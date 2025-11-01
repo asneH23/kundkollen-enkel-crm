@@ -19,10 +19,24 @@ const Hero = () => {
               Ett svenskt CRM-verktyg som är enkelt nog att börja använda idag.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-              <Button variant="hero" size="lg">
+              <Button 
+                variant="hero" 
+                size="lg"
+                onClick={() => {
+                  const betaSection = document.getElementById('beta');
+                  betaSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 Testa gratis
               </Button>
-              <Button variant="outline" size="lg">
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => {
+                  const featuresSection = document.getElementById('funktioner');
+                  featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 Läs mer
               </Button>
             </div>

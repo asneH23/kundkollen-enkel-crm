@@ -25,7 +25,7 @@ const BetaTester = () => {
   };
 
   return (
-    <section className="py-20 bg-primary">
+    <section id="beta" className="py-20 bg-primary">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-primary-foreground">
