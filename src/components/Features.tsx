@@ -43,14 +43,18 @@ const Features = () => {
             return (
               <Card
                 key={index}
-                className="p-6 hover:shadow-md transition-shadow border-border"
+                className="p-6 hover:shadow-md transition-shadow border-border cursor-pointer group"
+                onClick={() => {
+                  const betaSection = document.getElementById('beta');
+                  betaSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
                 <div className="mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-[hsl(var(--feature-icon-bg))] flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-[hsl(var(--feature-icon-bg))] flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Icon className="w-6 h-6 text-[hsl(var(--feature-icon-fg))]" />
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </Card>
             );
