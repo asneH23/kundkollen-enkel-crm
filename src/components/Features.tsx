@@ -1,30 +1,37 @@
 import { Users, FileText, Bell, BarChart3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const features = [
   {
     icon: Users,
     title: "Kundregister",
     description: "Samla all kundinfo på ett ställe. Enkel överblick över kontakter, historik och avtal.",
+    route: "/kunder",
   },
   {
     icon: FileText,
     title: "Offert- och säljöversikt",
     description: "Skapa och följ upp offerter. Se vilka affärer som är på gång och vilka som har avslutats.",
+    route: "/offerter",
   },
   {
     icon: Bell,
     title: "Påminnelser om uppföljning",
     description: "Missa aldrig att följa upp en kund. Automatiska påminnelser håller dig uppdaterad.",
+    route: "/paminnelser",
   },
   {
     icon: BarChart3,
     title: "Enkla rapporter",
     description: "Få snabba insikter om försäljning och kundrelationer. Inga komplicerade inställningar.",
+    route: "/rapporter",
   },
 ];
 
 const Features = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 bg-background" id="funktioner">
       <div className="container mx-auto px-4">
@@ -44,10 +51,7 @@ const Features = () => {
               <Card
                 key={index}
                 className="p-6 hover:shadow-md transition-shadow border-border cursor-pointer group"
-                onClick={() => {
-                  const betaSection = document.getElementById('beta');
-                  betaSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                onClick={() => navigate(feature.route)}
               >
                 <div className="mb-4">
                   <div className="w-12 h-12 rounded-lg bg-[hsl(var(--feature-icon-bg))] flex items-center justify-center group-hover:scale-110 transition-transform">
