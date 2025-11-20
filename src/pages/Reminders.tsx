@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Bell, Clock, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +20,13 @@ interface Reminder {
   description: string | null;
   due_date: string;
   completed: boolean | null;
+  customer_id: string | null;
   created_at: string;
+}
+
+interface Customer {
+  id: string;
+  company_name: string;
 }
 
 const Reminders = () => {
@@ -27,11 +34,13 @@ const Reminders = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [customerId, setCustomerId] = useState("");
 
   const fetchReminders = async () => {
     if (!user) return;
@@ -45,10 +54,10 @@ const Reminders = () => {
 
       if (error) throw error;
       setReminders(data || []);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Fel",
-        description: "Kunde inte hämta påminnelser",
+        description: error.message || "Kunde inte hämta påminnelser",
         variant: "destructive",
       });
     } finally {
@@ -56,38 +65,69 @@ const Reminders = () => {
     }
   };
 
+  const fetchCustomers = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("id, company_name")
+        .eq("user_id", user.id)
+        .order("company_name");
+
+      if (error) throw error;
+      setCustomers(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Fel",
+        description: error.message || "Kunde inte hämta kunder",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchReminders();
+    fetchCustomers();
   }, [user]);
 
   const handleAddReminder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !title || !dueDate) return;
+    if (!user || !title.trim() || !dueDate) {
+      toast({
+        title: "Fel",
+        description: "Titel och datum är obligatoriska",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const { error } = await supabase.from("reminders").insert({
         user_id: user.id,
-        title,
-        description: description || null,
+        title: title.trim(),
+        description: description.trim() || null,
         due_date: new Date(dueDate).toISOString(),
+        customer_id: customerId || null,
       });
 
       if (error) throw error;
 
       toast({
-        title: "Framgång",
-        description: "Påminnelse skapad",
+        title: "Skapad",
+        description: "Påminnelsen har skapats",
       });
 
       setTitle("");
       setDescription("");
       setDueDate("");
+      setCustomerId("");
       setOpen(false);
       fetchReminders();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Fel",
-        description: "Kunde inte skapa påminnelse",
+        description: error.message || "Kunde inte skapa påminnelse",
         variant: "destructive",
       });
     }
@@ -103,39 +143,47 @@ const Reminders = () => {
       if (error) throw error;
 
       toast({
-        title: "Framgång",
+        title: "Uppdaterad",
         description: completed ? "Påminnelse markerad som ej slutförd" : "Påminnelse markerad som slutförd",
       });
 
       fetchReminders();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Fel",
-        description: "Kunde inte uppdatera påminnelse",
+        description: error.message || "Kunde inte uppdatera påminnelse",
         variant: "destructive",
       });
     }
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Är du säker på att du vill ta bort denna påminnelse?")) return;
+
     try {
       const { error } = await supabase.from("reminders").delete().eq("id", id);
 
       if (error) throw error;
 
       toast({
-        title: "Framgång",
-        description: "Påminnelse borttagen",
+        title: "Borttagen",
+        description: "Påminnelsen har tagits bort",
       });
 
       fetchReminders();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Fel",
-        description: "Kunde inte ta bort påminnelse",
+        description: error.message || "Kunde inte ta bort påminnelse",
         variant: "destructive",
       });
     }
+  };
+
+  const getCustomerName = (customerId: string | null) => {
+    if (!customerId) return null;
+    const customer = customers.find(c => c.id === customerId);
+    return customer?.company_name || "Okänd kund";
   };
 
   const getPriorityVariant = (dueDate: string, completed: boolean | null) => {
@@ -204,7 +252,7 @@ const Reminders = () => {
               </DialogHeader>
               <form onSubmit={handleAddReminder} className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Titel</Label>
+                  <Label htmlFor="title">Titel *</Label>
                   <Input
                     id="title"
                     value={title}
@@ -212,6 +260,22 @@ const Reminders = () => {
                     placeholder="T.ex. Följ upp med Acme AB"
                     required
                   />
+                </div>
+                <div>
+                  <Label htmlFor="customer">Kund</Label>
+                  <Select value={customerId} onValueChange={setCustomerId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Välj kund (valfritt)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Ingen kund</SelectItem>
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} value={customer.id}>
+                          {customer.company_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="description">Beskrivning</Label>
@@ -223,7 +287,7 @@ const Reminders = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="dueDate">Datum</Label>
+                  <Label htmlFor="dueDate">Datum *</Label>
                   <Input
                     id="dueDate"
                     type="date"
@@ -265,6 +329,11 @@ const Reminders = () => {
                           <h3 className={`font-semibold text-lg mb-1 ${reminder.completed ? "line-through" : ""}`}>
                             {reminder.title}
                           </h3>
+                          {getCustomerName(reminder.customer_id) && (
+                            <p className="text-sm text-muted-foreground mb-1">
+                              Kund: {getCustomerName(reminder.customer_id)}
+                            </p>
+                          )}
                           {reminder.description && (
                             <p className="text-muted-foreground mb-2">{reminder.description}</p>
                           )}

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Trash2 } from "lucide-react";
+import { ArrowLeft, FileText, Trash2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -21,16 +21,33 @@ interface Quote {
   created_at: string;
 }
 
+interface Customer {
+  id: string;
+  company_name: string;
+}
+
+interface QuoteFormData {
+  title: string;
+  amount: string;
+  status: string;
+  customerId: string;
+}
+
 const Quotes = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
-  const [status, setStatus] = useState("draft");
+  const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
+  const [formData, setFormData] = useState<QuoteFormData>({
+    title: "",
+    amount: "",
+    status: "draft",
+    customerId: "",
+  });
 
   const fetchQuotes = async () => {
     if (!user) return;
@@ -44,10 +61,10 @@ const Quotes = () => {
 
       if (error) throw error;
       setQuotes(data || []);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Fel",
-        description: "Kunde inte hämta offerter",
+        description: error.message || "Kunde inte hämta offerter",
         variant: "destructive",
       });
     } finally {
@@ -55,62 +72,145 @@ const Quotes = () => {
     }
   };
 
-  useEffect(() => {
-    fetchQuotes();
-  }, [user]);
-
-  const handleAddQuote = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !title) return;
-
+  const fetchCustomers = async () => {
+    if (!user) return;
+    
     try {
-      const { error } = await supabase.from("quotes").insert({
-        user_id: user.id,
-        title,
-        amount: amount ? parseFloat(amount) : null,
-        status,
-      });
+      const { data, error } = await supabase
+        .from("customers")
+        .select("id, company_name")
+        .eq("user_id", user.id)
+        .order("company_name");
 
       if (error) throw error;
-
-      toast({
-        title: "Framgång",
-        description: "Offert skapad",
-      });
-
-      setTitle("");
-      setAmount("");
-      setStatus("draft");
-      setOpen(false);
-      fetchQuotes();
-    } catch (error) {
+      setCustomers(data || []);
+    } catch (error: any) {
       toast({
         title: "Fel",
-        description: "Kunde inte skapa offert",
+        description: error.message || "Kunde inte hämta kunder",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchQuotes();
+    fetchCustomers();
+  }, [user]);
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      amount: "",
+      status: "draft",
+      customerId: "",
+    });
+    setEditingQuote(null);
+  };
+
+  const handleOpenDialog = (quote?: Quote) => {
+    if (quote) {
+      setEditingQuote(quote);
+      setFormData({
+        title: quote.title,
+        amount: quote.amount?.toString() || "",
+        status: quote.status || "draft",
+        customerId: quote.customer_id || "",
+      });
+    } else {
+      resetForm();
+    }
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    resetForm();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !formData.title.trim()) {
+      toast({
+        title: "Fel",
+        description: "Titel är obligatorisk",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const quoteData = {
+        title: formData.title.trim(),
+        amount: formData.amount ? parseFloat(formData.amount) : null,
+        status: formData.status,
+        customer_id: formData.customerId || null,
+      };
+
+      if (editingQuote) {
+        const { error } = await supabase
+          .from("quotes")
+          .update(quoteData)
+          .eq("id", editingQuote.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Uppdaterad",
+          description: "Offerten har uppdaterats",
+        });
+      } else {
+        const { error } = await supabase.from("quotes").insert({
+          user_id: user.id,
+          ...quoteData,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Skapad",
+          description: "Offerten har skapats",
+        });
+      }
+
+      handleCloseDialog();
+      fetchQuotes();
+    } catch (error: any) {
+      toast({
+        title: "Fel",
+        description: error.message || `Kunde inte ${editingQuote ? "uppdatera" : "skapa"} offert`,
         variant: "destructive",
       });
     }
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Är du säker på att du vill ta bort denna offert?")) return;
+
     try {
       const { error } = await supabase.from("quotes").delete().eq("id", id);
 
       if (error) throw error;
 
       toast({
-        title: "Framgång",
-        description: "Offert borttagen",
+        title: "Borttagen",
+        description: "Offerten har tagits bort",
       });
 
       fetchQuotes();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Fel",
-        description: "Kunde inte ta bort offert",
+        description: error.message || "Kunde inte ta bort offert",
         variant: "destructive",
       });
     }
+  };
+
+  const getCustomerName = (customerId: string | null) => {
+    if (!customerId) return "Ingen kund";
+    const customer = customers.find(c => c.id === customerId);
+    return customer?.company_name || "Okänd kund";
   };
 
   const getStatusVariant = (status: string | null) => {
@@ -164,39 +264,64 @@ const Quotes = () => {
         <div className="mb-6">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button onClick={() => handleOpenDialog()}>
                 <FileText className="mr-2 h-4 w-4" />
-                Skapa ny offert
+                Skapa offert
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Skapa ny offert</DialogTitle>
+                <DialogTitle>
+                  {editingQuote ? "Redigera offert" : "Skapa ny offert"}
+                </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleAddQuote} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Titel</Label>
+                  <Label htmlFor="title">Titel *</Label>
                   <Input
                     id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="T.ex. Webbprojekt för Acme AB"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="T.ex. Renovering av badrum"
                     required
                   />
+                </div>
+                <div>
+                  <Label htmlFor="customer">Kund</Label>
+                  <Select 
+                    value={formData.customerId} 
+                    onValueChange={(value) => setFormData({ ...formData, customerId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Välj kund (valfritt)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Ingen kund</SelectItem>
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} value={customer.id}>
+                          {customer.company_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="amount">Belopp (kr)</Label>
                   <Input
                     id="amount"
                     type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="125000"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    placeholder="50000"
                   />
                 </div>
                 <div>
                   <Label htmlFor="status">Status</Label>
-                  <Select value={status} onValueChange={setStatus}>
+                  <Select 
+                    value={formData.status} 
+                    onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -207,9 +332,14 @@ const Quotes = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button type="submit" className="w-full">
-                  Skapa offert
-                </Button>
+                <div className="flex gap-2">
+                  <Button type="submit" className="flex-1">
+                    {editingQuote ? "Uppdatera" : "Skapa"}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                    Avbryt
+                  </Button>
+                </div>
               </form>
             </DialogContent>
           </Dialog>
@@ -226,28 +356,41 @@ const Quotes = () => {
             {quotes.map((quote) => (
               <Card key={quote.id}>
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold text-lg mb-1">{quote.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Skapad: {new Date(quote.created_at).toLocaleDateString("sv-SE")}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        {quote.amount && (
-                          <p className="font-bold text-xl mb-2">
-                            {quote.amount.toLocaleString("sv-SE")} kr
-                          </p>
-                        )}
-                        <Badge variant={getStatusVariant(quote.status)}>
-                          {getStatusLabel(quote.status)}
-                        </Badge>
+                  <div className="flex items-start justify-between">
+                    <div className="flex gap-4 flex-1">
+                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-6 h-6 text-primary" />
                       </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-1">{quote.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Kund: {getCustomerName(quote.customer_id)}
+                        </p>
+                        <p className="text-muted-foreground mb-2">
+                          {quote.amount ? `${quote.amount.toLocaleString("sv-SE")} kr` : "Inget belopp"}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Skapad: {new Date(quote.created_at).toLocaleDateString("sv-SE")}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={getStatusVariant(quote.status)}>
+                        {getStatusLabel(quote.status)}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenDialog(quote)}
+                        title="Redigera"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(quote.id)}
+                        title="Ta bort"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

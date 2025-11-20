@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 const Navbar = () => {
   const location = useLocation();
@@ -46,6 +46,12 @@ const Navbar = () => {
                 <span className="text-sm text-muted-foreground hidden sm:block">
                   {user.email}
                 </span>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/profil">
+                    <User className="h-4 w-4 mr-2" />
+                    Profil
+                  </Link>
+                </Button>
                 <Button variant="ghost" size="sm" onClick={signOut}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Logga ut

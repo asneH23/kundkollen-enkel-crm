@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Building2, Pencil } from "lucide-react";
 
 interface Customer {
   id: string;
@@ -17,15 +18,26 @@ interface Customer {
   phone: string | null;
 }
 
+interface CustomerFormData {
+  companyName: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+}
+
 const Customers = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [companyName, setCompanyName] = useState("");
-  const [contactPerson, setContactPerson] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [open, setOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [formData, setFormData] = useState<CustomerFormData>({
+    companyName: "",
+    contactPerson: "",
+    email: "",
+    phone: "",
+  });
 
   useEffect(() => {
     fetchCustomers();
@@ -38,14 +50,15 @@ const Customers = () => {
       const { data, error } = await supabase
         .from("customers")
         .select("*")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       setCustomers(data || []);
     } catch (error: any) {
       toast({
-        title: "Kunde inte hämta kunder",
-        description: error.message,
+        title: "Fel",
+        description: error.message || "Kunde inte hämta kunder",
         variant: "destructive",
       });
     } finally {
@@ -53,57 +66,110 @@ const Customers = () => {
     }
   };
 
-  const handleAddCustomer = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const resetForm = () => {
+    setFormData({
+      companyName: "",
+      contactPerson: "",
+      email: "",
+      phone: "",
+    });
+    setEditingCustomer(null);
+  };
 
-    if (!user) return;
+  const handleOpenDialog = (customer?: Customer) => {
+    if (customer) {
+      setEditingCustomer(customer);
+      setFormData({
+        companyName: customer.company_name,
+        contactPerson: customer.contact_person || "",
+        email: customer.email || "",
+        phone: customer.phone || "",
+      });
+    } else {
+      resetForm();
+    }
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    resetForm();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !formData.companyName.trim()) {
+      toast({
+        title: "Fel",
+        description: "Företagsnamn är obligatoriskt",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
-      const { error } = await supabase.from("customers").insert({
-        user_id: user.id,
-        company_name: companyName,
-        contact_person: contactPerson || null,
-        email: email || null,
-        phone: phone || null,
-      });
+      const customerData = {
+        company_name: formData.companyName.trim(),
+        contact_person: formData.contactPerson.trim() || null,
+        email: formData.email.trim() || null,
+        phone: formData.phone.trim() || null,
+      };
 
-      if (error) throw error;
+      if (editingCustomer) {
+        const { error } = await supabase
+          .from("customers")
+          .update(customerData)
+          .eq("id", editingCustomer.id);
 
-      toast({
-        title: "Kund tillagd!",
-        description: `${companyName} har lagts till.`,
-      });
+        if (error) throw error;
 
-      setCompanyName("");
-      setContactPerson("");
-      setEmail("");
-      setPhone("");
+        toast({
+          title: "Uppdaterad",
+          description: "Kunden har uppdaterats",
+        });
+      } else {
+        const { error } = await supabase.from("customers").insert({
+          user_id: user.id,
+          ...customerData,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Tillagd",
+          description: "Kunden har lagts till",
+        });
+      }
+
+      handleCloseDialog();
       fetchCustomers();
     } catch (error: any) {
       toast({
-        title: "Kunde inte lägga till kund",
-        description: error.message,
+        title: "Fel",
+        description: error.message || `Kunde inte ${editingCustomer ? "uppdatera" : "lägga till"} kund`,
         variant: "destructive",
       });
     }
   };
 
-  const handleDeleteCustomer = async (id: string, name: string) => {
+  const handleDelete = async (id: string) => {
+    if (!confirm("Är du säker på att du vill ta bort denna kund?")) return;
+
     try {
       const { error } = await supabase.from("customers").delete().eq("id", id);
 
       if (error) throw error;
 
       toast({
-        title: "Kund borttagen",
-        description: `${name} har tagits bort.`,
+        title: "Borttagen",
+        description: "Kunden har tagits bort",
       });
 
       fetchCustomers();
     } catch (error: any) {
       toast({
-        title: "Kunde inte ta bort kund",
-        description: error.message,
+        title: "Fel",
+        description: error.message || "Kunde inte ta bort kund",
         variant: "destructive",
       });
     }
@@ -124,118 +190,131 @@ const Customers = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Kunder</h1>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Kunder</h1>
+          <p className="text-muted-foreground">Hantera dina kundrelationer</p>
+        </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plus className="h-5 w-5" />
-              Lägg till ny kund
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAddCustomer} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+        <div className="mb-6">
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => handleOpenDialog()}>
+                <Plus className="mr-2 h-4 w-4" />
+                Lägg till kund
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingCustomer ? "Redigera kund" : "Lägg till ny kund"}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
                   <Label htmlFor="companyName">Företagsnamn *</Label>
                   <Input
                     id="companyName"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Företagets namn"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    placeholder="Acme AB"
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="contactPerson">Kontaktperson</Label>
                   <Input
                     id="contactPerson"
-                    value={contactPerson}
-                    onChange={(e) => setContactPerson(e.target.value)}
-                    placeholder="Namn på kontaktperson"
+                    value={formData.contactPerson}
+                    onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+                    placeholder="Anna Andersson"
                   />
                 </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="email">E-post</Label>
                   <Input
                     id="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email@exempel.se"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="anna@acme.se"
                   />
                 </div>
-
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="phone">Telefon</Label>
                   <Input
                     id="phone"
                     type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="070-123 45 67"
                   />
                 </div>
-              </div>
+                <div className="flex gap-2">
+                  <Button type="submit" className="flex-1">
+                    {editingCustomer ? "Uppdatera" : "Lägg till"}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                    Avbryt
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-              <Button type="submit">
-                <Plus className="h-4 w-4 mr-2" />
-                Lägg till kund
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Dina kunder ({customers.length})</h2>
-          {customers.length === 0 ? (
-            <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">
-                Inga kunder än. Lägg till din första kund ovan!
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {customers.map((customer) => (
-                <Card key={customer.id}>
-                  <CardContent className="py-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <h3 className="font-semibold text-lg">{customer.company_name}</h3>
+        {customers.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center text-muted-foreground">
+              Inga kunder ännu. Lägg till din första kund!
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            {customers.map((customer) => (
+              <Card key={customer.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex gap-4 flex-1">
+                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-1">{customer.company_name}</h3>
                         {customer.contact_person && (
-                          <p className="text-sm text-muted-foreground">
-                            Kontakt: {customer.contact_person}
-                          </p>
+                          <p className="text-muted-foreground mb-1">{customer.contact_person}</p>
                         )}
                         {customer.email && (
-                          <p className="text-sm text-muted-foreground">
-                            E-post: {customer.email}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{customer.email}</p>
                         )}
                         {customer.phone && (
-                          <p className="text-sm text-muted-foreground">
-                            Telefon: {customer.phone}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{customer.phone}</p>
                         )}
                       </div>
+                    </div>
+                    <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          handleDeleteCustomer(customer.id, customer.company_name)
-                        }
+                        size="icon"
+                        onClick={() => handleOpenDialog(customer)}
+                        title="Redigera"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(customer.id)}
+                        title="Ta bort"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
