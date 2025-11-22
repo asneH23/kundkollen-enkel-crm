@@ -315,35 +315,36 @@ const Reminders = () => {
             {reminders.map((reminder) => (
               <Card key={reminder.id} className={reminder.completed ? "opacity-60" : ""}>
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex gap-4 flex-1">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex gap-4 flex-1 w-full">
                       <Checkbox
                         checked={reminder.completed || false}
                         onCheckedChange={() => handleToggleComplete(reminder.id, reminder.completed || false)}
+                        className="mt-1"
                       />
-                      <div className="flex gap-4 flex-1">
+                      <div className="flex gap-4 flex-1 min-w-0">
                         <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <Clock className="w-6 h-6 text-primary" />
                         </div>
-                        <div className="flex-1">
-                          <h3 className={`font-semibold text-lg mb-1 ${reminder.completed ? "line-through" : ""}`}>
+                        <div className="flex-1 min-w-0">
+                          <h3 className={`font-semibold text-lg mb-1 break-words ${reminder.completed ? "line-through" : ""}`}>
                             {reminder.title}
                           </h3>
                           {getCustomerName(reminder.customer_id) && (
-                            <p className="text-sm text-muted-foreground mb-1">
+                            <p className="text-sm text-muted-foreground mb-1 break-words">
                               Kund: {getCustomerName(reminder.customer_id)}
                             </p>
                           )}
                           {reminder.description && (
-                            <p className="text-muted-foreground mb-2">{reminder.description}</p>
+                            <p className="text-muted-foreground mb-2 break-words">{reminder.description}</p>
                           )}
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-muted-foreground whitespace-nowrap">
                             Förfaller: {new Date(reminder.due_date).toLocaleDateString("sv-SE")}
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <Badge variant={getPriorityVariant(reminder.due_date, reminder.completed)}>
                         {getPriorityLabel(reminder.due_date, reminder.completed)}
                       </Badge>

@@ -273,25 +273,25 @@ const Customers = () => {
             {customers.map((customer) => (
               <Card key={customer.id}>
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex gap-4 flex-1">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex gap-4 flex-1 w-full">
                       <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <Building2 className="w-6 h-6 text-primary" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-1">{customer.company_name}</h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-lg mb-1 break-words">{customer.company_name}</h3>
                         {customer.contact_person && (
-                          <p className="text-muted-foreground mb-1">{customer.contact_person}</p>
+                          <p className="text-muted-foreground mb-1 break-words">{customer.contact_person}</p>
                         )}
                         {customer.email && (
-                          <p className="text-sm text-muted-foreground">{customer.email}</p>
+                          <p className="text-sm text-muted-foreground break-all">{customer.email}</p>
                         )}
                         {customer.phone && (
                           <p className="text-sm text-muted-foreground">{customer.phone}</p>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"

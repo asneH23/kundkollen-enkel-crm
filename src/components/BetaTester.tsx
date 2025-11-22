@@ -1,27 +1,47 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const BetaTester = () => {
   const { toast } = useToast();
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    companyName: "",
+    email: "",
+    phone: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const { error } = await supabase.from("beta_signups").insert({
+        company_name: formData.companyName,
+        email: formData.email,
+        phone: formData.phone || null,
+      });
 
-    toast({
-      title: "Välkommen som betatestare!",
-      description: "Vi hör av oss så snart som möjligt med mer information.",
-    });
+      if (error) throw error;
 
-    setEmail("");
-    setIsSubmitting(false);
+      toast({
+        title: "Välkommen som betatestare!",
+        description: "Vi hör av oss så snart som möjligt med mer information.",
+      });
+
+      setFormData({ companyName: "", email: "", phone: "" });
+    } catch (error: any) {
+      toast({
+        title: "Något gick fel",
+        description: error.message || "Kunde inte skicka din anmälan",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -36,20 +56,51 @@ const BetaTester = () => {
             Hjälp oss forma framtidens enklaste CRM-verktyg.
           </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Din e-postadress"
-              required
-              className="flex-1 bg-background"
-            />
+          <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto">
+            <div className="space-y-2">
+              <Label htmlFor="companyName" className="text-primary-foreground">Företagsnamn *</Label>
+              <Input
+                id="companyName"
+                type="text"
+                value={formData.companyName}
+                onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                placeholder="Ditt företagsnamn"
+                required
+                className="bg-background"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-primary-foreground">E-postadress *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="din@email.se"
+                required
+                className="bg-background"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-primary-foreground">Telefonnummer (valfritt)</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="070-123 45 67"
+                className="bg-background"
+              />
+            </div>
+
             <Button
               type="submit"
               size="lg"
               disabled={isSubmitting}
               variant="secondary"
+              className="w-full"
             >
               {isSubmitting ? "Skickar..." : "Bli betatestare"}
             </Button>
