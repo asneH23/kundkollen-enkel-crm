@@ -11,7 +11,9 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [acceptGdpr, setAcceptGdpr] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -35,6 +37,27 @@ const Auth = () => {
         });
         navigate("/kunder");
       } else {
+        // Validation for signup
+        if (password !== confirmPassword) {
+          toast({
+            title: "Lösenorden matchar inte",
+            description: "Vänligen se till att lösenorden är identiska.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
+        if (!acceptGdpr) {
+          toast({
+            title: "Godkänn GDPR",
+            description: "Du måste acceptera villkoren för att skapa ett konto.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -126,6 +149,46 @@ const Auth = () => {
                 minLength={6}
               />
             </div>
+
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Upprepa lösenordet"
+                  required
+                  minLength={6}
+                />
+              </div>
+            )}
+
+            {!isLogin && (
+              <div className="flex items-start space-x-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="gdpr"
+                  checked={acceptGdpr}
+                  onChange={(e) => setAcceptGdpr(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                  required
+                />
+                <Label htmlFor="gdpr" className="text-sm leading-relaxed cursor-pointer">
+                  Jag accepterar att mina personuppgifter behandlas enligt{" "}
+                  <a 
+                    href="https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary underline hover:no-underline"
+                  >
+                    GDPR
+                  </a>
+                  . Uppgifterna används endast för att ge dig tillgång till tjänsten och kommer inte delas med tredje part.
+                </Label>
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading

@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      beta_signups: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          id: string
+          phone: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          email: string
+          id?: string
+          phone?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           company_name: string

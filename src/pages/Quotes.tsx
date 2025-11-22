@@ -356,25 +356,25 @@ const Quotes = () => {
             {quotes.map((quote) => (
               <Card key={quote.id}>
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex gap-4 flex-1">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex gap-4 flex-1 w-full">
                       <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <FileText className="w-6 h-6 text-primary" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-1">{quote.title}</h3>
-                        <p className="text-sm text-muted-foreground mb-1">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-lg mb-1 break-words">{quote.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-1 break-words">
                           Kund: {getCustomerName(quote.customer_id)}
                         </p>
                         <p className="text-muted-foreground mb-2">
                           {quote.amount ? `${quote.amount.toLocaleString("sv-SE")} kr` : "Inget belopp"}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground whitespace-nowrap">
                           Skapad: {new Date(quote.created_at).toLocaleDateString("sv-SE")}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <Badge variant={getStatusVariant(quote.status)}>
                         {getStatusLabel(quote.status)}
                       </Badge>
