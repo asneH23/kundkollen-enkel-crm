@@ -209,6 +209,13 @@ const Customers = () => {
                   {editingCustomer ? "Redigera kund" : "Lägg till ny kund"}
                 </DialogTitle>
               </DialogHeader>
+              <div className="bg-muted/50 p-3 rounded-md mb-4">
+                <p className="text-xs text-muted-foreground">
+                  <strong>GDPR-information:</strong> Kunduppgifter sparas säkert och hanteras enligt dataskyddsförordningen (GDPR). 
+                  Informationen används endast för att hantera dina kundrelationer och delas inte med tredje part. 
+                  Du kan när som helst radera kunduppgifter.
+                </p>
+              </div>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="companyName">Företagsnamn *</Label>
