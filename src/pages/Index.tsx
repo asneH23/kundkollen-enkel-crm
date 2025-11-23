@@ -4,19 +4,22 @@ import About from "@/components/About";
 import ContactForm from "@/components/ContactForm";
 import BetaTester from "@/components/BetaTester";
 import Navbar from "@/components/Navbar";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen">
       <Navbar />
 
       {/* Main Content */}
       <main>
-        <Hero />
+        {!user && <Hero />}
         <Features />
         <About />
-        <ContactForm />
-        <BetaTester />
+        {!user && <ContactForm />}
+        {!user && <BetaTester />}
       </main>
 
       {/* Footer */}
