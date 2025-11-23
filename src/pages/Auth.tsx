@@ -35,7 +35,7 @@ const Auth = () => {
           title: "Välkommen tillbaka!",
           description: "Du är nu inloggad.",
         });
-        navigate("/kunder");
+        navigate("/dashboard");
       } else {
         // Validation for signup
         if (password !== confirmPassword) {
@@ -62,7 +62,7 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/kunder`,
+            emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
               company_name: companyName,
             },
@@ -83,7 +83,7 @@ const Auth = () => {
         });
 
         if (loginError) throw loginError;
-        navigate("/kunder");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       toast({

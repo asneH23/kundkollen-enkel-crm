@@ -8,6 +8,7 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
 
   const navItems = [
+    { path: "/dashboard", label: "Dashboard" },
     { path: "/kunder", label: "Kunder" },
     { path: "/offerter", label: "Offerter" },
     { path: "/paminnelser", label: "Påminnelser" },
