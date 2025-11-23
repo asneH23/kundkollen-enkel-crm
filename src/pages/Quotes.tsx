@@ -264,7 +264,7 @@ const Quotes = () => {
         <div className="mb-6">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => handleOpenDialog()}>
+              <Button>
                 <FileText className="mr-2 h-4 w-4" />
                 Skapa offert
               </Button>
