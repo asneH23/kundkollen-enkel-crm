@@ -7,6 +7,16 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import Navbar from "@/components/Navbar";
 import { Plus, Trash2, Building2, Pencil } from "lucide-react";
 
@@ -31,6 +41,9 @@ const Customers = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [formData, setFormData] = useState<CustomerFormData>({
     companyName: "",
@@ -38,6 +51,24 @@ const Customers = () => {
     email: "",
     phone: "",
   });
+
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    if (!digits) return "";
+
+    // Svensk mobil: 070-123-45-67 (3-3-2-2)
+    const part1 = digits.slice(0, 3);
+    const part2 = digits.slice(3, 6);
+    const part3 = digits.slice(6, 8);
+    const part4 = digits.slice(8, 10);
+
+    return [part1, part2, part3, part4].filter(Boolean).join("-");
+  };
+
+  const normalizePhoneForSave = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    return digits || null;
+  };
 
   useEffect(() => {
     fetchCustomers();
@@ -83,7 +114,7 @@ const Customers = () => {
         companyName: customer.company_name,
         contactPerson: customer.contact_person || "",
         email: customer.email || "",
-        phone: customer.phone || "",
+        phone: formatPhone(customer.phone || ""),
       });
     } else {
       resetForm();
@@ -112,7 +143,7 @@ const Customers = () => {
         company_name: formData.companyName.trim(),
         contact_person: formData.contactPerson.trim() || null,
         email: formData.email.trim() || null,
-        phone: formData.phone.trim() || null,
+        phone: normalizePhoneForSave(formData.phone || ""),
       };
 
       if (editingCustomer) {
@@ -175,6 +206,17 @@ const Customers = () => {
     }
   };
 
+  const filteredCustomers = customers.filter((customer) => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+    return (
+      customer.company_name.toLowerCase().includes(term) ||
+      (customer.contact_person && customer.contact_person.toLowerCase().includes(term)) ||
+      (customer.email && customer.email.toLowerCase().includes(term)) ||
+      (customer.phone && customer.phone.toLowerCase().includes(term))
+    );
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen">
@@ -195,7 +237,15 @@ const Customers = () => {
           <p className="text-muted-foreground">Hantera dina kundrelationer</p>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Sök på företagsnamn, kontaktperson eller e-post"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full md:w-80"
+            />
+          </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => handleOpenDialog()}>
@@ -252,8 +302,8 @@ const Customers = () => {
                     id="phone"
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="070-123 45 67"
+                    onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
+                    placeholder="070-123-45-67"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -269,36 +319,46 @@ const Customers = () => {
           </Dialog>
         </div>
 
-        {customers.length === 0 ? (
+        {filteredCustomers.length === 0 ? (
           <Card>
             <CardContent className="p-8 text-center text-muted-foreground">
-              Inga kunder ännu. Lägg till din första kund!
+              {customers.length === 0
+                ? "Inga kunder ännu. Lägg till din första kund!"
+                : "Inga kunder matchar din sökning."}
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
-            {customers.map((customer) => (
-              <Card key={customer.id}>
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                    <div className="flex gap-4 flex-1 w-full">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Building2 className="w-6 h-6 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg mb-1 break-words">{customer.company_name}</h3>
-                        {customer.contact_person && (
-                          <p className="text-muted-foreground mb-1 break-words">{customer.contact_person}</p>
-                        )}
-                        {customer.email && (
-                          <p className="text-sm text-muted-foreground break-all">{customer.email}</p>
-                        )}
-                        {customer.phone && (
-                          <p className="text-sm text-muted-foreground">{customer.phone}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Företag</TableHead>
+                  <TableHead>Kontaktperson</TableHead>
+                  <TableHead>E-post</TableHead>
+                  <TableHead>Telefon</TableHead>
+                  <TableHead className="w-[80px] text-right">Åtgärder</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCustomers.map((customer) => (
+                  <TableRow
+                    key={customer.id}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setSelectedCustomer(customer);
+                      setDetailOpen(true);
+                    }}
+                  >
+                    <TableCell className="font-medium">{customer.company_name}</TableCell>
+                    <TableCell>{customer.contact_person || "-"}</TableCell>
+                    <TableCell className="break-all">{customer.email || "-"}</TableCell>
+                    <TableCell>{customer.phone ? formatPhone(customer.phone) : "-"}</TableCell>
+                    <TableCell
+                      className="text-right"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
                       <Button
                         variant="ghost"
                         size="icon"
@@ -315,12 +375,75 @@ const Customers = () => {
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+              <TableCaption>Klicka på en rad för att se mer information om kunden.</TableCaption>
+            </Table>
+
+            <Sheet
+              open={detailOpen}
+              onOpenChange={(open) => {
+                setDetailOpen(open);
+                if (!open) {
+                  setSelectedCustomer(null);
+                }
+              }}
+            >
+              <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                      <Building2 className="h-4 w-4 text-primary" />
+                    </span>
+                    {selectedCustomer?.company_name || "Kunddetaljer"}
+                  </SheetTitle>
+                </SheetHeader>
+                {selectedCustomer && (
+                  <div className="mt-6 space-y-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Kontaktperson</p>
+                      <p className="font-medium">{selectedCustomer.contact_person || "Inte angivet"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">E-post</p>
+                      <p className="font-medium break-all">{selectedCustomer.email || "Inte angivet"}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Telefon</p>
+                      <p className="font-medium">
+                        {selectedCustomer.phone ? formatPhone(selectedCustomer.phone) : "Inte angivet"}
+                      </p>
+                    </div>
+                    <div className="pt-4 flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setDetailOpen(false);
+                          handleOpenDialog(selectedCustomer);
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Redigera
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setDetailOpen(false);
+                          handleDelete(selectedCustomer.id);
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Ta bort
+                      </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                )}
+              </SheetContent>
+            </Sheet>
+          </>
         )}
       </div>
     </div>

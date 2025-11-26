@@ -8,8 +8,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, Clock, Trash2 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import Navbar from "@/components/Navbar";
+import { Bell, Clock, Trash2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -30,17 +40,21 @@ interface Customer {
 }
 
 const Reminders = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
+  const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("active");
+  const [searchTerm, setSearchTerm] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [customerId, setCustomerId] = useState("");
+  const [customerId, setCustomerId] = useState("none");
 
   const fetchReminders = async () => {
     if (!user) return;
@@ -91,7 +105,33 @@ const Reminders = () => {
     fetchCustomers();
   }, [user]);
 
-  const handleAddReminder = async (e: React.FormEvent) => {
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setDueDate("");
+    setCustomerId("none");
+    setEditingReminder(null);
+  };
+
+  const handleOpenDialog = (reminder?: Reminder) => {
+    if (reminder) {
+      setEditingReminder(reminder);
+      setTitle(reminder.title);
+      setDescription(reminder.description || "");
+      setDueDate(reminder.due_date ? reminder.due_date.split("T")[0] : "");
+      setCustomerId(reminder.customer_id || "none");
+    } else {
+      resetForm();
+    }
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    resetForm();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !title.trim() || !dueDate) {
       toast({
@@ -103,31 +143,47 @@ const Reminders = () => {
     }
 
     try {
-      const { error } = await supabase.from("reminders").insert({
-        user_id: user.id,
-        title: title.trim(),
-        description: description.trim() || null,
-        due_date: new Date(dueDate).toISOString(),
-        customer_id: customerId || null,
-      });
+      if (editingReminder) {
+        const { error } = await supabase
+          .from("reminders")
+          .update({
+            title: title.trim(),
+            description: description.trim() || null,
+            due_date: new Date(dueDate).toISOString(),
+            customer_id: customerId === "none" ? null : customerId,
+          })
+          .eq("id", editingReminder.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Skapad",
-        description: "Påminnelsen har skapats",
-      });
+        toast({
+          title: "Uppdaterad",
+          description: "Påminnelsen har uppdaterats",
+        });
+      } else {
+        const { error } = await supabase.from("reminders").insert({
+          user_id: user.id,
+          title: title.trim(),
+          description: description.trim() || null,
+          due_date: new Date(dueDate).toISOString(),
+          customer_id: customerId === "none" ? null : customerId,
+        });
 
-      setTitle("");
-      setDescription("");
-      setDueDate("");
-      setCustomerId("");
-      setOpen(false);
+        if (error) throw error;
+
+        toast({
+          title: "Skapad",
+          description: "Påminnelsen har skapats",
+        });
+      }
+
+      handleCloseDialog();
       fetchReminders();
     } catch (error: any) {
       toast({
         title: "Fel",
-        description: error.message || "Kunde inte skapa påminnelse",
+        description:
+          error.message || `Kunde inte ${editingReminder ? "uppdatera" : "skapa"} påminnelse`,
         variant: "destructive",
       });
     }
@@ -208,49 +264,74 @@ const Reminders = () => {
     return "Kommande";
   };
 
+  const filteredReminders = reminders.filter((reminder) => {
+    if (statusFilter === "active" && reminder.completed) return false;
+    if (statusFilter === "completed" && !reminder.completed) return false;
+
+    const term = searchTerm.toLowerCase();
+    if (!term) return true;
+
+    const customerName = (getCustomerName(reminder.customer_id) || "").toLowerCase();
+    return (
+      reminder.title.toLowerCase().includes(term) ||
+      (reminder.description && reminder.description.toLowerCase().includes(term)) ||
+      customerName.includes(term)
+    );
+  });
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Laddar...</div>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-lg">Laddar...</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="bg-background border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="font-bold text-xl text-primary">
-              Kundkollen
-            </div>
-            <Button variant="ghost" onClick={() => navigate("/")}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Tillbaka
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Påminnelser om uppföljning</h1>
           <p className="text-muted-foreground">Missa aldrig en viktig uppföljning</p>
         </div>
 
-        <div className="mb-6">
-          <Dialog open={open} onOpenChange={setOpen}>
+        <div className="mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Input
+              placeholder="Sök på titel, beskrivning eller kund"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full sm:w-72"
+            />
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue placeholder="Filtera status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Aktiva</SelectItem>
+                <SelectItem value="completed">Klara</SelectItem>
+                <SelectItem value="all">Alla</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Dialog open={open} onOpenChange={(isOpen) => (isOpen ? setOpen(true) : handleCloseDialog())}>
             <DialogTrigger asChild>
-              <Button>
+              <Button onClick={() => handleOpenDialog()}>
                 <Bell className="mr-2 h-4 w-4" />
                 Skapa påminnelse
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Skapa ny påminnelse</DialogTitle>
+                <DialogTitle>
+                  {editingReminder ? "Redigera påminnelse" : "Skapa ny påminnelse"}
+                </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleAddReminder} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="title">Titel *</Label>
                   <Input
@@ -268,7 +349,7 @@ const Reminders = () => {
                       <SelectValue placeholder="Välj kund (valfritt)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Ingen kund</SelectItem>
+                      <SelectItem value="none">Ingen kund</SelectItem>
                       {customers.map((customer) => (
                         <SelectItem key={customer.id} value={customer.id}>
                           {customer.company_name}
@@ -297,57 +378,83 @@ const Reminders = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full">
-                  Skapa påminnelse
+                  {editingReminder ? "Uppdatera påminnelse" : "Skapa påminnelse"}
                 </Button>
               </form>
             </DialogContent>
           </Dialog>
         </div>
 
-        {reminders.length === 0 ? (
+        {filteredReminders.length === 0 ? (
           <Card>
             <CardContent className="p-8 text-center text-muted-foreground">
-              Inga påminnelser ännu. Skapa din första påminnelse!
+              {reminders.length === 0
+                ? "Inga påminnelser ännu. Skapa din första påminnelse!"
+                : "Inga påminnelser matchar dina filter."}
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
-            {reminders.map((reminder) => (
-              <Card key={reminder.id} className={reminder.completed ? "opacity-60" : ""}>
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                    <div className="flex gap-4 flex-1 w-full">
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead />
+                  <TableHead>Titel</TableHead>
+                  <TableHead>Kund</TableHead>
+                  <TableHead>Förfallodatum</TableHead>
+                  <TableHead>Prioritet</TableHead>
+                  <TableHead className="w-[80px] text-right">Åtgärder</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredReminders.map((reminder) => (
+                  <TableRow
+                    key={reminder.id}
+                    className={reminder.completed ? "opacity-60 cursor-pointer" : "cursor-pointer"}
+                    onClick={() => {
+                      setSelectedReminder(reminder);
+                      setDetailOpen(true);
+                    }}
+                  >
+                    <TableCell
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
                       <Checkbox
                         checked={reminder.completed || false}
-                        onCheckedChange={() => handleToggleComplete(reminder.id, reminder.completed || false)}
-                        className="mt-1"
+                        onCheckedChange={() =>
+                          handleToggleComplete(reminder.id, reminder.completed || false)
+                        }
                       />
-                      <div className="flex gap-4 flex-1 min-w-0">
-                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Clock className="w-6 h-6 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className={`font-semibold text-lg mb-1 break-words ${reminder.completed ? "line-through" : ""}`}>
-                            {reminder.title}
-                          </h3>
-                          {getCustomerName(reminder.customer_id) && (
-                            <p className="text-sm text-muted-foreground mb-1 break-words">
-                              Kund: {getCustomerName(reminder.customer_id)}
-                            </p>
-                          )}
-                          {reminder.description && (
-                            <p className="text-muted-foreground mb-2 break-words">{reminder.description}</p>
-                          )}
-                          <p className="text-sm text-muted-foreground whitespace-nowrap">
-                            Förfaller: {new Date(reminder.due_date).toLocaleDateString("sv-SE")}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    </TableCell>
+                    <TableCell className={reminder.completed ? "line-through" : ""}>
+                      {reminder.title}
+                    </TableCell>
+                    <TableCell>{getCustomerName(reminder.customer_id) || "-"}</TableCell>
+                    <TableCell>
+                      {new Date(reminder.due_date).toLocaleDateString("sv-SE")}
+                    </TableCell>
+                    <TableCell>
                       <Badge variant={getPriorityVariant(reminder.due_date, reminder.completed)}>
                         {getPriorityLabel(reminder.due_date, reminder.completed)}
                       </Badge>
+                    </TableCell>
+                    <TableCell
+                      className="text-right"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenDialog(reminder)}
+                        className="mr-1"
+                        title="Redigera"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -355,12 +462,95 @@ const Reminders = () => {
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+              <TableCaption>Klicka på en rad för att se mer information om påminnelsen.</TableCaption>
+            </Table>
+
+            <Sheet
+              open={detailOpen}
+              onOpenChange={(open) => {
+                setDetailOpen(open);
+                if (!open) {
+                  setSelectedReminder(null);
+                }
+              }}
+            >
+              <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                      <Clock className="h-4 w-4 text-primary" />
+                    </span>
+                    {selectedReminder?.title || "Påminnelse"}
+                  </SheetTitle>
+                </SheetHeader>
+                {selectedReminder && (
+                  <div className="mt-6 space-y-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Kund</p>
+                      <p className="font-medium">
+                        {getCustomerName(selectedReminder.customer_id) || "Ingen kund angiven"}
+                      </p>
+                    </div>
+                    {selectedReminder.description && (
+                      <div>
+                        <p className="text-muted-foreground">Beskrivning</p>
+                        <p className="font-medium whitespace-pre-wrap">
+                          {selectedReminder.description}
+                        </p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-muted-foreground">Förfallodatum</p>
+                      <p className="font-medium">
+                        {new Date(selectedReminder.due_date).toLocaleString("sv-SE")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Status</p>
+                      <Badge variant={getPriorityVariant(selectedReminder.due_date, selectedReminder.completed)}>
+                        {getPriorityLabel(selectedReminder.due_date, selectedReminder.completed)}
+                      </Badge>
+                    </div>
+                    <div className="pt-4 flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={selectedReminder.completed ? "outline" : "default"}
+                        onClick={() =>
+                          handleToggleComplete(selectedReminder.id, selectedReminder.completed || false)
+                        }
+                      >
+                        {selectedReminder.completed ? "Markera som ej klar" : "Markera som klar"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setDetailOpen(false);
+                          handleOpenDialog(selectedReminder);
+                        }}
+                      >
+                        Redigera
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setDetailOpen(false);
+                          handleDelete(selectedReminder.id);
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Ta bort
+                      </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                )}
+              </SheetContent>
+            </Sheet>
+          </>
         )}
       </main>
     </div>

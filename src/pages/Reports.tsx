@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, BarChart3, TrendingUp, Users, FileText } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import { BarChart3, TrendingUp, Users, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface Stats {
   totalCustomers: number;
@@ -22,8 +22,8 @@ interface Activity {
 }
 
 const Reports = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [stats, setStats] = useState<Stats>({
     totalCustomers: 0,
@@ -57,14 +57,14 @@ const Reports = () => {
           .from("quotes")
           .select("*", { count: "exact", head: true })
           .eq("user_id", user.id)
-          .eq("status", "won");
+          .eq("status", "accepted");
 
         // Fetch total value of won deals
         const { data: wonQuotes } = await supabase
           .from("quotes")
           .select("amount")
           .eq("user_id", user.id)
-          .eq("status", "won");
+          .eq("status", "accepted");
 
         const totalValue = wonQuotes?.reduce((sum, quote) => sum + (quote.amount || 0), 0) || 0;
 
@@ -100,7 +100,7 @@ const Reports = () => {
           .from("quotes")
           .select("title, amount, created_at")
           .eq("user_id", user.id)
-          .eq("status", "won")
+          .eq("status", "accepted")
           .order("created_at", { ascending: false })
           .limit(2);
 
@@ -109,6 +109,24 @@ const Reports = () => {
             id: `quote-${quote.created_at}`,
             type: "quote",
             description: `Offert vunnen: ${quote.title} - ${quote.amount?.toLocaleString("sv-SE")} kr`,
+            date: quote.created_at,
+          });
+        });
+
+        // Recent sent quotes
+        const { data: recentSentQuotes } = await supabase
+          .from("quotes")
+          .select("title, amount, created_at")
+          .eq("user_id", user.id)
+          .eq("status", "sent")
+          .order("created_at", { ascending: false })
+          .limit(3);
+
+        recentSentQuotes?.forEach((quote) => {
+          recentActivities.push({
+            id: `quote-sent-${quote.created_at}`,
+            type: "quote_sent",
+            description: `Offert skickad: ${quote.title} - ${quote.amount?.toLocaleString("sv-SE")} kr`,
             date: quote.created_at,
           });
         });
@@ -150,28 +168,18 @@ const Reports = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Laddar...</div>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-lg">Laddar...</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="bg-background border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="font-bold text-xl text-primary">
-              Kundkollen
-            </div>
-            <Button variant="ghost" onClick={() => navigate("/")}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Tillbaka
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Enkla rapporter</h1>
@@ -179,7 +187,10 @@ const Reports = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card
+            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
+            onClick={() => navigate("/kunder")}
+          >
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Totala kunder</CardTitle>
             </CardHeader>
@@ -191,7 +202,10 @@ const Reports = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card
+            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
+            onClick={() => navigate("/offerter")}
+          >
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Aktiva offerter</CardTitle>
             </CardHeader>
@@ -203,7 +217,10 @@ const Reports = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card
+            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
+            onClick={() => navigate("/offerter?status=accepted")}
+          >
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Vunna affärer</CardTitle>
             </CardHeader>
@@ -215,7 +232,10 @@ const Reports = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card
+            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
+            onClick={() => navigate("/offerter?status=accepted")}
+          >
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Totalt värde</CardTitle>
             </CardHeader>

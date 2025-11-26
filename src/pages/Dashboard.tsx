@@ -31,7 +31,7 @@ const Dashboard = () => {
         supabase.from("customers").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("quotes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("reminders").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("completed", false),
-        supabase.from("quotes").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "won"),
+        supabase.from("quotes").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "accepted"),
       ]);
 
       setStats({
@@ -84,6 +84,28 @@ const Dashboard = () => {
           <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
           <p className="text-muted-foreground">Välkommen tillbaka! Här är en översikt över din verksamhet.</p>
         </div>
+
+        {/* Färgglatt kort som lyfter fram totalt antal kunder */}
+        <Card className="mb-8 border-none bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400 text-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardTitle className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Totalt antal kunder
+              </CardTitle>
+              <div className="mt-2 text-4xl font-extrabold drop-shadow-sm">
+                {stats.customers}
+              </div>
+              <p className="mt-2 text-xs md:text-sm text-white/80">
+                Bygg starkare relationer genom att hålla koll på alla dina kundkontakter på ett och samma ställe.
+              </p>
+            </div>
+            <div className="hidden md:flex items-center justify-center">
+              <div className="rounded-full bg-white/15 p-4 md:p-5 shadow-inner">
+                <Building2 className="h-8 w-8 md:h-10 md:w-10 text-white" />
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {statCards.map((card) => (
