@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
 import { BarChart3, TrendingUp, Users, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -168,85 +167,66 @@ const Reports = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-lg">Laddar...</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-lg text-primary">Laddar...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Enkla rapporter</h1>
-          <p className="text-muted-foreground">Snabba insikter om din försäljning</p>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-4xl font-bold text-primary mb-2">Rapporter</h1>
+        <p className="text-secondary">Snabba insikter baserade på dina offerter och accepterade affärer</p>
+      </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card
-            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
-            onClick={() => navigate("/kunder")}
-          >
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+          <Card className="rounded-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Totala kunder</CardTitle>
+              <CardTitle className="text-base font-bold text-secondary">Totala kunder</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{stats.totalCustomers}</div>
-                <Users className="h-8 w-8 text-muted-foreground" />
+                <div className="text-3xl font-extrabold text-primary">{stats.totalCustomers}</div>
+                <Users className="h-8 w-8 text-accent" />
               </div>
             </CardContent>
           </Card>
-
-          <Card
-            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
-            onClick={() => navigate("/offerter")}
-          >
+          <Card className="rounded-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Aktiva offerter</CardTitle>
+              <CardTitle className="text-base font-bold text-secondary">Aktiva offerter</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{stats.activeQuotes}</div>
-                <FileText className="h-8 w-8 text-muted-foreground" />
+                <div className="text-3xl font-extrabold text-primary">{stats.activeQuotes}</div>
+                <FileText className="h-8 w-8 text-accent" />
               </div>
             </CardContent>
           </Card>
-
-          <Card
-            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
-            onClick={() => navigate("/offerter?status=accepted")}
-          >
+          <Card className="rounded-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Vunna affärer</CardTitle>
+              <CardTitle className="text-base font-bold text-secondary">Accepterade offerter</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{stats.wonDeals}</div>
-                <TrendingUp className="h-8 w-8 text-muted-foreground" />
+                <div className="text-3xl font-extrabold text-primary">{stats.wonDeals}</div>
+                <TrendingUp className="h-8 w-8 text-accent" />
               </div>
             </CardContent>
           </Card>
-
-          <Card
-            className="cursor-pointer transition-transform transition-shadow hover:-translate-y-1 hover:shadow-lg"
-            onClick={() => navigate("/offerter?status=accepted")}
-          >
+          <Card className="rounded-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Totalt värde</CardTitle>
+              <CardTitle className="text-base font-bold text-secondary">Värde accepterade offerter</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">
+                <div className="text-3xl font-extrabold text-primary">
                   {stats.totalValue >= 1000000 
                     ? `${(stats.totalValue / 1000000).toFixed(1)}M`
                     : `${Math.round(stats.totalValue / 1000)}k`}
                 </div>
-                <BarChart3 className="h-8 w-8 text-muted-foreground" />
+                <BarChart3 className="h-8 w-8 text-accent" />
               </div>
             </CardContent>
           </Card>
@@ -284,7 +264,6 @@ const Reports = () => {
             )}
           </CardContent>
         </Card>
-      </main>
     </div>
   );
 };

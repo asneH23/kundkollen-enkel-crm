@@ -13,57 +13,52 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Inter", "SF Pro Display", "system-ui", "sans-serif"],
+      },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: {
+          DEFAULT: "#1A1A1C",
+          section: "#222226",
+          elevated: "#2A2A2D",
+        },
+        card: { DEFAULT: "#2A2A2D", foreground: "#F3F4F6" },
+        section: { DEFAULT: "#242426" },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-          hover: "hsl(var(--primary-hover))",
+          DEFAULT: "#F3F4F6",
+          softer: "#C7C7CC",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#C7C7CC",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#4ADE80",
+          foreground: "#052E16",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
+        border: "#3A3A3D",
+        input: "#242426",
+        muted: { DEFAULT: "#232328", foreground: "#777882" },
+        success: { DEFAULT: "#22C55E", background: "#24341B", foreground: "#DCFCE7" },
+        warning: { DEFAULT: "#FDE68A", background: "#50440D", foreground: "#FDE68A" },
+        danger: { DEFAULT: "#F87171", background: "#4B1818", foreground: "#FCA5A5" },
       },
       backgroundImage: {
         "hero-gradient": "linear-gradient(135deg, hsl(var(--hero-gradient-from)), hsl(var(--hero-gradient-to)))",
       },
       boxShadow: {
-        sm: "var(--shadow-sm)",
-        md: "var(--shadow-md)",
-        lg: "var(--shadow-lg)",
+        sm: "0 2px 4px 0 #10101352",
+        md: "0 6px 24px -4px #18181b62",
+        lg: "0 14px 36px -8px #10101382",
+        elevated: "0 2px 12px 0 #1010136e",
       },
       transitionProperty: {
-        base: "var(--transition-base)",
+        base: "background, color, border, box-shadow, opacity, transform",
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "16px",
+        md: "10px",
+        sm: "6px",
+        input: "6px",
       },
       keyframes: {
         "accordion-down": {
@@ -86,6 +81,10 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      spacing: {
+        'section-y': '3rem',
+        'card-y': '2.25rem'
       },
     },
   },

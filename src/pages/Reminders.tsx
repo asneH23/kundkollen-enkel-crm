@@ -8,18 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import Navbar from "@/components/Navbar";
-import { Bell, Clock, Trash2, Pencil } from "lucide-react";
+import { Bell, Clock, Trash2, Pencil, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -46,8 +35,6 @@ const Reminders = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("active");
   const [searchTerm, setSearchTerm] = useState("");
@@ -281,50 +268,28 @@ const Reminders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-lg">Laddar...</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-lg text-primary">Laddar...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Påminnelser om uppföljning</h1>
-          <p className="text-muted-foreground">Missa aldrig en viktig uppföljning</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold text-primary mb-2">Påminnelser</h1>
+          <p className="text-secondary">Missa aldrig en viktig uppföljning</p>
         </div>
 
-        <div className="mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              placeholder="Sök på titel, beskrivning eller kund"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-72"
-            />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue placeholder="Filtera status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Aktiva</SelectItem>
-                <SelectItem value="completed">Klara</SelectItem>
-                <SelectItem value="all">Alla</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Dialog open={open} onOpenChange={(isOpen) => (isOpen ? setOpen(true) : handleCloseDialog())}>
-            <DialogTrigger asChild>
-              <Button onClick={() => handleOpenDialog()}>
-                <Bell className="mr-2 h-4 w-4" />
-                Skapa påminnelse
-              </Button>
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={(isOpen) => (isOpen ? setOpen(true) : handleCloseDialog())}>
+          <DialogTrigger asChild>
+            <Button onClick={() => handleOpenDialog()}>
+              <Bell className="mr-2 h-4 w-4" />
+              Skapa påminnelse
+            </Button>
+          </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
@@ -382,177 +347,121 @@ const Reminders = () => {
                 </Button>
               </form>
             </DialogContent>
-          </Dialog>
+        </Dialog>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
+          <Input
+            placeholder="Sök på titel, beskrivning eller kund"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 w-full"
+          />
         </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Filtera status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Aktiva</SelectItem>
+            <SelectItem value="completed">Klara</SelectItem>
+            <SelectItem value="all">Alla</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-        {filteredReminders.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center text-muted-foreground">
-              {reminders.length === 0
-                ? "Inga påminnelser ännu. Skapa din första påminnelse!"
-                : "Inga påminnelser matchar dina filter."}
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead />
-                  <TableHead>Titel</TableHead>
-                  <TableHead>Kund</TableHead>
-                  <TableHead>Förfallodatum</TableHead>
-                  <TableHead>Prioritet</TableHead>
-                  <TableHead className="w-[80px] text-right">Åtgärder</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredReminders.map((reminder) => (
-                  <TableRow
-                    key={reminder.id}
-                    className={reminder.completed ? "opacity-60 cursor-pointer" : "cursor-pointer"}
-                    onClick={() => {
-                      setSelectedReminder(reminder);
-                      setDetailOpen(true);
-                    }}
-                  >
-                    <TableCell
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      <Checkbox
-                        checked={reminder.completed || false}
-                        onCheckedChange={() =>
-                          handleToggleComplete(reminder.id, reminder.completed || false)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className={reminder.completed ? "line-through" : ""}>
-                      {reminder.title}
-                    </TableCell>
-                    <TableCell>{getCustomerName(reminder.customer_id) || "-"}</TableCell>
-                    <TableCell>
-                      {new Date(reminder.due_date).toLocaleDateString("sv-SE")}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getPriorityVariant(reminder.due_date, reminder.completed)}>
-                        {getPriorityLabel(reminder.due_date, reminder.completed)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell
-                      className="text-right"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenDialog(reminder)}
-                        className="mr-1"
-                        title="Redigera"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(reminder.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-              <TableCaption>Klicka på en rad för att se mer information om påminnelsen.</TableCaption>
-            </Table>
-
-            <Sheet
-              open={detailOpen}
-              onOpenChange={(open) => {
-                setDetailOpen(open);
-                if (!open) {
-                  setSelectedReminder(null);
-                }
-              }}
+      {filteredReminders.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 border border-accent/20">
+                <Bell className="h-8 w-8 text-accent" />
+              </div>
+              <h3 className="text-xl font-semibold text-primary mb-2">
+                {reminders.length === 0 ? "Inga påminnelser ännu" : "Inga påminnelser matchar dina filter"}
+              </h3>
+              <p className="text-secondary mb-6">
+                {reminders.length === 0
+                  ? "Börja med att skapa din första påminnelse för att komma igång."
+                  : "Prova att ändra dina filter för att hitta fler resultat."}
+              </p>
+              {reminders.length === 0 && (
+                <Button onClick={() => handleOpenDialog()}>
+                  <Bell className="h-4 w-4 mr-2" />
+                  Skapa din första påminnelse
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredReminders.map((reminder) => (
+            <Card
+              key={reminder.id}
+              className={`group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 ${
+                reminder.completed ? "opacity-60" : ""
+              }`}
             >
-              <SheetContent side="right">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                      <Clock className="h-4 w-4 text-primary" />
-                    </span>
-                    {selectedReminder?.title || "Påminnelse"}
-                  </SheetTitle>
-                </SheetHeader>
-                {selectedReminder && (
-                  <div className="mt-6 space-y-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Kund</p>
-                      <p className="font-medium">
-                        {getCustomerName(selectedReminder.customer_id) || "Ingen kund angiven"}
-                      </p>
-                    </div>
-                    {selectedReminder.description && (
-                      <div>
-                        <p className="text-muted-foreground">Beskrivning</p>
-                        <p className="font-medium whitespace-pre-wrap">
-                          {selectedReminder.description}
-                        </p>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4 flex-1">
+                    <Checkbox
+                      checked={reminder.completed || false}
+                      onCheckedChange={() =>
+                        handleToggleComplete(reminder.id, reminder.completed || false)
+                      }
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <h3
+                        className={`font-semibold text-lg text-primary mb-1 ${
+                          reminder.completed ? "line-through" : ""
+                        }`}
+                      >
+                        {reminder.title}
+                      </h3>
+                      {reminder.description && (
+                        <p className="text-sm text-secondary mb-2">{reminder.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 text-xs text-secondary">
+                        {getCustomerName(reminder.customer_id) && (
+                          <span>{getCustomerName(reminder.customer_id)}</span>
+                        )}
+                        <span>{new Date(reminder.due_date).toLocaleDateString("sv-SE")}</span>
+                        <Badge variant={getPriorityVariant(reminder.due_date, reminder.completed)}>
+                          {getPriorityLabel(reminder.due_date, reminder.completed)}
+                        </Badge>
                       </div>
-                    )}
-                    <div>
-                      <p className="text-muted-foreground">Förfallodatum</p>
-                      <p className="font-medium">
-                        {new Date(selectedReminder.due_date).toLocaleString("sv-SE")}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Status</p>
-                      <Badge variant={getPriorityVariant(selectedReminder.due_date, selectedReminder.completed)}>
-                        {getPriorityLabel(selectedReminder.due_date, selectedReminder.completed)}
-                      </Badge>
-                    </div>
-                    <div className="pt-4 flex gap-2">
-                      <Button
-                        size="sm"
-                        variant={selectedReminder.completed ? "outline" : "default"}
-                        onClick={() =>
-                          handleToggleComplete(selectedReminder.id, selectedReminder.completed || false)
-                        }
-                      >
-                        {selectedReminder.completed ? "Markera som ej klar" : "Markera som klar"}
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setDetailOpen(false);
-                          handleOpenDialog(selectedReminder);
-                        }}
-                      >
-                        Redigera
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setDetailOpen(false);
-                          handleDelete(selectedReminder.id);
-                        }}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Ta bort
-                      </Button>
                     </div>
                   </div>
-                )}
-              </SheetContent>
-            </Sheet>
-          </>
-        )}
-      </main>
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleOpenDialog(reminder)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-danger hover:text-danger"
+                      onClick={() => handleDelete(reminder.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

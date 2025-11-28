@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import Layout from "./Layout";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -14,8 +15,8 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Laddar...</div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-lg text-primary">Laddar...</div>
       </div>
     );
   }
@@ -24,5 +25,5 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return null;
   }
 
-  return <>{children}</>;
+  return <Layout>{children}</Layout>;
 };

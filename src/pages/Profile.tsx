@@ -84,34 +84,19 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Laddar...</div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-lg text-primary">Laddar...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-background border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="font-bold text-xl text-primary">
-              Kundkollen
-            </div>
-            <Button variant="ghost" onClick={() => navigate("/")}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Tillbaka
-            </Button>
-          </div>
+    <div className="space-y-6">
+      <div className="max-w-2xl">
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold text-primary mb-2">Profilinställningar</h1>
+          <p className="text-secondary">Hantera dina kontoinställningar</p>
         </div>
-      </nav>
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Profilinställningar</h1>
-            <p className="text-muted-foreground">Hantera dina kontoinställningar</p>
-          </div>
 
           <Card>
             <CardHeader>
@@ -154,7 +139,6 @@ const Profile = () => {
             </CardContent>
           </Card>
         </div>
-      </main>
     </div>
   );
 };

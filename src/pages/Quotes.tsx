@@ -1,24 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import Navbar from "@/components/Navbar";
+import QuoteCard from "@/components/QuoteCard";
 import { useSearchParams } from "react-router-dom";
-import { FileText, Trash2, Pencil } from "lucide-react";
+import { FileText, Plus, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -52,8 +41,6 @@ const Quotes = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>(() => {
     const urlStatus = searchParams.get("status");
     if (urlStatus === "draft" || urlStatus === "sent" || urlStatus === "accepted" || urlStatus === "all") {
@@ -268,51 +255,27 @@ const Quotes = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-lg">Laddar...</div>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-lg text-primary">Laddar...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Offert- och säljöversikt</h1>
-          <p className="text-muted-foreground">Följ upp dina offerter och affärer</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold text-primary mb-2">Offerter</h1>
+          <p className="text-secondary">Följ upp dina offerter och affärer</p>
         </div>
-
-        <div className="mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              placeholder="Sök på titel eller kund"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-72"
-            />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue placeholder="Filtera status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alla statusar</SelectItem>
-                <SelectItem value="draft">Utkast</SelectItem>
-                <SelectItem value="sent">Skickad</SelectItem>
-                <SelectItem value="accepted">Vunnen</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <FileText className="mr-2 h-4 w-4" />
-                Skapa offert
-              </Button>
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => handleOpenDialog()}>
+              <Plus className="mr-2 h-4 w-4" />
+              Skapa offert
+            </Button>
+          </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
@@ -389,155 +352,71 @@ const Quotes = () => {
           </Dialog>
         </div>
 
-        {filteredQuotes.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center text-muted-foreground">
-              {quotes.length === 0
-                ? "Inga offerter ännu. Skapa din första offert!"
-                : "Inga offerter matchar dina filter."}
-            </CardContent>
-          </Card>
-        ) : (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Titel</TableHead>
-                  <TableHead>Kund</TableHead>
-                  <TableHead>Belopp</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Skapad</TableHead>
-                  <TableHead className="w-[80px] text-right">Åtgärder</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredQuotes.map((quote) => (
-                  <TableRow
-                    key={quote.id}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setSelectedQuote(quote);
-                      setDetailOpen(true);
-                    }}
-                  >
-                    <TableCell className="font-medium">{quote.title}</TableCell>
-                    <TableCell>{getCustomerName(quote.customer_id)}</TableCell>
-                    <TableCell>
-                      {quote.amount ? `${quote.amount.toLocaleString("sv-SE")} kr` : "Inget belopp"}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusVariant(quote.status)}>
-                        {getStatusLabel(quote.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(quote.created_at).toLocaleDateString("sv-SE")}
-                    </TableCell>
-                    <TableCell
-                      className="text-right"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenDialog(quote)}
-                        title="Redigera"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(quote.id)}
-                        title="Ta bort"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-              <TableCaption>Klicka på en rad för att se mer information om offerten.</TableCaption>
-            </Table>
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
+          <Input
+            placeholder="Sök på titel eller kund"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 w-full"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Filtera status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alla statusar</SelectItem>
+            <SelectItem value="draft">Utkast</SelectItem>
+            <SelectItem value="sent">Skickad</SelectItem>
+            <SelectItem value="accepted">Vunnen</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-            <Sheet
-              open={detailOpen}
-              onOpenChange={(open) => {
-                setDetailOpen(open);
-                if (!open) {
-                  setSelectedQuote(null);
-                }
-              }}
-            >
-              <SheetContent side="right">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                      <FileText className="h-4 w-4 text-primary" />
-                    </span>
-                    {selectedQuote?.title || "Offertdetaljer"}
-                  </SheetTitle>
-                </SheetHeader>
-                {selectedQuote && (
-                  <div className="mt-6 space-y-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Kund</p>
-                      <p className="font-medium">
-                        {getCustomerName(selectedQuote.customer_id)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Belopp</p>
-                      <p className="font-medium">
-                        {selectedQuote.amount
-                          ? `${selectedQuote.amount.toLocaleString("sv-SE")} kr`
-                          : "Inget belopp angivet"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Status</p>
-                      <Badge variant={getStatusVariant(selectedQuote.status)}>
-                        {getStatusLabel(selectedQuote.status)}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Skapad</p>
-                      <p className="font-medium">
-                        {new Date(selectedQuote.created_at).toLocaleString("sv-SE")}
-                      </p>
-                    </div>
-                    <div className="pt-4 flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setDetailOpen(false);
-                          handleOpenDialog(selectedQuote);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Redigera
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setDetailOpen(false);
-                          handleDelete(selectedQuote.id);
-                        }}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Ta bort
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </SheetContent>
-            </Sheet>
-          </>
-        )}
-      </main>
+      {/* Quotes Grid */}
+      {filteredQuotes.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 border border-accent/20">
+                <FileText className="h-8 w-8 text-accent" />
+              </div>
+              <h3 className="text-xl font-semibold text-primary mb-2">
+                {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
+              </h3>
+              <p className="text-secondary mb-6">
+                {quotes.length === 0
+                  ? "Börja med att skapa din första offert för att komma igång."
+                  : "Prova att ändra dina filter för att hitta fler resultat."}
+              </p>
+              {quotes.length === 0 && (
+                <Button onClick={() => handleOpenDialog()}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Skapa din första offert
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredQuotes.map((quote) => (
+            <QuoteCard
+              key={quote.id}
+              title={quote.title}
+              customerName={getCustomerName(quote.customer_id)}
+              amount={quote.amount}
+              status={quote.status}
+              createdAt={quote.created_at}
+              onEdit={() => handleOpenDialog(quote)}
+              onDelete={() => handleDelete(quote.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

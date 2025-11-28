@@ -1,96 +1,70 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import 'inter-ui/inter.css';
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 210 20% 15%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 210 20% 15%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 20% 15%;
-
-    --primary: 210 75% 50%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 210 75% 42%;
-
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 20% 15%;
-
-    --muted: 210 40% 96%;
-    --muted-foreground: 210 15% 50%;
-
-    --accent: 150 60% 50%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 30% 90%;
-    --input: 210 30% 92%;
-    --ring: 210 75% 50%;
-
-    --radius: 0.75rem;
-
-    /* Custom tokens for Kundkollen design */
-    --hero-gradient-from: 210 100% 97%;
-    --hero-gradient-to: 150 100% 97%;
-    
-    --feature-icon-bg: 210 100% 95%;
-    --feature-icon-fg: 210 75% 50%;
-
-    --shadow-sm: 0 1px 2px 0 hsl(210 20% 15% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(210 20% 15% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(210 20% 15% / 0.1);
-
-    --transition-base: all 0.2s ease-in-out;
+  html {
+    font-family: 'Inter', 'SF Pro Display', 'system-ui', sans-serif;
+    font-size: 18px;
+    background: linear-gradient(135deg, #1A1A1C, #222226 100%);
+    color: #F3F4F6;
+    letter-spacing: 0.01em;
   }
 
-  .dark {
-    --background: 210 30% 8%;
-    --foreground: 210 20% 95%;
+  :root {
+    /* Design tokens -- all use modern dark palette */
+    --background: 240 7% 11%; /* #1A1A1C */
+    --background-section: 240 5% 13%; /* #222226 */
+    --background-elevated: 240 3% 16%; /* #2A2A2D */
+    --surface: 240 3% 16%;
+    --primary: 220 17% 95%; /* #F3F4F6 */
+    --primary-softer: 220 17% 80%; /* #C7C7CC */
+    --secondary: 220 17% 80%; /* #C7C7CC */
+    --accent: 145 76% 62%;  /* #4ADE80 */
+    --accent-foreground: 146 89% 10%;
+    --border: 240 6% 23%; /* #3A3A3D */
+    --input: 240 8% 15%;   /* #242426 */
+    --muted: 240 4% 14%;   /* #232328 */
+    --muted-foreground: 240 9% 45%;
+    --card: 240 3% 16%;    /* #2A2A2D */
+    --card-foreground: 220 17% 95%;
+    --success: 145 62% 53%;
+    --success-background: 94 28% 16%;
+    --success-foreground: 134 84% 92%;
+    --warning: 49 97% 85%;
+    --warning-background: 46 72% 18%;
+    --warning-foreground: 49 97% 85%;
+    --danger: 0 94% 70%;
+    --danger-background: 0 52% 19%;
+    --danger-foreground: 0 94% 85%;
+    --radius: 16px;
+  }
+  body {
+    background: linear-gradient(135deg, #1A1A1C, #222226 100%);
+    color: #F3F4F6;
+    font-size: 1.15rem;
+    line-height: 1.75;
+    min-height: 100vh;
+    letter-spacing: 0.01em;
+  }
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
 
-    --card: 210 25% 12%;
-    --card-foreground: 210 20% 95%;
-
-    --popover: 210 25% 12%;
-    --popover-foreground: 210 20% 95%;
-
-    --primary: 210 75% 55%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 210 75% 48%;
-
-    --secondary: 210 20% 18%;
-    --secondary-foreground: 210 20% 95%;
-
-    --muted: 210 20% 18%;
-    --muted-foreground: 210 15% 65%;
-
-    --accent: 150 60% 55%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 20% 20%;
-    --input: 210 20% 20%;
-    --ring: 210 75% 55%;
+  /* Focus styles and transition defaults */
+  :focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #4ADE80;
+    transition: box-shadow 0.12s, border-color 0.12s;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
+@layer components {
+  .page-container {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    max-width: 1520px;
+    margin: 0 auto;
   }
 }

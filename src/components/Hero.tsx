@@ -1,56 +1,83 @@
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-image.jpg";
+import { ArrowRight, Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const features = [
+    "Enkelt kundregister",
+    "Offert- och säljöversikt",
+    "Påminnelser om uppföljning",
+    "Enkla rapporter",
+  ];
+
   return (
-    <section className="relative bg-hero-gradient py-20 lg:py-32 overflow-hidden">
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
-          <div className="space-y-6 text-center lg:text-left">
-            <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-              Kundkollen
-            </h1>
-            <p className="text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-              Det enkla CRM-verktyget för småföretagare
-            </p>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-              Håll koll på dina kunder, offerter och uppföljningar – utan krångel. 
-              Ett svenskt CRM-verktyg som är enkelt nog att börja använda idag.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-              <Button 
-                variant="hero" 
-                size="lg"
-                onClick={() => {
-                  const betaSection = document.getElementById('beta');
-                  betaSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
+    <section className="relative bg-background py-32 lg:py-48 overflow-hidden border-b border-border">
+      <div className="container mx-auto px-6 max-w-7xl">
+        <div className="max-w-5xl mx-auto text-center">
+          {/* Main Heading */}
+          <h1 className="text-5xl lg:text-7xl font-extrabold leading-[1.1] text-primary mb-8 tracking-tight">
+            CRM för hantverkare
+          </h1>
+          
+          {/* Subheading */}
+          <p className="text-xl lg:text-2xl text-secondary mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+            Håll koll på kunder, offerter och uppföljningar. Enkelt, snabbt och byggt för dig som jobbar med händerna.
+          </p>
+
+          {/* Features List */}
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-card border border-border/50 hover:border-accent/30 transition-colors"
               >
-                Testa gratis
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => {
-                  const featuresSection = document.getElementById('funktioner');
-                  featuresSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                Läs mer
-              </Button>
-            </div>
+                <Check className="h-4 w-4 text-accent flex-shrink-0" />
+                <span className="text-sm font-medium text-primary">{feature}</span>
+              </div>
+            ))}
           </div>
 
-          {/* Hero Image */}
-          <div className="relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-lg">
-              <img
-                src={heroImage}
-                alt="Kundkollen CRM dashboard"
-                className="w-full h-auto"
-              />
-            </div>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {user ? (
+              <Button
+                size="lg"
+                className="text-base font-semibold px-10 h-14"
+                onClick={() => navigate("/dashboard")}
+              >
+                Gå till Dashboard
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            ) : (
+              <>
+                <Button
+                  size="lg"
+                  className="text-base font-semibold px-10 h-14"
+                  onClick={() => {
+                    const betaSection = document.getElementById('beta');
+                    betaSection?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Testa gratis
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="text-base font-semibold px-10 h-14 border-2"
+                  onClick={() => {
+                    const featuresSection = document.getElementById('funktioner');
+                    featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Läs mer
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
