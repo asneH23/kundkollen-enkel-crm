@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Building2, Calendar, Pencil, Trash2 } from "lucide-react";
+import { FileText, Users, Calendar, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface QuoteCardProps {
@@ -41,7 +41,7 @@ const QuoteCard = ({
   const getStatusLabel = (status: string | null) => {
     switch (status) {
       case "accepted":
-        return "Vunnen";
+        return "Accepterad";
       case "sent":
         return "Skickad";
       case "draft":
@@ -51,10 +51,23 @@ const QuoteCard = ({
     }
   };
 
+  const getStatusColor = (status: string | null) => {
+    switch (status) {
+      case "accepted":
+        return "bg-accent/10 border-accent/30";
+      case "sent":
+        return "bg-blue-500/10 border-blue-500/30";
+      case "draft":
+        return "bg-secondary/10 border-border";
+      default:
+        return "bg-secondary/10 border-border";
+    }
+  };
+
   return (
     <Card
       className={cn(
-        "group hover:shadow-lg transition-all duration-200 hover:-translate-y-1",
+        "group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-border hover:border-accent/30",
         onClick && "cursor-pointer"
       )}
       onClick={onClick}
@@ -62,14 +75,17 @@ const QuoteCard = ({
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3 flex-1">
-            <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center border border-accent/20">
+            <div className={cn(
+              "h-12 w-12 rounded flex items-center justify-center border group-hover:scale-110 transition-all duration-300",
+              getStatusColor(status)
+            )}>
               <FileText className="h-6 w-6 text-accent" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-primary text-lg truncate">{title}</h3>
-              <p className="text-sm text-secondary flex items-center gap-1 mt-1">
-                <Building2 className="h-3 w-3" />
-                {customerName}
+              <h3 className="font-semibold text-primary text-lg truncate group-hover:text-accent transition-colors">{title}</h3>
+              <p className="text-sm text-secondary flex items-center gap-1 mt-1 group-hover:text-primary transition-colors">
+                <Users className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{customerName}</span>
               </p>
             </div>
           </div>
@@ -99,19 +115,29 @@ const QuoteCard = ({
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pt-3 border-t border-border/50">
           <div className="space-y-2">
             {amount && (
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-primary group-hover:text-accent transition-colors">
                 {amount.toLocaleString("sv-SE")} kr
               </div>
             )}
-            <div className="flex items-center gap-2 text-xs text-secondary">
-              <Calendar className="h-3 w-3" />
-              {new Date(createdAt).toLocaleDateString("sv-SE")}
+            <div className="flex items-center gap-2 text-xs text-secondary group-hover:text-primary transition-colors">
+              <div className="h-6 w-6 rounded bg-muted/50 flex items-center justify-center border border-border/50">
+                <Calendar className="h-3 w-3 text-accent" />
+              </div>
+              <span>{new Date(createdAt).toLocaleDateString("sv-SE")}</span>
             </div>
           </div>
-          <Badge variant={getStatusVariant(status)} className="ml-4">
+          <Badge 
+            variant={getStatusVariant(status)} 
+            className={cn(
+              "ml-4",
+              status === "accepted" && "bg-accent/20 text-accent border-accent/30",
+              status === "sent" && "bg-blue-500/20 text-blue-400 border-blue-500/30",
+              status === "draft" && "bg-secondary/20 text-secondary border-border"
+            )}
+          >
             {getStatusLabel(status)}
           </Badge>
         </div>

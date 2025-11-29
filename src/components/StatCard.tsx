@@ -34,7 +34,7 @@ const StatCard = ({ title, value, icon: Icon, link, description }: StatCardProps
             <p className="text-xs text-muted-foreground mt-2">{description}</p>
           )}
         </CardContent>
-        <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center border border-border/50 group-hover:bg-accent/20 transition-colors">
+        <div className="h-12 w-12 rounded bg-accent/10 flex items-center justify-center border border-border/50 group-hover:bg-accent/20 transition-colors">
           <Icon className="h-6 w-6 text-accent" />
         </div>
       </CardHeader>

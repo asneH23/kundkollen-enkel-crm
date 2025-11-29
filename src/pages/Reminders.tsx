@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, Clock, Trash2, Pencil, Search } from "lucide-react";
+import { Bell, Clock, Trash2, Pencil, Search, Users, Calendar } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -275,12 +276,12 @@ const Reminders = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-primary mb-2">Påminnelser</h1>
-          <p className="text-secondary">Missa aldrig en viktig uppföljning</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Påminnelser</h1>
+          <p className="text-sm sm:text-base text-secondary">Missa aldrig en viktig uppföljning</p>
         </div>
 
         <Dialog open={open} onOpenChange={(isOpen) => (isOpen ? setOpen(true) : handleCloseDialog())}>
@@ -377,7 +378,7 @@ const Reminders = () => {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="max-w-md mx-auto">
-              <div className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 border border-accent/20">
+              <div className="h-16 w-16 rounded bg-accent/10 flex items-center justify-center mx-auto mb-4 border border-accent/20">
                 <Bell className="h-8 w-8 text-accent" />
               </div>
               <h3 className="text-xl font-semibold text-primary mb-2">
@@ -402,37 +403,57 @@ const Reminders = () => {
           {filteredReminders.map((reminder) => (
             <Card
               key={reminder.id}
-              className={`group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 ${
+              className={`group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-border hover:border-accent/30 ${
                 reminder.completed ? "opacity-60" : ""
               }`}
             >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4 flex-1">
-                    <Checkbox
-                      checked={reminder.completed || false}
-                      onCheckedChange={() =>
-                        handleToggleComplete(reminder.id, reminder.completed || false)
-                      }
-                      className="mt-1"
-                    />
+                    <div className="mt-1">
+                      <Checkbox
+                        checked={reminder.completed || false}
+                        onCheckedChange={() =>
+                          handleToggleComplete(reminder.id, reminder.completed || false)
+                        }
+                        className="h-5 w-5"
+                      />
+                    </div>
                     <div className="flex-1">
-                      <h3
-                        className={`font-semibold text-lg text-primary mb-1 ${
-                          reminder.completed ? "line-through" : ""
-                        }`}
-                      >
-                        {reminder.title}
-                      </h3>
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="h-10 w-10 rounded bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
+                          <Bell className="h-5 w-5 text-accent" />
+                        </div>
+                        <h3
+                          className={`font-semibold text-lg text-primary group-hover:text-accent transition-colors ${
+                            reminder.completed ? "line-through" : ""
+                          }`}
+                        >
+                          {reminder.title}
+                        </h3>
+                      </div>
                       {reminder.description && (
-                        <p className="text-sm text-secondary mb-2">{reminder.description}</p>
+                        <p className="text-sm text-secondary mb-3 ml-13">{reminder.description}</p>
                       )}
-                      <div className="flex items-center gap-4 text-xs text-secondary">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-secondary ml-13">
                         {getCustomerName(reminder.customer_id) && (
-                          <span>{getCustomerName(reminder.customer_id)}</span>
+                          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-muted/50 border border-border/50">
+                            <Users className="h-3 w-3 text-accent" />
+                            <span>{getCustomerName(reminder.customer_id)}</span>
+                          </div>
                         )}
-                        <span>{new Date(reminder.due_date).toLocaleDateString("sv-SE")}</span>
-                        <Badge variant={getPriorityVariant(reminder.due_date, reminder.completed)}>
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-muted/50 border border-border/50">
+                          <Calendar className="h-3 w-3 text-accent" />
+                          <span>{new Date(reminder.due_date).toLocaleDateString("sv-SE")}</span>
+                        </div>
+                        <Badge 
+                          variant={getPriorityVariant(reminder.due_date, reminder.completed)}
+                          className={cn(
+                            getPriorityVariant(reminder.due_date, reminder.completed) === "destructive" && "bg-red-500/20 text-red-400 border-red-500/30",
+                            getPriorityVariant(reminder.due_date, reminder.completed) === "default" && "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+                            getPriorityVariant(reminder.due_date, reminder.completed) === "secondary" && "bg-secondary/20 text-secondary border-border"
+                          )}
+                        >
                           {getPriorityLabel(reminder.due_date, reminder.completed)}
                         </Badge>
                       </div>

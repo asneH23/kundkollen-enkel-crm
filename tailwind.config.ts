@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "SF Pro Display", "system-ui", "sans-serif"],
+        sans: ["'Space Grotesk'", "'IBM Plex Sans'", "system-ui", "sans-serif"],
       },
       colors: {
         background: {
@@ -55,10 +55,10 @@ export default {
         base: "background, color, border, box-shadow, opacity, transform",
       },
       borderRadius: {
-        lg: "16px",
-        md: "10px",
-        sm: "6px",
-        input: "6px",
+        lg: "4px",
+        md: "3px",
+        sm: "2px",
+        input: "3px",
       },
       keyframes: {
         "accordion-down": {

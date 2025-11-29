@@ -33,7 +33,7 @@ const Hero = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-card border border-border/50 hover:border-accent/30 transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 rounded bg-card border border-border/50 hover:border-accent/30 transition-colors"
               >
                 <Check className="h-4 w-4 text-accent flex-shrink-0" />
                 <span className="text-sm font-medium text-primary">{feature}</span>
@@ -69,9 +69,24 @@ const Hero = () => {
                   variant="outline"
                   size="lg"
                   className="text-base font-semibold px-10 h-14 border-2"
-                  onClick={() => {
-                    const featuresSection = document.getElementById('funktioner');
-                    featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const scrollToSection = () => {
+                      const section = document.getElementById('las-mer');
+                      if (section) {
+                        const headerOffset = 80;
+                        const elementPosition = section.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({
+                          top: offsetPosition,
+                          behavior: 'smooth'
+                        });
+                      } else {
+                        // Retry after a short delay if element not found
+                        setTimeout(scrollToSection, 100);
+                      }
+                    };
+                    scrollToSection();
                   }}
                 >
                   Läs mer

@@ -1,15 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import 'inter-ui/inter.css';
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 @layer base {
   html {
-    font-family: 'Inter', 'SF Pro Display', 'system-ui', sans-serif;
+    font-family: 'Space Grotesk', 'IBM Plex Sans', system-ui, sans-serif;
     font-size: 18px;
     background: linear-gradient(135deg, #1A1A1C, #222226 100%);
     color: #F3F4F6;
     letter-spacing: 0.01em;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   :root {
@@ -38,15 +41,38 @@
     --danger: 0 94% 70%;
     --danger-background: 0 52% 19%;
     --danger-foreground: 0 94% 85%;
-    --radius: 16px;
+    --radius: 4px;
   }
   body {
     background: linear-gradient(135deg, #1A1A1C, #222226 100%);
     color: #F3F4F6;
     font-size: 1.15rem;
-    line-height: 1.75;
+    line-height: 1.6;
     min-height: 100vh;
     letter-spacing: 0.01em;
+    font-weight: 500;
+    cursor: default;
+  }
+  
+  /* Default cursor for most elements */
+  * {
+    cursor: default;
+  }
+  
+  /* Text cursor only for inputs and textareas */
+  input, textarea, [contenteditable="true"] {
+    cursor: text;
+  }
+  
+  /* Pointer cursor for interactive elements */
+  button, a, [role="button"], [onclick], label[for] {
+    cursor: pointer;
+  }
+  
+  /* Allow text selection but keep default cursor */
+  p, h1, h2, h3, h4, h5, h6, span, div, li, td, th {
+    user-select: text;
+    cursor: default;
   }
   *, *:before, *:after {
     box-sizing: border-box;

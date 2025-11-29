@@ -39,9 +39,10 @@ const Sidebar = () => {
           variant="ghost"
           size="icon"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="bg-card border border-border"
+          className="bg-card border border-border h-12 w-12 min-h-[48px] min-w-[48px]"
+          aria-label="Toggle menu"
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
       </div>
 
@@ -50,14 +51,14 @@ const Sidebar = () => {
         className={cn(
           "fixed left-0 top-0 h-full w-64 bg-card border-r border-border z-40 transition-transform duration-300",
           "lg:translate-x-0",
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo/Brand */}
           <div className="p-6 border-b border-border">
             <Link to="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/30">
+              <div className="h-8 w-8 rounded bg-accent/20 flex items-center justify-center border border-accent/30">
                 <span className="text-accent font-bold text-lg">K</span>
               </div>
               <span className="text-xl font-bold text-primary">Kundkollen</span>
@@ -74,7 +75,7 @@ const Sidebar = () => {
                   to={item.path}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-3 px-4 py-3 rounded text-sm font-medium transition-all duration-200",
                     isActive(item.path)
                       ? "bg-accent/10 text-accent border border-accent/20"
                       : "text-secondary hover:bg-muted/50 hover:text-primary"

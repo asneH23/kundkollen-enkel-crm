@@ -1,8 +1,14 @@
 const About = () => {
   return (
-    <section className="py-24 bg-background border-t border-border" id="om-oss">
+    <section className="py-24 bg-background border-t border-border relative" id="om-oss">
+      {/* Decorative gradient */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent"></div>
+      
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded bg-accent/10 border border-accent/20 mb-6">
+            <span className="text-2xl font-bold text-accent">K</span>
+          </div>
           <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-primary tracking-tight">
             Om Kundkollen
           </h2>

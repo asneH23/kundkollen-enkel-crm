@@ -107,7 +107,7 @@ const Reports = () => {
           recentActivities.push({
             id: `quote-${quote.created_at}`,
             type: "quote",
-            description: `Offert vunnen: ${quote.title} - ${quote.amount?.toLocaleString("sv-SE")} kr`,
+            description: `Offert accepterad: ${quote.title} - ${quote.amount?.toLocaleString("sv-SE")} kr`,
             date: quote.created_at,
           });
         });
@@ -174,14 +174,14 @@ const Reports = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-bold text-primary mb-2">Rapporter</h1>
-        <p className="text-secondary">Snabba insikter baserade på dina offerter och accepterade affärer</p>
+        <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Rapporter</h1>
+        <p className="text-sm sm:text-base text-secondary">Snabba insikter baserade på dina offerter och accepterade affärer</p>
       </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10">
           <Card className="rounded-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold text-secondary">Totala kunder</CardTitle>

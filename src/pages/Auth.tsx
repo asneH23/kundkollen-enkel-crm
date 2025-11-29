@@ -4,16 +4,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    // Load saved email from localStorage
+    return localStorage.getItem("remembered_email") || "";
+  });
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [acceptGdpr, setAcceptGdpr] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => {
+    // Check if we have a saved email (means remember me was checked before)
+    return !!localStorage.getItem("remembered_email");
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -24,12 +33,21 @@ const Auth = () => {
 
     try {
       if (isLogin) {
+        // Set storage based on remember me preference
+        // Supabase already uses localStorage by default, but we can ensure it persists
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
+
+        // Save email if "remember me" is checked
+        if (rememberMe) {
+          localStorage.setItem("remembered_email", email);
+        } else {
+          localStorage.removeItem("remembered_email");
+        }
 
         toast({
           title: "Välkommen tillbaka!",
@@ -98,7 +116,19 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary/20 p-4">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md">
+        {/* Back button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/")}
+          className="mb-6 text-secondary hover:text-primary flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Tillbaka till startsidan
+        </Button>
+        
+        <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-2xl text-center">
             {isLogin ? "Logga in" : "Skapa konto"}
@@ -149,6 +179,25 @@ const Auth = () => {
                 minLength={6}
               />
             </div>
+
+            {isLogin && (
+              <div className="flex items-center space-x-3 py-2 px-1 rounded hover:bg-muted/30 transition-colors">
+                <Checkbox
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                  className="h-5 w-5 border-2 border-border data-[state=checked]:bg-accent data-[state=checked]:border-accent data-[state=checked]:text-background"
+                />
+                <Label 
+                  htmlFor="rememberMe" 
+                  className={`text-sm cursor-pointer font-semibold transition-colors flex-1 ${
+                    rememberMe ? "text-primary" : "text-secondary"
+                  }`}
+                >
+                  Håll mig inloggad
+                </Label>
+              </div>
+            )}
 
             {!isLogin && (
               <div className="space-y-2">
@@ -211,6 +260,7 @@ const Auth = () => {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

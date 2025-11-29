@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import WhyKundkollen from "@/components/WhyKundkollen";
 import Features from "@/components/Features";
 import About from "@/components/About";
 import ContactForm from "@/components/ContactForm";
@@ -34,7 +35,7 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/30">
+              <div className="h-8 w-8 rounded bg-accent/20 flex items-center justify-center border border-accent/30">
                 <span className="text-accent font-bold text-lg">K</span>
               </div>
               <span className="text-xl font-bold text-primary">Kundkollen</span>
@@ -49,6 +50,7 @@ const Index = () => {
       {/* Main Content */}
       <main>
         <Hero />
+        <WhyKundkollen />
         <Features />
         <About />
         <ContactForm />
