@@ -1,6 +1,6 @@
 # Email-konfiguration för Kundkollen
 
-Jag behöver konfigurera email-verifiering i Supabase så att alla email som skickas från Kundkollen kommer från "Kundkollen AB" istället för "Lovable".
+Jag behöver konfigurera email-verifiering i Supabase så att alla email som skickas från Kundkollen kommer från "Kundkollen" istället för "Lovable".
 
 ## Vad som behöver göras:
 
@@ -19,7 +19,7 @@ Gå till **Supabase Dashboard → Authentication → Email Templates** och uppda
 <p><a href="{{ .ConfirmationURL }}">Verifiera email</a></p>
 <p>Eller kopiera denna kod och ange den i appen: <strong>{{ .Token }}</strong></p>
 <p>Om du inte skapade detta konto kan du ignorera detta email.</p>
-<p>Med vänliga hälsningar,<br>Kundkollen AB</p>
+<p>Med vänliga hälsningar,<br>Kundkollen</p>
 ```
 
 **Body (Plain Text):**
@@ -34,7 +34,7 @@ Eller kopiera denna kod och ange den i appen: {{ .Token }}
 Om du inte skapade detta konto kan du ignorera detta email.
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 #### Magic Link Email (Email Change)
@@ -47,7 +47,7 @@ Kundkollen AB
 <p>Klicka på länken nedan för att bekräfta din nya email:</p>
 <p><a href="{{ .ConfirmationURL }}">Bekräfta email</a></p>
 <p>Om du inte begärde denna ändring kan du ignorera detta email.</p>
-<p>Med vänliga hälsningar,<br>Kundkollen AB</p>
+<p>Med vänliga hälsningar,<br>Kundkollen</p>
 ```
 
 #### Password Reset Email
@@ -60,14 +60,14 @@ Kundkollen AB
 <p>Klicka på länken nedan för att återställa ditt lösenord:</p>
 <p><a href="{{ .ConfirmationURL }}">Återställ lösenord</a></p>
 <p>Om du inte begärde en lösenordsåterställning kan du ignorera detta email.</p>
-<p>Med vänliga hälsningar,<br>Kundkollen AB</p>
+<p>Med vänliga hälsningar,<br>Kundkollen</p>
 ```
 
 ### 2. Konfigurera Email Avsändare
 
 Gå till **Supabase Dashboard → Project Settings → Auth → SMTP Settings** och sätt:
 
-- **From Name:** `Kundkollen AB`
+- **From Name:** `Kundkollen`
 - **From Email:** `noreply@kundkollen.se` (eller din egen domän om du har en)
 
 **Viktigt:** Behåll alla variabler som `{{ .ConfirmationURL }}` och `{{ .Token }}` - dessa är nödvändiga för att funktionaliteten ska fungera.
@@ -76,7 +76,7 @@ Gå till **Supabase Dashboard → Project Settings → Auth → SMTP Settings** 
 
 Efter att du har uppdaterat templates och SMTP-inställningar, testa att:
 1. Skapa ett nytt konto
-2. Kontrollera att verifieringsemailet kommer från "Kundkollen AB"
+2. Kontrollera att verifieringsemailet kommer från "Kundkollen"
 3. Verifiera att både länk och kod fungerar
 
 ---

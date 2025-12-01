@@ -25,13 +25,13 @@ Konfigurera Resend i Supabase Dashboard:
    - **SMTP Port:** `587` (eller `465` för SSL)
    - **SMTP User:** `resend`
    - **SMTP Password:** `[DIN RESEND API-NYCKEL]`
-   - **Sender Name:** `Kundkollen AB`
+   - **Sender Name:** `Kundkollen`
    - **Sender Email:** `onboarding@resend.dev` (tillfälligt, kan ändras senare till egen domän)
 
-### 2. Email från "Kundkollen AB"
+### 2. Email från "Kundkollen"
 
 **VIKTIGT:** Se till att alla email som skickas har:
-- **From Name:** `Kundkollen AB`
+- **From Name:** `Kundkollen`
 - **From Email:** `onboarding@resend.dev` (eller din egen domän när den är verifierad)
 
 **INGA email får komma från "Lovable" eller visa Lovable-branding.**
@@ -49,7 +49,7 @@ För närvarande använder jag Resend's standarddomän (`onboarding@resend.dev`)
 
 Efter konfiguration, testa att:
 1. Skicka ett test-email
-2. Kontrollera att email kommer från "Kundkollen AB"
+2. Kontrollera att email kommer från "Kundkollen"
 3. Verifiera att email inte kommer från "Lovable"
 
 ## Ytterligare information

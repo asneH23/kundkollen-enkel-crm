@@ -142,7 +142,7 @@ function getEmailContent(reminder: Reminder): { subject: string; html: string } 
         <a href="${appUrl}/reminders" class="button">Se påminnelser i Kundkollen</a>
         
         <div class="footer">
-          <p>Med vänliga hälsningar,<br><strong>Kundkollen AB</strong></p>
+          <p>Med vänliga hälsningar,<br><strong>Kundkollen</strong></p>
         </div>
       </div>
     </body>
@@ -191,7 +191,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         // Send email via Resend
         const emailResponse = await resend.emails.send({
-          from: "Kundkollen AB <noreply@kundkollen.se>",
+          from: "Kundkollen <noreply@kundkollen.se>",
           to: [reminder.user_email],
           subject,
           html,

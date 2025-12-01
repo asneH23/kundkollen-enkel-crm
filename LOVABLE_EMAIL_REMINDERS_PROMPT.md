@@ -1,6 +1,6 @@
 # Email-påminnelser för Kundkollen
 
-**VIKTIGT:** Alla email som skickas måste komma från "Kundkollen AB" och INTE från "Lovable". Se till att konfigurera SMTP Settings i Supabase Dashboard med "Kundkollen AB" som avsändarnamn.
+**VIKTIGT:** Alla email som skickas måste komma från "Kundkollen" och INTE från "Lovable". Se till att konfigurera SMTP Settings i Supabase Dashboard med "Kundkollen" som avsändarnamn.
 
 Jag behöver hjälp med att implementera automatiska email-påminnelser för Kundkollen-användare (hantverkare) när deras påminnelser närmar sig.
 
@@ -81,9 +81,9 @@ Skapa en Edge Function som:
 1. Körs dagligen via Supabase Cron eller extern tjänst (t.ex. GitHub Actions, Vercel Cron)
 2. Hämtar alla påminnelser som behöver notifieras
 3. Skickar email via Supabase's email-tjänst eller Resend/SendGrid
-   - **VIKTIGT:** Se till att alla email har "From Name" = "Kundkollen AB"
-   - Om du använder Resend: `from: "Kundkollen AB <noreply@kundkollen.se>"`
-   - Om du använder SendGrid: Sätt "From Name" till "Kundkollen AB"
+   - **VIKTIGT:** Se till att alla email har "From Name" = "Kundkollen"
+   - Om du använder Resend: `from: "Kundkollen <noreply@kundkollen.se>"`
+   - Om du använder SendGrid: Sätt "From Name" till "Kundkollen"
 
 ## Email-mallar
 
@@ -104,7 +104,7 @@ Datum: [Datum]
 Logga in på Kundkollen för att se detaljer: [Länk]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 ### 1 dag kvar
@@ -124,7 +124,7 @@ Datum: [Datum]
 Logga in på Kundkollen för att se detaljer: [Länk]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 ### Idag
@@ -144,7 +144,7 @@ Datum: [Datum]
 Logga in på Kundkollen för att se detaljer: [Länk]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 ### Försenad
@@ -164,18 +164,18 @@ Datum: [Datum] (Försenad med [X] dagar)
 Logga in på Kundkollen för att se detaljer: [Länk]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 ## Viktiga punkter
 
-1. **Email från "Kundkollen AB" - KRITISKT:**
-   - **ALLA email måste komma från "Kundkollen AB" och INTE från "Lovable"**
+1. **Email från "Kundkollen" - KRITISKT:**
+   - **ALLA email måste komma från "Kundkollen" och INTE från "Lovable"**
    - Konfigurera Supabase SMTP Settings:
      - Gå till `Project Settings` → `Auth` → `SMTP Settings`
-     - Sätt **Sender name** till: `Kundkollen AB`
+     - Sätt **Sender name** till: `Kundkollen`
      - Sätt **From Email** till: `noreply@kundkollen.se` (eller annan passande domän)
-   - Om du använder Resend/SendGrid eller annan email-tjänst, se till att "From Name" är "Kundkollen AB"
+   - Om du använder Resend/SendGrid eller annan email-tjänst, se till att "From Name" är "Kundkollen"
    - **Inga email får komma från "Lovable" eller visa Lovable-branding**
 
 2. **Inga dubbletter:** Se till att samma påminnelse inte skickas flera gånger för samma datum

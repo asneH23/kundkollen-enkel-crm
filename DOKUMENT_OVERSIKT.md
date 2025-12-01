@@ -20,10 +20,10 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ### 2. `LOVABLE_EMAIL_CONFIG_PROMPT.md`
 **Vad:** Prompt för att konfigurera email-templates och SMTP-inställningar  
-**När att skicka:** När du vill att alla email ska komma från "Kundkollen AB"  
+**När att skicka:** När du vill att alla email ska komma från "Kundkollen"  
 **Innehåll:**
 - Instruktioner för att uppdatera email-templates (signup, password reset, etc.)
-- SMTP-inställningar för "Kundkollen AB"
+- SMTP-inställningar för "Kundkollen"
 - Svenska texter för alla email
 
 **Status:** ✅ Klar att skicka (men kräver manuell konfiguration i Supabase Dashboard)
@@ -67,9 +67,33 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ---
 
+### 6. `LOVABLE_UPDATE_EMAIL_NAME.md`
+**Vad:** Prompt för att uppdatera email-avsändarnamn från "Kundkollen AB" till "Kundkollen"  
+**När att skicka:** När du vill ändra email-avsändarnamn (efter att ha pushat ändringarna till GitHub)  
+**Innehåll:**
+- Instruktioner för att deploya om Edge Function
+- Instruktioner för att uppdatera email-templates i Supabase Dashboard
+- Instruktioner för att uppdatera SMTP Settings
+
+**Status:** ✅ Klar att skicka (efter att ha pushat ändringarna till GitHub)
+
+---
+
+### 7. `LOVABLE_FIX_EDGE_FUNCTION.md`
+**Vad:** Prompt för att fixa build error i Edge Function  
+**När att skicka:** Om Edge Function `send-reminder-emails` får build error med Resend-paketet  
+**Innehåll:**
+- Instruktioner för att skapa `deno.json` fil
+- Alternativa lösningar om `deno.json` inte fungerar
+- Uppdatering av import-syntax
+
+**Status:** ✅ Klar att skicka (om build error uppstår)
+
+---
+
 ## 📖 Guider för dig (manuell konfiguration)
 
-### 6. `EMAIL_CONFIG_GUIDE.md`
+### 8. `EMAIL_CONFIG_GUIDE.md`
 **Vad:** Steg-för-steg guide för att konfigurera email manuellt i Supabase Dashboard  
 **När att använda:** Om du vill konfigurera email-templates själv istället för att be Lovable  
 **Innehåll:**
@@ -83,7 +107,7 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ## 📊 Granskningar och översikter
 
-### 7. `LOVABLE_IMPLEMENTATION_REVIEW.md`
+### 9. `LOVABLE_IMPLEMENTATION_REVIEW.md`
 **Vad:** Granskning av vad Lovable redan har implementerat  
 **När att läsa:** För att se vad som är klart och vad som saknas  
 **Innehåll:**
@@ -95,40 +119,62 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ---
 
-## 📝 Sammanfattning
+## 📝 Snabböversikt - Prioriterad ordning
 
-### Dokument att skicka till Lovable (i ordning):
+### 🔴 SKICKA FÖRST (Högsta prioritet):
+1. **`LOVABLE_EMAIL_CONFIG_PROMPT.md`** ⭐ - Email-templates och SMTP (kritisk för att email ska fungera)
 
-1. **`LOVABLE_BACKEND_PROMPT.md`** - Profilbilder och profilfält
-2. **`LOVABLE_EMAIL_CONFIG_PROMPT.md`** - Email-templates och SMTP
-3. **`LOVABLE_RESEND_API_KEY.md`** - Resend API-nyckel (lägg till nyckel först!)
+### 🟡 SKICKA HÄRNÄST (Medel prioritet):
+2. **`LOVABLE_BACKEND_PROMPT.md`** - Profilbilder och profilfält (om du vill ha det)
+3. **`LOVABLE_RESEND_API_KEY.md`** - Resend API-nyckel (när Lovable frågar, lägg till nyckel först!)
+
+### 🟢 SKICKA SENARE (Låg prioritet):
 4. **`LOVABLE_EMAIL_REMINDERS_PROMPT.md`** - Email-påminnelser (översikt)
-5. **`LOVABLE_EDGE_FUNCTION_PROMPT.md`** - Slutför email-påminnelser (lägg till nyckel först!)
+5. **`LOVABLE_EDGE_FUNCTION_PROMPT.md`** - Slutför email-påminnelser (när du har credits, lägg till nyckel först!)
+6. **`LOVABLE_UPDATE_EMAIL_NAME.md`** - Uppdatera från "Kundkollen AB" till "Kundkollen" (efter push till GitHub)
+7. **`LOVABLE_FIX_EDGE_FUNCTION.md`** - Fixa build error i Edge Function (om build error uppstår)
 
-### Dokument för dig:
-
+### 📖 Dokument för dig (inte att skicka):
 - **`EMAIL_CONFIG_GUIDE.md`** - Manuell guide för email-konfiguration
 - **`LOVABLE_IMPLEMENTATION_REVIEW.md`** - Granskning av implementation
+- **`DOKUMENT_OVERSIKT.md`** - Denna fil (översikt över alla dokument)
 
 ---
 
-## 🎯 Rekommenderad ordning
+## 🎯 Rekommenderad ordning (PRIORITERAT)
 
-### Steg 1: Profilfunktioner
-Skicka: `LOVABLE_BACKEND_PROMPT.md`
+### 🔴 HÖGSTA PRIORITET - Gör först
 
-### Steg 2: Email-konfiguration
-1. Skicka: `LOVABLE_EMAIL_CONFIG_PROMPT.md`
-2. ELLER följ: `EMAIL_CONFIG_GUIDE.md` (manuellt)
+#### Steg 1: Email-konfiguration (VIKTIGT för att email ska fungera)
+**Skicka:** `LOVABLE_EMAIL_CONFIG_PROMPT.md`  
+**ELLER följ:** `EMAIL_CONFIG_GUIDE.md` (manuellt i Supabase Dashboard)  
+**Varför först:** Alla email (signup, password reset, etc.) behöver komma från "Kundkollen" istället för "Lovable"
 
-### Steg 3: Resend API
-1. Öppna: `LOVABLE_RESEND_API_KEY.md`
-2. Lägg till din Resend API-nyckel
-3. Skicka till Lovable när de frågar
+---
 
-### Steg 4: Email-påminnelser
-1. Skicka: `LOVABLE_EMAIL_REMINDERS_PROMPT.md` (första gången)
-2. När du har credits igen: Skicka `LOVABLE_EDGE_FUNCTION_PROMPT.md` (lägg till API-nyckel först!)
+### 🟡 MEDEL PRIORITET - Gör härnäst
+
+#### Steg 2: Profilfunktioner (Om du vill ha profilbilder)
+**Skicka:** `LOVABLE_BACKEND_PROMPT.md`  
+**Varför:** Lägger till stöd för profilbilder och extra profilfält (telefon, adress)
+
+#### Steg 3: Resend API (När Lovable frågar)
+**Skicka:** `LOVABLE_RESEND_API_KEY.md` (lägg till din API-nyckel först!)  
+**Varför:** Behövs för att skicka email via Resend (när Lovable frågar efter nyckeln)
+
+---
+
+### 🟢 LÅG PRIORITET - Gör senare
+
+#### Steg 4: Email-påminnelser (När du har credits)
+1. **Första gången:** Skicka `LOVABLE_EMAIL_REMINDERS_PROMPT.md`
+2. **När du har credits igen:** Skicka `LOVABLE_EDGE_FUNCTION_PROMPT.md` (lägg till Resend API-nyckel först!)  
+**Varför senare:** Email-påminnelser är en "nice-to-have" funktion, inte kritisk för grundfunktionalitet
+
+#### Steg 5: Uppdatera email-avsändarnamn (Efter push till GitHub)
+1. Pusha ändringarna till GitHub först
+2. Skicka: `LOVABLE_UPDATE_EMAIL_NAME.md`  
+**Varför:** Uppdaterar från "Kundkollen AB" till "Kundkollen" (görs efter att grundkonfigurationen är klar)
 
 ---
 

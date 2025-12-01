@@ -22,7 +22,7 @@ Skapa en Edge Function (t.ex. `send-reminder-emails`) som:
    - Använd Resend API för att skicka email
    - API-nyckel: `[LÄGG TILL RESEND API-NYCKEL HÄR]`
    - **VIKTIGT:** Alla email måste ha:
-     - **From Name:** `Kundkollen AB`
+     - **From Name:** `Kundkollen`
      - **From Email:** `onboarding@resend.dev` (eller egen domän om konfigurerad)
 
 3. **Email-innehåll baserat på typ:**
@@ -54,7 +54,7 @@ Datum: [due_date formaterat på svenska]
 Logga in på Kundkollen för att se detaljer: [Länk till app]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 #### 1 dag kvar
@@ -74,7 +74,7 @@ Datum: [due_date formaterat på svenska]
 Logga in på Kundkollen för att se detaljer: [Länk till app]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 #### Idag
@@ -94,7 +94,7 @@ Datum: [due_date formaterat på svenska]
 Logga in på Kundkollen för att se detaljer: [Länk till app]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 #### Försenad
@@ -114,7 +114,7 @@ Datum: [due_date formaterat på svenska] (Försenad med [days_until] dagar)
 Logga in på Kundkollen för att se detaljer: [Länk till app]
 
 Med vänliga hälsningar,
-Kundkollen AB
+Kundkollen
 ```
 
 ### 3. Skapa Cron Job
@@ -142,9 +142,9 @@ SELECT cron.schedule(
 
 ## Viktiga punkter
 
-1. **Email från "Kundkollen AB":**
-   - **ALLA email måste komma från "Kundkollen AB" och INTE från "Lovable"**
-   - Konfigurera Resend med: `from: "Kundkollen AB <onboarding@resend.dev>"`
+1. **Email från "Kundkollen":**
+   - **ALLA email måste komma från "Kundkollen" och INTE från "Lovable"**
+   - Konfigurera Resend med: `from: "Kundkollen <onboarding@resend.dev>"`
 
 2. **Inga dubbletter:**
    - Funktionen `get_reminders_to_notify()` undviker redan dubbletter
@@ -165,7 +165,7 @@ Efter implementation, testa:
 2. Skapa en påminnelse som är exakt 1 dag bort
 3. Skapa en påminnelse som är idag
 4. Skapa en försenad påminnelse
-5. Verifiera att email kommer från "Kundkollen AB"
+5. Verifiera att email kommer från "Kundkollen"
 6. Kontrollera att samma notifikation inte skickas flera gånger
 
 ## Resend API Integration
@@ -181,7 +181,7 @@ const response = await fetch('https://api.resend.com/emails', {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    from: 'Kundkollen AB <onboarding@resend.dev>',
+    from: 'Kundkollen <onboarding@resend.dev>',
     to: user_email,
     subject: emailSubject,
     html: emailBody,

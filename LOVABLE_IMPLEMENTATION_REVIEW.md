@@ -51,7 +51,7 @@ När du får mer credits i Lovable, be dem att:
 
 3. **Konfigurera Resend:**
    - Använd Resend API-nyckeln du ska ge dem
-   - Se till att "From Name" är "Kundkollen AB"
+   - Se till att "From Name" är "Kundkollen"
 
 ## 🔍 Granskning av befintlig kod
 
@@ -79,7 +79,7 @@ När du skickar till Lovable igen, be dem att:
 - [ ] Integrera Resend API (använd API-nyckeln från `LOVABLE_RESEND_API_KEY.md`)
 - [ ] Skapa pg_cron job för daglig körning
 - [ ] Testa att email skickas korrekt
-- [ ] Verifiera att email kommer från "Kundkollen AB"
+- [ ] Verifiera att email kommer från "Kundkollen"
 
 ## 💡 Rekommendation
 
