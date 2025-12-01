@@ -276,17 +276,17 @@ const Reminders = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-border/50">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Påminnelser</h1>
-          <p className="text-sm sm:text-base text-secondary">Missa aldrig en viktig uppföljning</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Påminnelser</h1>
+          <p className="text-sm sm:text-base text-secondary/80">Missa aldrig en viktig uppföljning</p>
         </div>
 
         <Dialog open={open} onOpenChange={(isOpen) => (isOpen ? setOpen(true) : handleCloseDialog())}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()}>
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto min-h-[44px]">
               <Bell className="mr-2 h-4 w-4" />
               Skapa påminnelse
             </Button>
@@ -343,7 +343,7 @@ const Reminders = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full min-h-[44px]">
                   {editingReminder ? "Uppdatera påminnelse" : "Skapa påminnelse"}
                 </Button>
               </form>
@@ -352,14 +352,14 @@ const Reminders = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
+      <div className="flex flex-col sm:flex-row gap-3 pb-4 border-b border-border/30">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary/60" />
           <Input
             placeholder="Sök på titel, beskrivning eller kund"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full"
+            className="pl-10 w-full bg-card/50 border-border/50 focus:border-accent/50"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -375,22 +375,22 @@ const Reminders = () => {
       </div>
 
       {filteredReminders.length === 0 ? (
-        <Card>
-          <CardContent className="p-12 text-center">
+        <Card className="border-border/50 bg-card/50">
+          <CardContent className="p-12 sm:p-16 text-center">
             <div className="max-w-md mx-auto">
-              <div className="h-16 w-16 rounded bg-accent/10 flex items-center justify-center mx-auto mb-4 border border-accent/20">
-                <Bell className="h-8 w-8 text-accent" />
+              <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
+                <Bell className="h-10 w-10 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold text-primary mb-2">
+              <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">
                 {reminders.length === 0 ? "Inga påminnelser ännu" : "Inga påminnelser matchar dina filter"}
               </h3>
-              <p className="text-secondary mb-6">
+              <p className="text-secondary/80 mb-8 text-sm sm:text-base">
                 {reminders.length === 0
                   ? "Börja med att skapa din första påminnelse för att komma igång."
                   : "Prova att ändra dina filter för att hitta fler resultat."}
               </p>
               {reminders.length === 0 && (
-                <Button onClick={() => handleOpenDialog()}>
+                <Button onClick={() => handleOpenDialog()} size="lg" className="min-h-[44px]">
                   <Bell className="h-4 w-4 mr-2" />
                   Skapa din första påminnelse
                 </Button>
@@ -403,11 +403,11 @@ const Reminders = () => {
           {filteredReminders.map((reminder) => (
             <Card
               key={reminder.id}
-              className={`group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-border hover:border-accent/30 ${
+              className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-accent/30 bg-card/50 ${
                 reminder.completed ? "opacity-60" : ""
               }`}
             >
-              <CardContent className="p-6">
+              <CardContent className="p-5 sm:p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4 flex-1">
                     <div className="mt-1">
@@ -433,9 +433,9 @@ const Reminders = () => {
                         </h3>
                       </div>
                       {reminder.description && (
-                        <p className="text-sm text-secondary mb-3 ml-13">{reminder.description}</p>
+                        <p className="text-sm text-secondary/80 mb-3 ml-13">{reminder.description}</p>
                       )}
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-secondary ml-13">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-secondary/80 ml-13">
                         {getCustomerName(reminder.customer_id) && (
                           <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-muted/50 border border-border/50">
                             <Users className="h-3 w-3 text-accent" />
@@ -471,7 +471,7 @@ const Reminders = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-danger hover:text-danger"
+                      className="h-8 w-8 text-red-500 hover:text-red-600"
                       onClick={() => handleDelete(reminder.id)}
                     >
                       <Trash2 className="h-4 w-4" />

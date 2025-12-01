@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, Calendar, Pencil, Trash2 } from "lucide-react";
+import { FileText, Users, Calendar, Pencil, Trash2, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface QuoteCardProps {
@@ -67,33 +67,28 @@ const QuoteCard = ({
   return (
     <Card
       className={cn(
-        "group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-border hover:border-accent/30",
+        "group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-accent/30 bg-card/50",
         onClick && "cursor-pointer"
       )}
       onClick={onClick}
     >
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3 flex-1">
-            <div className={cn(
-              "h-12 w-12 rounded flex items-center justify-center border group-hover:scale-110 transition-all duration-300",
-              getStatusColor(status)
-            )}>
-              <FileText className="h-6 w-6 text-accent" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-primary text-lg truncate group-hover:text-accent transition-colors">{title}</h3>
-              <p className="text-sm text-secondary flex items-center gap-1 mt-1 group-hover:text-primary transition-colors">
-                <Users className="h-3 w-3 flex-shrink-0" />
-                <span className="truncate">{customerName}</span>
-              </p>
+      <CardContent className="p-4 sm:p-6">
+        {/* Header Section */}
+        <div className="flex items-start justify-between mb-4 sm:mb-5">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-primary text-lg sm:text-xl mb-2 break-words group-hover:text-accent transition-colors">
+              {title}
+            </h3>
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-secondary">
+              <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">{customerName}</span>
             </div>
           </div>
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="h-9 w-9 sm:h-8 sm:w-8 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit();
@@ -104,7 +99,7 @@ const QuoteCard = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-danger hover:text-danger"
+              className="h-9 w-9 sm:h-8 sm:w-8 text-red-500 hover:text-red-600 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete();
@@ -115,36 +110,49 @@ const QuoteCard = ({
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-border/50">
-          <div className="space-y-2">
-            {amount && (
-              <div className="text-2xl font-bold text-primary group-hover:text-accent transition-colors">
-                {amount.toLocaleString("sv-SE")} kr
-              </div>
-            )}
-            <div className="flex items-center gap-2 text-xs text-secondary group-hover:text-primary transition-colors">
-              <div className="h-6 w-6 rounded bg-muted/50 flex items-center justify-center border border-border/50">
-                <Calendar className="h-3 w-3 text-accent" />
-              </div>
-              <span>{new Date(createdAt).toLocaleDateString("sv-SE")}</span>
+        {/* Amount Section */}
+        {amount && (
+          <div className="mb-4 sm:mb-5 pb-4 sm:pb-5 border-b border-border/50">
+            <div className="text-2xl sm:text-3xl font-bold text-primary group-hover:text-accent transition-colors">
+              {amount.toLocaleString("sv-SE")} kr
             </div>
           </div>
-          <Badge 
-            variant={getStatusVariant(status)} 
-            className={cn(
-              "ml-4",
-              status === "accepted" && "bg-accent/20 text-accent border-accent/30",
-              status === "sent" && "bg-blue-500/20 text-blue-400 border-blue-500/30",
-              status === "draft" && "bg-secondary/20 text-secondary border-border"
-            )}
-          >
-            {getStatusLabel(status)}
-          </Badge>
+        )}
+
+        {/* Footer Section */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-secondary">
+            <Calendar className="h-3.5 w-3.5" />
+            <span>{new Date(createdAt).toLocaleDateString("sv-SE")}</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant={getStatusVariant(status)} 
+              className={cn(
+                "text-xs font-medium",
+                status === "accepted" && "bg-accent/20 text-accent border-accent/30",
+                status === "sent" && "bg-blue-500/20 text-blue-400 border-blue-500/30",
+                status === "draft" && "bg-secondary/20 text-secondary border-border"
+              )}
+            >
+              {getStatusLabel(status)}
+            </Badge>
+          </div>
         </div>
+
+        {/* Click to view hint */}
+        {onClick && (
+          <div className="mt-4 pt-4 border-t border-border/30">
+            <div className="flex items-center gap-2 text-xs text-accent/80 group-hover:text-accent transition-colors">
+              <Send className="h-3.5 w-3.5" />
+              <span>Klicka för att se detaljer och skicka offert</span>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 };
 
 export default QuoteCard;
-

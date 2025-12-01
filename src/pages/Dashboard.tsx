@@ -28,6 +28,16 @@ const Dashboard = () => {
   const [goalInput, setGoalInput] = useState("");
   const { toast } = useToast();
 
+  // Format number input with spaces (Swedish format: 100 000)
+  const formatNumberInput = (value: string): string => {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, "");
+    if (!digits) return "";
+    
+    // Format with spaces every 3 digits from right
+    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  };
+
   // Update goal input when dialog opens
   useEffect(() => {
     if (goalDialogOpen && salesGoal) {
@@ -255,11 +265,11 @@ const Dashboard = () => {
   const goalProgress = salesGoal && salesGoal > 0 ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0;
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8 sm:space-y-10">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Dashboard</h1>
-        <p className="text-sm sm:text-base text-secondary">Välkommen tillbaka! Här är en översikt över din verksamhet.</p>
+      <div className="border-b border-border/50 pb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Dashboard</h1>
+        <p className="text-sm sm:text-base text-secondary/80">Välkommen tillbaka! Här är en översikt över din verksamhet.</p>
       </div>
 
       {/* Stats Grid */}
@@ -303,16 +313,16 @@ const Dashboard = () => {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Revenue Card */}
-        <Card className="lg:col-span-2 border-accent/10">
-          <CardHeader>
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <CardTitle className="text-lg font-semibold text-secondary">Försäljningsöversikt</CardTitle>
+        <Card className="lg:col-span-2 border-border/50 bg-card/50">
+          <CardHeader className="border-b border-border/30 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <CardTitle className="text-base sm:text-lg font-semibold text-primary">Försäljningsöversikt</CardTitle>
               <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
                 <DialogTrigger asChild>
                   <Button 
                     variant={salesGoal ? "outline" : "default"} 
                     size="sm" 
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 w-full sm:w-auto min-h-[44px]"
                   >
                     {salesGoal ? "Ändra mål" : "Sätt försäljningsmål"}
                   </Button>
@@ -330,8 +340,11 @@ const Dashboard = () => {
                         id="goal"
                         type="text"
                         value={goalInput}
-                        onChange={(e) => setGoalInput(e.target.value)}
-                        placeholder={salesGoal ? salesGoal.toLocaleString("sv-SE") : "1000000"}
+                        onChange={(e) => {
+                          const formatted = formatNumberInput(e.target.value);
+                          setGoalInput(formatted);
+                        }}
+                        placeholder={salesGoal ? salesGoal.toLocaleString("sv-SE") : "1 000 000"}
                         className="mt-2 text-lg"
                       />
                       <p className="text-sm text-muted-foreground mt-2">
@@ -365,17 +378,17 @@ const Dashboard = () => {
           <CardContent>
             <div className="space-y-6">
               <div>
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                   <div>
                     <span className="text-sm text-secondary block mb-1">Total försäljning</span>
-                    <span className="text-3xl font-bold text-primary">
+                    <span className="text-2xl sm:text-3xl font-bold text-primary">
                       {stats.totalValue.toLocaleString("sv-SE")} kr
                     </span>
                   </div>
                   {salesGoal && (
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <span className="text-sm text-secondary block mb-1">Mål</span>
-                      <span className="text-xl font-semibold text-primary">
+                      <span className="text-xl sm:text-2xl font-semibold text-primary">
                         {salesGoal.toLocaleString("sv-SE")} kr
                       </span>
                     </div>
@@ -418,14 +431,14 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded bg-muted/50 border border-border hover:border-accent/30 transition-colors">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="p-3 sm:p-4 rounded bg-muted/50 border border-border hover:border-accent/30 transition-colors">
                   <p className="text-xs text-secondary mb-1">Accepterade affärer</p>
-                  <p className="text-xl font-bold text-primary">{stats.wonQuotes}</p>
+                  <p className="text-lg sm:text-xl font-bold text-primary">{stats.wonQuotes}</p>
                 </div>
-                <div className="p-4 rounded bg-muted/50 border border-border hover:border-accent/30 transition-colors">
+                <div className="p-3 sm:p-4 rounded bg-muted/50 border border-border hover:border-accent/30 transition-colors">
                   <p className="text-xs text-secondary mb-1">Genomsnitt</p>
-                  <p className="text-xl font-bold text-primary">
+                  <p className="text-lg sm:text-xl font-bold text-primary">
                     {stats.wonQuotes > 0
                       ? Math.round(stats.totalValue / stats.wonQuotes).toLocaleString("sv-SE")
                       : 0}{" "}
@@ -438,51 +451,51 @@ const Dashboard = () => {
             </Card>
 
         {/* Quick Actions */}
-        <Card className="border-border">
-            <CardHeader>
-            <CardTitle className="text-lg font-semibold text-secondary flex items-center gap-2">
-              <Plus className="h-5 w-5 text-accent" />
+        <Card className="border-border/50 bg-card/50">
+            <CardHeader className="border-b border-border/30 pb-4">
+            <CardTitle className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2">
+              <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
               Snabblänkar
             </CardTitle>
             </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2 sm:space-y-3">
             <Button
               variant="outline"
-              className="w-full justify-between text-primary border-border hover:bg-muted/50"
+              className="w-full justify-between text-primary border-border hover:bg-muted/50 min-h-[44px]"
               onClick={() => navigate("/kunder")}
             >
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Hantera kunder
+                <span className="text-sm sm:text-base">Hantera kunder</span>
               </div>
               <ArrowRight className="h-4 w-4" />
               </Button>
             <Button
               variant="outline"
-              className="w-full justify-between text-primary border-border hover:bg-muted/50"
+              className="w-full justify-between text-primary border-border hover:bg-muted/50 min-h-[44px]"
               onClick={() => navigate("/offerter")}
             >
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Skapa offert
+                <span className="text-sm sm:text-base">Skapa offert</span>
               </div>
               <ArrowRight className="h-4 w-4" />
               </Button>
             <Button
               variant="outline"
-              className="w-full justify-between text-primary border-border hover:bg-muted/50"
+              className="w-full justify-between text-primary border-border hover:bg-muted/50 min-h-[44px]"
               onClick={() => navigate("/paminnelser")}
             >
               <div className="flex items-center gap-2">
                 <Bell className="h-4 w-4" />
-                Lägg till påminnelse
+                <span className="text-sm sm:text-base">Lägg till påminnelse</span>
               </div>
               <ArrowRight className="h-4 w-4" />
             </Button>
             <div className="pt-2 border-t border-border">
               <Button
                 variant="default"
-                className="w-full"
+                className="w-full min-h-[44px]"
                 onClick={() => navigate("/kunder")}
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -494,23 +507,23 @@ const Dashboard = () => {
       </div>
 
       {/* Activity Feed */}
-      <div>
+      <div className="mt-6 sm:mt-8">
         <ActivityFeed activities={activities} />
       </div>
 
       {/* Empty State */}
       {stats.customers === 0 && stats.quotes === 0 && (
-          <Card>
-          <CardContent className="p-12 text-center">
+          <Card className="border-border/50 bg-card/50 mt-6 sm:mt-8">
+          <CardContent className="p-12 sm:p-16 text-center">
             <div className="max-w-md mx-auto">
-              <div className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 border border-accent/20">
-                <Building2 className="h-8 w-8 text-accent" />
+              <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
+                <Building2 className="h-10 w-10 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold text-primary mb-2">Kom igång med Kundkollen</h3>
-              <p className="text-secondary mb-6">
+              <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">Kom igång med Kundkollen</h3>
+              <p className="text-secondary/80 mb-8 text-sm sm:text-base">
                 Börja med att lägga till din första kund för att få en fullständig översikt över din verksamhet.
               </p>
-              <Button onClick={() => navigate("/kunder")}>
+              <Button onClick={() => navigate("/kunder")} size="lg" className="min-h-[44px]">
                 <Plus className="h-4 w-4 mr-2" />
                 Lägg till din första kund
               </Button>

@@ -214,16 +214,16 @@ const Customers = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-border/50">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Kunder</h1>
-          <p className="text-sm sm:text-base text-secondary">Hantera dina kundrelationer</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Kunder</h1>
+          <p className="text-sm sm:text-base text-secondary/80">Hantera dina kundrelationer</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()}>
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto min-h-[44px]">
               <Plus className="mr-2 h-4 w-4" />
               Lägg till kund
             </Button>
@@ -281,11 +281,11 @@ const Customers = () => {
                   placeholder="070-123-45-67"
                 />
               </div>
-              <div className="flex gap-2">
-                <Button type="submit" className="flex-1">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button type="submit" className="flex-1 min-h-[44px]">
                   {editingCustomer ? "Uppdatera" : "Lägg till"}
                 </Button>
-                <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                <Button type="button" variant="outline" onClick={handleCloseDialog} className="min-h-[44px]">
                   Avbryt
                 </Button>
               </div>
@@ -295,33 +295,33 @@ const Customers = () => {
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary" />
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary/60" />
         <Input
           placeholder="Sök på företagsnamn, kontaktperson eller e-post"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 w-full max-w-md"
+          className="pl-10 w-full bg-card/50 border-border/50 focus:border-accent/50"
         />
       </div>
       {/* Customers Grid */}
       {filteredCustomers.length === 0 ? (
-        <Card>
-          <CardContent className="p-12 text-center">
+        <Card className="border-border/50 bg-card/50">
+          <CardContent className="p-12 sm:p-16 text-center">
             <div className="max-w-md mx-auto">
-              <div className="h-16 w-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 border border-accent/20">
-                <Plus className="h-8 w-8 text-accent" />
+              <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
+                <Plus className="h-10 w-10 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold text-primary mb-2">
+              <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">
                 {customers.length === 0 ? "Inga kunder ännu" : "Inga kunder matchar din sökning"}
               </h3>
-              <p className="text-secondary mb-6">
+              <p className="text-secondary/80 mb-8 text-sm sm:text-base">
                 {customers.length === 0
                   ? "Börja med att lägga till din första kund för att komma igång."
                   : "Prova att ändra din sökning för att hitta fler resultat."}
               </p>
               {customers.length === 0 && (
-                <Button onClick={() => handleOpenDialog()}>
+                <Button onClick={() => handleOpenDialog()} size="lg" className="min-h-[44px]">
                   <Plus className="h-4 w-4 mr-2" />
                   Lägg till din första kund
                 </Button>

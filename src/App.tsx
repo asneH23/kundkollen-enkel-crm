@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import EmailVerification from "./pages/EmailVerification";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Customers from "./pages/Customers";
@@ -27,6 +28,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/verifiera-email" element={<EmailVerification />} />
             <Route
               path="/dashboard"
               element={

@@ -28,17 +28,17 @@ const StatWidget = ({
       }`}
       onClick={onClick}
     >
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="text-sm font-medium text-secondary mb-1 group-hover:text-primary transition-colors">{title}</div>
-            <div className="text-3xl font-bold text-primary group-hover:text-accent transition-colors">{value}</div>
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex items-start justify-between mb-3 sm:mb-4">
+          <div className="flex-1 min-w-0">
+            <div className="text-xs sm:text-sm font-medium text-secondary mb-1 group-hover:text-primary transition-colors">{title}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-primary group-hover:text-accent transition-colors">{value}</div>
             {description && (
-              <p className="text-xs text-muted-foreground mt-2 group-hover:text-secondary transition-colors">{description}</p>
+              <p className="text-xs text-muted-foreground mt-1 sm:mt-2 group-hover:text-secondary transition-colors">{description}</p>
             )}
           </div>
-          <div className="h-12 w-12 rounded bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
-            <Icon className="h-6 w-6 text-accent" />
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300 flex-shrink-0 ml-2">
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
           </div>
         </div>
         {progress !== undefined && (

@@ -54,22 +54,22 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <Card
                 key={index}
-                className="p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border-border cursor-pointer group bg-card"
+                className="p-6 sm:p-8 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border-border cursor-pointer group bg-card min-h-[44px]"
                 onClick={() => navigate(feature.route)}
               >
-                <div className="mb-6">
-                  <div className="w-16 h-16 rounded bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-all duration-300 border border-accent/20 group-hover:scale-110">
-                    <Icon className="w-8 h-8 text-accent" />
+                <div className="mb-4 sm:mb-6">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-all duration-300 border border-accent/20 group-hover:scale-110">
+                    <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-accent" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-primary group-hover:text-accent transition-colors">{feature.title}</h3>
-                <p className="text-sm text-secondary leading-relaxed">{feature.description}</p>
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary group-hover:text-accent transition-colors">{feature.title}</h3>
+                <p className="text-xs sm:text-sm text-secondary leading-relaxed">{feature.description}</p>
               </Card>
             );
           })}

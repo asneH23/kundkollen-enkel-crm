@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User, Camera, Mail, Building2, Phone, MapPin, Calendar, TrendingUp, FileText, Bell, Users } from "lucide-react";
+import { ArrowLeft, User, Mail, Building2, Phone, MapPin, Calendar, TrendingUp, FileText, Bell, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -22,11 +21,9 @@ const Profile = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [stats, setStats] = useState({
     customers: 0,
@@ -34,13 +31,11 @@ const Profile = () => {
     reminders: 0,
     totalValue: 0,
   });
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user) {
       fetchProfile();
       fetchStats();
-      loadAvatar();
     }
   }, [user]);
 
@@ -61,7 +56,6 @@ const Profile = () => {
         // Load additional fields if they exist in the database
         setPhone((data as any).phone || localStorage.getItem(`profile_phone_${user.id}`) || "");
         setAddress((data as any).address || localStorage.getItem(`profile_address_${user.id}`) || "");
-        setAvatarUrl((data as any).avatar_url || null);
         setCreatedAt(data.created_at || null);
       }
     } catch (error: any) {
@@ -99,99 +93,6 @@ const Profile = () => {
     }
   };
 
-  const loadAvatar = () => {
-    if (!user) return;
-    // Try to load from localStorage first (fallback if storage not available)
-    const savedAvatar = localStorage.getItem(`avatar_${user.id}`);
-    if (savedAvatar) {
-      setAvatarUrl(savedAvatar);
-    }
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!user || !e.target.files || e.target.files.length === 0) return;
-
-    const file = e.target.files[0];
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "För stor fil",
-        description: "Profilbilden får max vara 5MB",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setUploadingImage(true);
-
-    try {
-      // Convert to base64 for localStorage (simple solution without backend changes)
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64String = reader.result as string;
-        
-        // Save to localStorage as fallback
-        localStorage.setItem(`avatar_${user.id}`, base64String);
-        setAvatarUrl(base64String);
-
-        // Try to save to Supabase storage if available
-        try {
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-          const filePath = `avatars/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, file, { upsert: true });
-
-          if (!uploadError) {
-            const { data } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(filePath);
-            
-            setAvatarUrl(data.publicUrl);
-            
-            // Try to update profile with avatar_url
-            await supabase
-              .from("profiles")
-              .update({ avatar_url: data.publicUrl })
-              .eq("id", user.id);
-          }
-        } catch (storageError) {
-          // Storage might not be set up, that's okay - we have localStorage
-          console.log("Storage not available, using localStorage");
-        }
-
-        toast({
-          title: "Profilbild uppdaterad",
-          description: "Din profilbild har sparats",
-        });
-      };
-      reader.readAsDataURL(file);
-    } catch (error: any) {
-      toast({
-        title: "Fel",
-        description: error.message || "Kunde inte ladda upp bild",
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  const getInitials = () => {
-    if (companyName) {
-      return companyName
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    if (user?.email) {
-      return user.email[0].toUpperCase();
-    }
-    return "U";
-  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,64 +153,24 @@ const Profile = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       <div className="max-w-4xl">
-        <div className="mb-6">
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Profilinställningar</h1>
-          <p className="text-secondary">Hantera dina kontoinställningar och profilinformation</p>
+        <div className="mb-6 pb-6 border-b border-border/50">
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Profilinställningar</h1>
+          <p className="text-secondary/80">Hantera dina kontoinställningar och profilinformation</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Profile Card */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
+          <Card className="lg:col-span-2 border-border/50 bg-card/50">
+            <CardHeader className="border-b border-border/30 pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold text-primary">
+                <User className="h-5 w-5 text-accent" />
                 Din profil
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSave} className="space-y-6">
-                {/* Avatar Section */}
-                <div className="flex items-center gap-6 pb-6 border-b border-border">
-                  <div className="relative">
-                    <Avatar className="h-24 w-24 border-2 border-border">
-                      <AvatarImage src={avatarUrl || undefined} alt="Profilbild" />
-                      <AvatarFallback className="bg-accent/10 text-accent text-2xl font-bold">
-                        {getInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="secondary"
-                      className="absolute bottom-0 right-0 h-8 w-8 rounded-full border-2 border-background"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingImage}
-                    >
-                      <Camera className="h-4 w-4" />
-                    </Button>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-primary mb-1">
-                      {companyName || user?.email?.split("@")[0]}
-                    </h3>
-                    <p className="text-sm text-secondary mb-3">
-                      Klicka på kameran för att ändra profilbild
-                    </p>
-                    {uploadingImage && (
-                      <p className="text-xs text-muted-foreground">Laddar upp bild...</p>
-                    )}
-                  </div>
-                </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
                     <Label htmlFor="email" className="flex items-center gap-2">
@@ -375,7 +236,7 @@ const Profile = () => {
                 </div>
 
                 <div className="pt-4 border-t border-border">
-                  <Button type="submit" disabled={saving} className="w-full sm:w-auto">
+                  <Button type="submit" disabled={saving} className="w-full sm:w-auto min-h-[44px]">
                     {saving ? "Sparar..." : "Spara ändringar"}
                   </Button>
                 </div>
@@ -384,10 +245,10 @@ const Profile = () => {
           </Card>
 
           {/* Stats Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+          <Card className="border-border/50 bg-card/50">
+            <CardHeader className="border-b border-border/30 pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold text-primary">
+                <TrendingUp className="h-5 w-5 text-accent" />
                 Statistik
               </CardTitle>
             </CardHeader>

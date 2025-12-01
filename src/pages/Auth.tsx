@@ -76,7 +76,7 @@ const Auth = () => {
           return;
         }
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -89,19 +89,21 @@ const Auth = () => {
 
         if (error) throw error;
 
+        // Save email if "remember me" is checked (for when they come back)
+        if (rememberMe) {
+          localStorage.setItem("remembered_email", email);
+        }
+
+        // Save email temporarily for verification page (even if session isn't created yet)
+        sessionStorage.setItem("pending_verification_email", email);
+
         toast({
           title: "Konto skapat!",
-          description: "Du kan nu logga in.",
+          description: "Ett verifieringsemail har skickats till din email.",
         });
         
-        // Auto-login after signup
-        const { error: loginError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (loginError) throw loginError;
-        navigate("/dashboard");
+        // Redirect immediately to email verification page
+        navigate("/verifiera-email");
       }
     } catch (error: any) {
       toast({

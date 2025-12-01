@@ -46,7 +46,7 @@ const Hero = () => {
             {user ? (
               <Button
                 size="lg"
-                className="text-base font-semibold px-10 h-14"
+                className="text-base font-semibold px-6 sm:px-10 h-12 sm:h-14 min-h-[44px]"
                 onClick={() => navigate("/dashboard")}
               >
                 Gå till Dashboard
@@ -56,7 +56,7 @@ const Hero = () => {
               <>
                 <Button
                   size="lg"
-                  className="text-base font-semibold px-10 h-14"
+                  className="text-base font-semibold px-6 sm:px-10 h-12 sm:h-14 min-h-[44px]"
                   onClick={() => {
                     const betaSection = document.getElementById('beta');
                     betaSection?.scrollIntoView({ behavior: 'smooth' });
@@ -68,7 +68,7 @@ const Hero = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-base font-semibold px-10 h-14 border-2"
+                  className="text-base font-semibold px-6 sm:px-10 h-12 sm:h-14 border-2 min-h-[44px]"
                   onClick={(e) => {
                     e.preventDefault();
                     const scrollToSection = () => {

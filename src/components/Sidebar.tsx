@@ -75,13 +75,13 @@ const Sidebar = () => {
                   to={item.path}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-3 px-4 py-3 rounded text-sm font-medium transition-all duration-200 min-h-[44px]",
                     isActive(item.path)
                       ? "bg-accent/10 text-accent border border-accent/20"
                       : "text-secondary hover:bg-muted/50 hover:text-primary"
                   )}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-5 w-5 flex-shrink-0" />
                   {item.label}
                 </Link>
               );
@@ -96,21 +96,21 @@ const Sidebar = () => {
               </div>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-secondary hover:text-primary"
+                className="w-full justify-start text-secondary hover:text-primary min-h-[44px]"
                 onClick={() => {
                   navigate("/profil");
                   setMobileOpen(false);
                 }}
               >
-                <User className="h-4 w-4 mr-2" />
+                <User className="h-4 w-4 mr-2 flex-shrink-0" />
                 Profil
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-secondary hover:text-primary"
+                className="w-full justify-start text-secondary hover:text-primary min-h-[44px]"
                 onClick={signOut}
               >
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="h-4 w-4 mr-2 flex-shrink-0" />
                 Logga ut
               </Button>
             </div>
