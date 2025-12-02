@@ -159,6 +159,55 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Check for test mode
+    let body: { test_email?: string } = {};
+    try {
+      body = await req.json();
+    } catch {
+      // No body or invalid JSON, continue with normal operation
+    }
+
+    // Test mode: send a test email directly
+    if (body.test_email) {
+      console.log(`Test mode: sending test email to ${body.test_email}`);
+      
+      const testEmailResponse = await resend.emails.send({
+        from: "Kundkollen <onboarding@resend.dev>",
+        to: [body.test_email],
+        subject: "Test: Email-påminnelser fungerar!",
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background-color: #2563eb; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+              .content { background-color: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1 style="margin: 0; font-size: 24px;">Test av email-påminnelser</h1>
+            </div>
+            <div class="content">
+              <p>Detta är ett testmail från Kundkollen för att verifiera att email-påminnelser fungerar korrekt.</p>
+              <p>Om du ser detta meddelande fungerar systemet som det ska!</p>
+              <p style="margin-top: 30px;">Med vänliga hälsningar,<br><strong>Kundkollen</strong></p>
+            </div>
+          </body>
+          </html>
+        `,
+      });
+
+      console.log("Test email sent:", testEmailResponse);
+
+      return new Response(
+        JSON.stringify({ message: "Test email sent", email: body.test_email, response: testEmailResponse }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     console.log("Starting reminder email job...");
     
     // Create Supabase client with service role key (bypasses RLS)
@@ -191,7 +240,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         // Send email via Resend
         const emailResponse = await resend.emails.send({
-          from: "Kundkollen <noreply@kundkollen.se>",
+          from: "Kundkollen <onboarding@resend.dev>",
           to: [reminder.user_email],
           subject,
           html,
