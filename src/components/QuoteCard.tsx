@@ -52,7 +52,7 @@ const QuoteCard = ({
         {/* Header Section */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-white text-xl mb-2 break-words group-hover:text-accent transition-colors leading-tight">
+            <h3 className="font-bold text-primary text-xl mb-2 break-words group-hover:text-accent transition-colors leading-tight">
               {title}
             </h3>
             <div className="flex items-center gap-2 text-sm text-secondary-foreground/60">
@@ -66,7 +66,7 @@ const QuoteCard = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-white/10 text-white/60 hover:text-white"
+              className="h-8 w-8 hover:bg-black/10 text-primary/60 hover:text-accent"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit();
@@ -89,13 +89,13 @@ const QuoteCard = ({
         </div>
 
         {/* Amount Section */}
-        <div className="py-4 border-y border-white/5">
+        <div className="py-4 border-y border-black/5">
           {amount ? (
-            <div className="text-3xl font-bold text-white group-hover:text-accent transition-colors tracking-tight">
-              {amount.toLocaleString("sv-SE")} <span className="text-lg text-white/40 font-normal">kr</span>
+            <div className="text-3xl font-bold text-primary group-hover:text-accent transition-colors tracking-tight">
+              {amount.toLocaleString("sv-SE")} <span className="text-lg text-primary/50 font-normal">kr</span>
             </div>
           ) : (
-            <div className="text-white/30 italic text-sm">Belopp ej angivet</div>
+            <div className="text-primary/30 italic text-sm">Belopp ej angivet</div>
           )}
         </div>
 
@@ -111,7 +111,7 @@ const QuoteCard = ({
               "text-xs font-medium border-0",
               status === "accepted" && "bg-accent/20 text-accent",
               status === "sent" && "bg-blue-500/20 text-blue-400",
-              status === "draft" && "bg-white/10 text-white"
+              status === "draft" && "bg-black/10 text-primary"
             )}
           >
             {getStatusLabel(status)}

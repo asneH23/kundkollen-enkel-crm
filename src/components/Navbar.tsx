@@ -32,7 +32,7 @@ const Navbar = () => {
                     className={`relative px-3 py-2 rounded-none text-lg transition-colors font-sans ${
                       location.pathname === item.path
                         ? "text-accent after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-1 after:bg-accent after:rounded-full after:content-['']"
-                        : "text-secondary hover:text-primary"
+                        : "text-secondary hover:text-accent"
                     }`}
                   >
                     {item.label}

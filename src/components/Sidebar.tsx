@@ -63,7 +63,7 @@ const Sidebar = () => {
           <div className="p-8 pb-6">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="h-10 w-10 rounded-xl bg-accent flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300">
-                <span className="text-white font-bold text-xl">K</span>
+                <span className="text-primary font-bold text-xl">K</span>
               </div>
               <div>
                 <span className="text-2xl font-bold text-primary tracking-tight block leading-none">Kundkollen</span>
@@ -74,7 +74,7 @@ const Sidebar = () => {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
             <div className="px-4 mb-2">
-              <p className="text-xs font-semibold text-primary/40 uppercase tracking-wider">Meny</p>
+              <p className="text-xs font-semibold text-primary/50 uppercase tracking-wider">Meny</p>
             </div>
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -88,7 +88,7 @@ const Sidebar = () => {
                     "flex items-center gap-3 px-4 py-3.5 rounded-lg text-sm font-medium transition-all duration-300 group relative overflow-hidden",
                     active
                       ? "text-primary bg-accent/10 shadow-md border border-accent/20"
-                      : "text-primary/60 hover:text-primary hover:bg-black/5"
+                      : "text-primary/60 hover:text-accent hover:bg-black/5"
                   )}
                 >
                   {active && (
@@ -106,9 +106,9 @@ const Sidebar = () => {
 
           {/* User section */}
           {user && (
-            <div className="p-4 m-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-md">
+            <div className="p-4 m-4 rounded-xl bg-black/5 border border-black/5 backdrop-blur-md">
               <div className="flex items-center gap-3 mb-4 px-2">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent to-blue-500 flex items-center justify-center text-primary font-bold shadow-lg">
                   {user.email?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -120,7 +120,7 @@ const Sidebar = () => {
               <div className="space-y-1">
                 <Button
                   variant="ghost"
-                  className="w-full justify-start text-primary/70 hover:text-primary hover:bg-black/5 h-9"
+                  className="w-full justify-start text-primary/70 hover:text-accent hover:bg-black/5 h-9"
                   onClick={() => {
                     navigate("/profil");
                     setMobileOpen(false);

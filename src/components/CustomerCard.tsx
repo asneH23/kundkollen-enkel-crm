@@ -46,11 +46,11 @@ const CustomerCard = ({
         {/* Header Section */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent/30 group-hover:bg-accent/10 transition-all duration-300 shadow-lg group-hover:shadow-glow flex-shrink-0">
-              <Users className="h-6 w-6 text-white group-hover:text-accent transition-colors duration-300" />
+            <div className="h-12 w-12 rounded-xl bg-black/5 flex items-center justify-center border border-black/10 group-hover:border-accent/30 group-hover:bg-accent/10 transition-all duration-300 shadow-lg group-hover:shadow-glow flex-shrink-0">
+              <Users className="h-6 w-6 text-primary group-hover:text-accent transition-colors duration-300" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-white text-lg group-hover:text-accent transition-colors break-words leading-tight">{companyName}</h3>
+              <h3 className="font-bold text-primary text-lg group-hover:text-accent transition-colors break-words leading-tight">{companyName}</h3>
               {contactPerson && (
                 <p className="text-sm text-secondary-foreground/60 flex items-center gap-1 mt-1">
                   <User className="h-3 w-3 flex-shrink-0" />
@@ -65,7 +65,7 @@ const CustomerCard = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-white/10 text-white/60 hover:text-white"
+              className="h-8 w-8 hover:bg-black/10 text-primary/60 hover:text-accent"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit();
@@ -89,18 +89,18 @@ const CustomerCard = ({
 
         {/* Contact Info Section */}
         {hasContactInfo && (
-          <div className="space-y-2 pt-3 border-t border-white/5">
+          <div className="space-y-2 pt-3 border-t border-black/5">
             {email && (
-              <div className="flex items-center gap-2 text-sm text-secondary-foreground/60 group-hover:text-white/80 transition-colors">
-                <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5 flex-shrink-0">
+              <div className="flex items-center gap-2 text-sm text-secondary-foreground/60 group-hover:text-accent/80 transition-colors">
+                <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center border border-black/5 flex-shrink-0">
                   <Mail className="h-4 w-4 text-accent" />
                 </div>
                 <span className="truncate flex-1 min-w-0">{email}</span>
               </div>
             )}
             {phone && (
-              <div className="flex items-center gap-2 text-sm text-secondary-foreground/60 group-hover:text-white/80 transition-colors">
-                <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5 flex-shrink-0">
+              <div className="flex items-center gap-2 text-sm text-secondary-foreground/60 group-hover:text-accent/80 transition-colors">
+                <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center border border-black/5 flex-shrink-0">
                   <Phone className="h-4 w-4 text-accent" />
                 </div>
                 <span className="flex-1 min-w-0">{formatPhone(phone)}</span>

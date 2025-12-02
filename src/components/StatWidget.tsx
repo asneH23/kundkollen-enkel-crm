@@ -32,11 +32,11 @@ const StatWidget = ({
 
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-4">
-          <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent/30 group-hover:bg-accent/10 transition-all duration-300 shadow-lg group-hover:shadow-glow">
-            <Icon className="h-6 w-6 text-white group-hover:text-accent transition-colors duration-300" />
+          <div className="h-12 w-12 rounded-xl bg-black/5 flex items-center justify-center border border-black/10 group-hover:border-accent/30 group-hover:bg-accent/10 transition-all duration-300 shadow-lg group-hover:shadow-glow">
+            <Icon className="h-6 w-6 text-primary group-hover:text-accent transition-colors duration-300" />
           </div>
           {progress !== undefined && (
-            <div className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/5">
+            <div className="flex items-center gap-1 bg-black/5 px-2 py-1 rounded-full border border-black/5">
               <span className="text-xs font-medium text-accent">{progress}%</span>
             </div>
           )}
@@ -44,14 +44,14 @@ const StatWidget = ({
 
         <div>
           <div className="text-sm font-medium text-secondary-foreground/60 mb-1 uppercase tracking-wide">{title}</div>
-          <div className="text-3xl font-bold text-white tracking-tight mb-2 group-hover:text-accent transition-colors duration-300">{value}</div>
+          <div className="text-3xl font-bold text-primary tracking-tight mb-2 group-hover:text-accent transition-colors duration-300">{value}</div>
           {description && (
             <p className="text-xs text-secondary-foreground/40 group-hover:text-secondary-foreground/60 transition-colors">{description}</p>
           )}
         </div>
 
         {progress !== undefined && (
-          <div className="mt-4 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+          <div className="mt-4 h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
             <div
               className="h-full bg-accent shadow-[0_0_8px_rgba(0,229,153,0.5)] transition-all duration-1000 ease-out rounded-full"
               style={{ width: `${progress}%` }}

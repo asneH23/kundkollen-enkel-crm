@@ -26,7 +26,7 @@ const Layout = ({ children }: LayoutProps) => {
               size="sm"
               onClick={() => navigate(-1)}
               className={cn(
-                "mb-6 text-secondary-foreground/60 hover:text-white hover:bg-white/5",
+                "mb-6 text-secondary-foreground/60 hover:text-accent hover:bg-black/5",
                 "flex items-center gap-2"
               )}
             >

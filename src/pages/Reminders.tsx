@@ -280,7 +280,7 @@ const Reminders = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">Påminnelser</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Påminnelser</h1>
           <p className="text-secondary-foreground/60 text-lg">Håll koll på alla viktiga uppföljningar.</p>
         </div>
 
@@ -291,7 +291,7 @@ const Reminders = () => {
               Skapa påminnelse
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-panel border-white/10 text-white sm:max-w-[600px]">
+          <DialogContent className="glass-panel border-black/10 text-primary sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
                 {editingReminder ? "Redigera påminnelse" : "Skapa ny påminnelse"}
@@ -300,7 +300,7 @@ const Reminders = () => {
             <form onSubmit={handleSubmit} className="space-y-6 mt-4">
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-white">Titel *</Label>
+                  <Label htmlFor="title" className="text-primary">Titel *</Label>
                   <Input
                     id="title"
                     value={title}
@@ -312,15 +312,15 @@ const Reminders = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="customer" className="text-white">Kund</Label>
+                  <Label htmlFor="customer" className="text-primary">Kund</Label>
                   <Select value={customerId} onValueChange={setCustomerId}>
                     <SelectTrigger className="premium-input">
                       <SelectValue placeholder="Välj kund (valfritt)" />
                     </SelectTrigger>
-                    <SelectContent className="glass-panel border-white/10 text-white">
-                      <SelectItem value="none" className="focus:bg-white/10 focus:text-white">Ingen kund</SelectItem>
+                    <SelectContent className="glass-panel border-black/10 text-primary">
+                      <SelectItem value="none" className="focus:bg-black/10 focus:text-primary">Ingen kund</SelectItem>
                       {customers.map((customer) => (
-                        <SelectItem key={customer.id} value={customer.id} className="focus:bg-white/10 focus:text-white">
+                        <SelectItem key={customer.id} value={customer.id} className="focus:bg-black/10 focus:text-primary">
                           {customer.company_name}
                         </SelectItem>
                       ))}
@@ -329,7 +329,7 @@ const Reminders = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-white">Beskrivning</Label>
+                  <Label htmlFor="description" className="text-primary">Beskrivning</Label>
                   <Textarea
                     id="description"
                     value={description}
@@ -341,7 +341,7 @@ const Reminders = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="dueDate" className="flex items-center gap-2 text-white">
+                  <Label htmlFor="dueDate" className="flex items-center gap-2 text-primary">
                     <Calendar className="h-4 w-4 text-accent" />
                     Förfallodatum *
                   </Label>
@@ -356,7 +356,7 @@ const Reminders = () => {
                     />
                     <label
                       htmlFor="dueDate"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10 flex items-center justify-center w-8 h-8 rounded hover:bg-white/10 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10 flex items-center justify-center w-8 h-8 rounded hover:bg-black/10 transition-colors"
                       onClick={(e) => {
                         e.preventDefault();
                         const input = document.getElementById('dueDate') as HTMLInputElement;
@@ -392,18 +392,18 @@ const Reminders = () => {
             <Mail className="h-5 w-5 text-accent" />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-base text-white mb-1">Automatiska email-påminnelser</h3>
+            <h3 className="font-semibold text-base text-primary mb-1">Automatiska email-påminnelser</h3>
             <p className="text-sm text-secondary-foreground/60 leading-relaxed">
-              Du får automatiskt email när påminnelser närmar sig: <span className="font-medium text-white">7 dagar innan</span>, <span className="font-medium text-white">1 dag innan</span>, <span className="font-medium text-white">idag</span> och om de blir <span className="font-medium text-white">försenade</span>.
+              Du får automatiskt email när påminnelser närmar sig: <span className="font-medium text-primary">7 dagar innan</span>, <span className="font-medium text-primary">1 dag innan</span>, <span className="font-medium text-primary">idag</span> och om de blir <span className="font-medium text-primary">försenade</span>.
             </p>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-white/5">
+      <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-black/5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/50" />
           <Input
             placeholder="Sök på titel, beskrivning eller kund"
             value={searchTerm}
@@ -415,20 +415,20 @@ const Reminders = () => {
           <SelectTrigger className="w-full sm:w-48 h-11 premium-input">
             <SelectValue placeholder="Filtera status" />
           </SelectTrigger>
-          <SelectContent className="glass-panel border-white/10 text-white">
-            <SelectItem value="active" className="focus:bg-white/10 focus:text-white">Aktiva</SelectItem>
-            <SelectItem value="completed" className="focus:bg-white/10 focus:text-white">Klara</SelectItem>
-            <SelectItem value="all" className="focus:bg-white/10 focus:text-white">Alla</SelectItem>
+          <SelectContent className="glass-panel border-black/10 text-primary">
+            <SelectItem value="active" className="focus:bg-black/10 focus:text-primary">Aktiva</SelectItem>
+            <SelectItem value="completed" className="focus:bg-black/10 focus:text-primary">Klara</SelectItem>
+            <SelectItem value="all" className="focus:bg-black/10 focus:text-primary">Alla</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {filteredReminders.length === 0 ? (
-        <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+        <div className="glass-card rounded-xl p-12 text-center border-dashed border-black/10">
           <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
             <Bell className="h-10 w-10 text-accent" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3">
+          <h3 className="text-2xl font-bold text-primary mb-3">
             {reminders.length === 0 ? "Inga påminnelser ännu" : "Inga påminnelser matchar dina filter"}
           </h3>
           <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">

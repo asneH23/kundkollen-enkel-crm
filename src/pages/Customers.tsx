@@ -218,7 +218,7 @@ const Customers = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">Kunder</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Kunder</h1>
           <p className="text-secondary-foreground/60 text-lg">Bygg starkare relationer med dina kunder.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -228,7 +228,7 @@ const Customers = () => {
               Lägg till kund
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-panel border-white/10 text-white sm:max-w-[600px]">
+          <DialogContent className="glass-panel border-black/10 text-primary sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
                 {editingCustomer ? "Redigera kund" : "Lägg till ny kund"}
@@ -244,7 +244,7 @@ const Customers = () => {
             <form onSubmit={handleSubmit} className="space-y-6 mt-4">
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="companyName" className="text-white">Företagsnamn *</Label>
+                  <Label htmlFor="companyName" className="text-primary">Företagsnamn *</Label>
                   <Input
                     id="companyName"
                     value={formData.companyName}
@@ -257,7 +257,7 @@ const Customers = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="contactPerson" className="text-white">Kontaktperson</Label>
+                    <Label htmlFor="contactPerson" className="text-primary">Kontaktperson</Label>
                     <Input
                       id="contactPerson"
                       value={formData.contactPerson}
@@ -267,7 +267,7 @@ const Customers = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white">Telefon</Label>
+                    <Label htmlFor="phone" className="text-primary">Telefon</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -280,7 +280,7 @@ const Customers = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white">E-post</Label>
+                  <Label htmlFor="email" className="text-primary">E-post</Label>
                   <Input
                     id="email"
                     type="email"
@@ -300,7 +300,7 @@ const Customers = () => {
                   type="button"
                   variant="outline"
                   onClick={handleCloseDialog}
-                  className="h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
+                  className="h-11 border-black/10 text-primary hover:bg-black/5 hover:text-accent"
                 >
                   Avbryt
                 </Button>
@@ -311,8 +311,8 @@ const Customers = () => {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md pb-6 border-b border-white/5">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
+      <div className="relative max-w-md pb-6 border-b border-black/5">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/50" />
         <Input
           placeholder="Sök på företagsnamn, kontaktperson eller e-post"
           value={searchTerm}
@@ -323,11 +323,11 @@ const Customers = () => {
 
       {/* Customers Grid */}
       {filteredCustomers.length === 0 ? (
-        <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+        <div className="glass-card rounded-xl p-12 text-center border-dashed border-black/10">
           <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
             <Plus className="h-10 w-10 text-accent" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3">
+          <h3 className="text-2xl font-bold text-primary mb-3">
             {customers.length === 0 ? "Inga kunder ännu" : "Inga kunder matchar din sökning"}
           </h3>
           <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">

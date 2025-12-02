@@ -268,7 +268,7 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">
             {getGreeting()}, <span className="text-accent">Aston</span>
           </h1>
           <p className="text-secondary-foreground/60 text-lg">Här är en översikt över din verksamhet idag.</p>
@@ -324,7 +324,7 @@ const Dashboard = () => {
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 relative z-10">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-1">Försäljningsöversikt</h2>
+              <h2 className="text-xl font-semibold text-primary mb-1">Försäljningsöversikt</h2>
               <p className="text-sm text-secondary-foreground/60">Din försäljning mot målet</p>
             </div>
             <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
@@ -332,18 +332,18 @@ const Dashboard = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-white/5 border-white/10 hover:bg-white/10 text-white"
+                  className="bg-black/5 border-black/10 hover:bg-black/10 text-primary"
                 >
                   {salesGoal ? "Ändra mål" : "Sätt mål"}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="glass-panel border-white/10 text-white">
+              <DialogContent className="glass-panel border-black/10 text-primary">
                 <DialogHeader>
                   <DialogTitle>Sätt försäljningsmål</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
                   <div>
-                    <Label htmlFor="goal" className="text-base font-medium text-white">
+                    <Label htmlFor="goal" className="text-base font-medium text-primary">
                       Försäljningsmål (kr)
                     </Label>
                     <Input
@@ -371,7 +371,7 @@ const Dashboard = () => {
           <div className="space-y-8 relative z-10">
             <div>
               <div className="flex items-end gap-3 mb-2">
-                <span className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
+                <span className="text-4xl sm:text-5xl font-bold text-primary tracking-tight">
                   {stats.totalValue.toLocaleString("sv-SE")} <span className="text-2xl text-secondary-foreground/40 font-normal">kr</span>
                 </span>
               </div>
@@ -382,7 +382,7 @@ const Dashboard = () => {
                     <span className="text-secondary-foreground/60">Framsteg mot {salesGoal.toLocaleString("sv-SE")} kr</span>
                     <span className="text-accent font-medium">{goalProgress.toFixed(1)}%</span>
                   </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-2 bg-black/5 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-accent shadow-[0_0_10px_rgba(0,229,153,0.5)] transition-all duration-1000 ease-out rounded-full"
                       style={{ width: `${goalProgress}%` }}
@@ -390,20 +390,20 @@ const Dashboard = () => {
                   </div>
                 </div>
               ) : (
-                <div className="p-4 rounded-lg bg-white/5 border border-white/10 border-dashed text-center">
+                <div className="p-4 rounded-lg bg-black/5 border border-black/10 border-dashed text-center">
                   <p className="text-sm text-secondary-foreground/60">Inget mål satt än</p>
                 </div>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+              <div className="p-4 rounded-lg bg-black/5 border border-black/5">
                 <p className="text-xs text-secondary-foreground/60 mb-1 uppercase tracking-wider">Accepterade affärer</p>
-                <p className="text-2xl font-bold text-white">{stats.wonQuotes}</p>
+                <p className="text-2xl font-bold text-primary">{stats.wonQuotes}</p>
               </div>
-              <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+              <div className="p-4 rounded-lg bg-black/5 border border-black/5">
                 <p className="text-xs text-secondary-foreground/60 mb-1 uppercase tracking-wider">Snittvärde</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-2xl font-bold text-primary">
                   {stats.wonQuotes > 0
                     ? Math.round(stats.totalValue / stats.wonQuotes).toLocaleString("sv-SE")
                     : 0} kr
@@ -416,18 +416,18 @@ const Dashboard = () => {
         {/* Quick Actions & Activity */}
         <div className="space-y-6">
           <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-accent" />
               Snabblänkar
             </h3>
             <div className="space-y-3">
               <Button
                 variant="ghost"
-                className="w-full justify-between text-white hover:bg-white/5 hover:text-accent group h-12"
+                className="w-full justify-between text-primary hover:bg-black/5 hover:text-accent group h-12"
                 onClick={() => navigate("/kunder")}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-white/5 group-hover:bg-accent/10 transition-colors">
+                  <div className="p-2 rounded-md bg-black/5 group-hover:bg-accent/10 transition-colors">
                     <Users className="h-4 w-4" />
                   </div>
                   <span>Hantera kunder</span>
@@ -436,11 +436,11 @@ const Dashboard = () => {
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-between text-white hover:bg-white/5 hover:text-accent group h-12"
+                className="w-full justify-between text-primary hover:bg-black/5 hover:text-accent group h-12"
                 onClick={() => navigate("/offerter")}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-white/5 group-hover:bg-accent/10 transition-colors">
+                  <div className="p-2 rounded-md bg-black/5 group-hover:bg-accent/10 transition-colors">
                     <FileText className="h-4 w-4" />
                   </div>
                   <span>Skapa offert</span>
@@ -449,11 +449,11 @@ const Dashboard = () => {
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-between text-white hover:bg-white/5 hover:text-accent group h-12"
+                className="w-full justify-between text-primary hover:bg-black/5 hover:text-accent group h-12"
                 onClick={() => navigate("/paminnelser")}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-white/5 group-hover:bg-accent/10 transition-colors">
+                  <div className="p-2 rounded-md bg-black/5 group-hover:bg-accent/10 transition-colors">
                     <Bell className="h-4 w-4" />
                   </div>
                   <span>Lägg till påminnelse</span>
@@ -465,7 +465,7 @@ const Dashboard = () => {
 
           {/* Activity Feed Mini */}
           <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Senaste händelser</h3>
+            <h3 className="text-lg font-semibold text-primary mb-4">Senaste händelser</h3>
             <ActivityFeed activities={activities.slice(0, 3)} />
           </div>
         </div>
@@ -473,11 +473,11 @@ const Dashboard = () => {
 
       {/* Empty State */}
       {stats.customers === 0 && stats.quotes === 0 && (
-        <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+        <div className="glass-card rounded-xl p-12 text-center border-dashed border-black/10">
           <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
             <Building2 className="h-10 w-10 text-accent" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3">Välkommen till framtiden</h3>
+          <h3 className="text-2xl font-bold text-primary mb-3">Välkommen till framtiden</h3>
           <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
             Ditt nya CRM är redo. Börja med att lägga till din första kund för att se magin hända.
           </p>

@@ -486,7 +486,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">Offerter</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Offerter</h1>
           <p className="text-secondary-foreground/60 text-lg">Hantera dina affärer och skapa nya möjligheter.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -496,7 +496,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
               Skapa offert
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-panel border-white/10 text-white sm:max-w-[600px]">
+          <DialogContent className="glass-panel border-black/10 text-primary sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
                 {editingQuote ? "Redigera offert" : "Skapa ny offert"}
@@ -505,7 +505,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
             <form onSubmit={handleSubmit} className="space-y-6 mt-4">
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-white">Titel *</Label>
+                  <Label htmlFor="title" className="text-primary">Titel *</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -518,7 +518,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="customer" className="text-white">Kund</Label>
+                    <Label htmlFor="customer" className="text-primary">Kund</Label>
                     <Select
                       value={formData.customerId}
                       onValueChange={(value) => setFormData({ ...formData, customerId: value })}
@@ -526,10 +526,10 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                       <SelectTrigger className="premium-input">
                         <SelectValue placeholder="Välj kund (valfritt)" />
                       </SelectTrigger>
-                      <SelectContent className="glass-panel border-white/10 text-white">
-                        <SelectItem value="none" className="focus:bg-white/10 focus:text-white">Ingen kund</SelectItem>
+                      <SelectContent className="glass-panel border-black/10 text-primary">
+                        <SelectItem value="none" className="focus:bg-black/10 focus:text-primary">Ingen kund</SelectItem>
                         {customers.map((customer) => (
-                          <SelectItem key={customer.id} value={customer.id} className="focus:bg-white/10 focus:text-white">
+                          <SelectItem key={customer.id} value={customer.id} className="focus:bg-black/10 focus:text-primary">
                             {customer.company_name}
                           </SelectItem>
                         ))}
@@ -537,7 +537,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="amount" className="text-white">Belopp (kr)</Label>
+                    <Label htmlFor="amount" className="text-primary">Belopp (kr)</Label>
                     <Input
                       id="amount"
                       type="text"
@@ -553,7 +553,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="status" className="text-white">Status</Label>
+                  <Label htmlFor="status" className="text-primary">Status</Label>
                   <Select
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value })}
@@ -561,16 +561,16 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                     <SelectTrigger className="premium-input">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="glass-panel border-white/10 text-white">
-                      <SelectItem value="draft" className="focus:bg-white/10 focus:text-white">Utkast</SelectItem>
-                      <SelectItem value="sent" className="focus:bg-white/10 focus:text-white">Skickad</SelectItem>
-                      <SelectItem value="accepted" className="focus:bg-white/10 focus:text-white">Accepterad</SelectItem>
+                    <SelectContent className="glass-panel border-black/10 text-primary">
+                      <SelectItem value="draft" className="focus:bg-black/10 focus:text-primary">Utkast</SelectItem>
+                      <SelectItem value="sent" className="focus:bg-black/10 focus:text-primary">Skickad</SelectItem>
+                      <SelectItem value="accepted" className="focus:bg-black/10 focus:text-primary">Accepterad</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-white">Beskrivning (valfritt)</Label>
+                  <Label htmlFor="description" className="text-primary">Beskrivning (valfritt)</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
@@ -590,7 +590,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                   type="button"
                   variant="outline"
                   onClick={handleCloseDialog}
-                  className="h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
+                  className="h-11 border-black/10 text-primary hover:bg-black/5 hover:text-accent"
                 >
                   Avbryt
                 </Button>
@@ -601,7 +601,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
         {/* Detail View Dialog */}
         <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-          <DialogContent className="glass-panel border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="glass-panel border-black/10 text-primary max-w-2xl max-h-[90vh] overflow-y-auto">
             {selectedQuote && (
               <>
                 <DialogHeader>
@@ -617,7 +617,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
                 <div className="space-y-8 mt-6">
                   {/* Status and Amount */}
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 p-6 rounded-xl bg-white/5 border border-white/5">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 p-6 rounded-xl bg-black/5 border border-black/5">
                     <div className="flex flex-col gap-2">
                       <span className="text-sm text-secondary-foreground/60 uppercase tracking-wider font-medium">Status</span>
                       <div className="flex items-center gap-3">
@@ -626,7 +626,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                             "text-sm px-3 py-1 border-0",
                             selectedQuote.status === "accepted" && "bg-accent/20 text-accent",
                             selectedQuote.status === "sent" && "bg-blue-500/20 text-blue-400",
-                            selectedQuote.status === "draft" && "bg-white/10 text-white"
+                            selectedQuote.status === "draft" && "bg-black/10 text-primary"
                           )}
                         >
                           {getStatusLabel(selectedQuote.status)}
@@ -658,13 +658,13 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                             }
                           }}
                         >
-                          <SelectTrigger className="w-32 h-8 bg-transparent border-white/10 text-xs">
+                          <SelectTrigger className="w-32 h-8 bg-transparent border-black/10 text-xs">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="glass-panel border-white/10 text-white">
-                            <SelectItem value="draft" className="focus:bg-white/10 focus:text-white">Utkast</SelectItem>
-                            <SelectItem value="sent" className="focus:bg-white/10 focus:text-white">Skickad</SelectItem>
-                            <SelectItem value="accepted" className="focus:bg-white/10 focus:text-white">Accepterad</SelectItem>
+                          <SelectContent className="glass-panel border-black/10 text-primary">
+                            <SelectItem value="draft" className="focus:bg-black/10 focus:text-primary">Utkast</SelectItem>
+                            <SelectItem value="sent" className="focus:bg-black/10 focus:text-primary">Skickad</SelectItem>
+                            <SelectItem value="accepted" className="focus:bg-black/10 focus:text-primary">Accepterad</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -673,24 +673,24 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                     <div className="flex flex-col gap-1 sm:text-right">
                       <span className="text-sm text-secondary-foreground/60 uppercase tracking-wider font-medium">Belopp</span>
                       {selectedQuote.amount ? (
-                        <div className="text-3xl font-bold text-white tracking-tight">
+                        <div className="text-3xl font-bold text-primary tracking-tight">
                           {selectedQuote.amount.toLocaleString("sv-SE")} <span className="text-lg text-secondary-foreground/40 font-normal">kr</span>
                         </div>
                       ) : (
-                        <span className="text-white/40 italic">Ej angivet</span>
+                        <span className="text-primary/50 italic">Ej angivet</span>
                       )}
                     </div>
                   </div>
 
                   {/* Customer Info */}
                   {selectedQuote.customer_id && (
-                    <div className="flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:bg-white/5 transition-colors">
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-black/5 hover:bg-black/5 transition-colors">
                       <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
                         <Users className="h-5 w-5 text-accent" />
                       </div>
                       <div>
                         <p className="text-xs text-secondary-foreground/60 uppercase tracking-wider font-medium mb-0.5">Kund</p>
-                        <p className="font-semibold text-white text-lg">{getCustomerName(selectedQuote.customer_id)}</p>
+                        <p className="font-semibold text-primary text-lg">{getCustomerName(selectedQuote.customer_id)}</p>
                       </div>
                     </div>
                   )}
@@ -698,7 +698,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                   {/* Description */}
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-white">Beskrivning</h3>
+                      <h3 className="text-lg font-semibold text-primary">Beskrivning</h3>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -706,25 +706,25 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                           setDetailOpen(false);
                           handleOpenDialog(selectedQuote);
                         }}
-                        className="text-secondary-foreground/60 hover:text-white hover:bg-white/10"
+                        className="text-secondary-foreground/60 hover:text-accent hover:bg-black/10"
                       >
                         <Pencil className="h-4 w-4 mr-2" />
                         Redigera
                       </Button>
                     </div>
-                    <div className="p-6 rounded-xl bg-white/5 border border-white/5 min-h-[100px]">
+                    <div className="p-6 rounded-xl bg-black/5 border border-black/5 min-h-[100px]">
                       {selectedQuote.description ? (
-                        <p className="text-white/90 whitespace-pre-wrap leading-relaxed">
+                        <p className="text-primary/90 whitespace-pre-wrap leading-relaxed">
                           {selectedQuote.description}
                         </p>
                       ) : (
-                        <p className="text-white/30 italic">Ingen beskrivning tillagd ännu.</p>
+                        <p className="text-primary/30 italic">Ingen beskrivning tillagd ännu.</p>
                       )}
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-3 pt-6 border-t border-white/10">
+                  <div className="flex flex-col gap-3 pt-6 border-t border-black/10">
                     <Button
                       className="premium-button w-full h-12 text-base"
                       onClick={() => {
@@ -738,7 +738,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                     <div className="flex flex-col sm:flex-row gap-3">
                       <Button
                         variant="outline"
-                        className="flex-1 h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
+                        className="flex-1 h-11 border-black/10 text-primary hover:bg-black/5 hover:text-accent"
                         onClick={() => {
                           setDetailOpen(false);
                           handleOpenDialog(selectedQuote);
@@ -767,7 +767,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
         {/* Send Quote Dialog */}
         <Dialog open={sendQuoteOpen} onOpenChange={setSendQuoteOpen}>
-          <DialogContent className="glass-panel border-white/10 text-white max-w-lg">
+          <DialogContent className="glass-panel border-black/10 text-primary max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-xl">
                 <Mail className="h-5 w-5 text-accent" />
@@ -780,9 +780,9 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
             {selectedQuote && (
               <div className="space-y-6 mt-4">
-                <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+                <div className="p-4 rounded-lg bg-black/5 border border-black/5">
                   <p className="text-xs text-secondary-foreground/60 uppercase tracking-wider font-medium mb-1">Offert</p>
-                  <p className="font-semibold text-white text-lg">{selectedQuote.title}</p>
+                  <p className="font-semibold text-primary text-lg">{selectedQuote.title}</p>
                   {selectedQuote.amount && (
                     <p className="text-xl font-bold text-accent mt-1">
                       {selectedQuote.amount.toLocaleString("sv-SE")} kr
@@ -791,7 +791,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="customerEmail" className="text-white">Kundens email *</Label>
+                  <Label htmlFor="customerEmail" className="text-primary">Kundens email *</Label>
                   <Input
                     id="customerEmail"
                     type="email"
@@ -809,7 +809,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="emailMessage" className="text-white">Meddelande (valfritt)</Label>
+                  <Label htmlFor="emailMessage" className="text-primary">Meddelande (valfritt)</Label>
                   <Textarea
                     id="emailMessage"
                     value={emailMessage}
@@ -848,7 +848,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                       setCustomerEmail("");
                       setEmailMessage("");
                     }}
-                    className="h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
+                    className="h-11 border-black/10 text-primary hover:bg-black/5 hover:text-accent"
                   >
                     Avbryt
                   </Button>
@@ -867,9 +867,9 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-white/5">
+      <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-black/5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/50" />
           <Input
             placeholder="Sök på titel eller kund"
             value={searchTerm}
@@ -881,11 +881,11 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
           <SelectTrigger className="w-full sm:w-48 h-11 premium-input">
             <SelectValue placeholder="Filtera status" />
           </SelectTrigger>
-          <SelectContent className="glass-panel border-white/10 text-white">
-            <SelectItem value="all" className="focus:bg-white/10 focus:text-white">Alla statusar</SelectItem>
-            <SelectItem value="draft" className="focus:bg-white/10 focus:text-white">Utkast</SelectItem>
-            <SelectItem value="sent" className="focus:bg-white/10 focus:text-white">Skickad</SelectItem>
-            <SelectItem value="accepted" className="focus:bg-white/10 focus:text-white">Accepterad</SelectItem>
+          <SelectContent className="glass-panel border-black/10 text-primary">
+            <SelectItem value="all" className="focus:bg-black/10 focus:text-primary">Alla statusar</SelectItem>
+            <SelectItem value="draft" className="focus:bg-black/10 focus:text-primary">Utkast</SelectItem>
+            <SelectItem value="sent" className="focus:bg-black/10 focus:text-primary">Skickad</SelectItem>
+            <SelectItem value="accepted" className="focus:bg-black/10 focus:text-primary">Accepterad</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -893,11 +893,11 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       {/* Quotes Grid */}
       {
         filteredQuotes.length === 0 ? (
-          <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+          <div className="glass-card rounded-xl p-12 text-center border-dashed border-black/10">
             <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
               <FileText className="h-10 w-10 text-accent" />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-3">
+            <h3 className="text-2xl font-bold text-primary mb-3">
               {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
             </h3>
             <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">

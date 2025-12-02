@@ -246,7 +246,7 @@ const EmailVerification = () => {
             supabase.auth.signOut();
             navigate("/auth");
           }}
-          className="mb-6 text-secondary hover:text-primary flex items-center gap-2"
+          className="mb-6 text-secondary hover:text-accent flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
           Tillbaka till inloggning
