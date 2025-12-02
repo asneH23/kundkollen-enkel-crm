@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, Clock, Trash2, Pencil, Search, Users, Calendar } from "lucide-react";
+import { Bell, Clock, Trash2, Pencil, Search, Users, Calendar, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -334,14 +334,39 @@ const Reminders = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="dueDate">Datum *</Label>
-                  <Input
-                    id="dueDate"
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    required
-                  />
+                  <Label htmlFor="dueDate" className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-accent" />
+                    Förfallodatum *
+                  </Label>
+                  <div className="relative mt-2 group">
+                    <Input
+                      id="dueDate"
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      required
+                      className="pr-12 cursor-pointer bg-input border-border hover:border-accent/50 focus:border-accent transition-colors"
+                    />
+                    <label
+                      htmlFor="dueDate"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10 flex items-center justify-center w-8 h-8 rounded hover:bg-accent/10 transition-colors"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const input = document.getElementById('dueDate') as HTMLInputElement;
+                        if (input && 'showPicker' in input) {
+                          input.showPicker();
+                        } else {
+                          input?.focus();
+                          input?.click();
+                        }
+                      }}
+                    >
+                      <Calendar className="h-5 w-5 text-accent group-hover:text-accent-foreground" />
+                    </label>
+                  </div>
+                  <p className="text-xs text-secondary/70 mt-1.5">
+                    Klicka på kalender-ikonen eller i fältet för att välja datum. Du får email-påminnelser 7 dagar, 1 dag, idag och om den blir försenad.
+                  </p>
                 </div>
                 <Button type="submit" className="w-full min-h-[44px]">
                   {editingReminder ? "Uppdatera påminnelse" : "Skapa påminnelse"}
@@ -350,6 +375,23 @@ const Reminders = () => {
             </DialogContent>
         </Dialog>
       </div>
+
+      {/* Email Notification Info */}
+      <Card className="border-accent/30 bg-accent/5">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/30 flex-shrink-0">
+              <Mail className="h-5 w-5 text-accent" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-sm sm:text-base text-primary mb-1">Automatiska email-påminnelser</h3>
+              <p className="text-xs sm:text-sm text-secondary/80 leading-relaxed">
+                Du får automatiskt email när påminnelser närmar sig: <span className="font-medium text-primary">7 dagar innan</span>, <span className="font-medium text-primary">1 dag innan</span>, <span className="font-medium text-primary">idag</span> och om de blir <span className="font-medium text-primary">försenade</span>.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 pb-4 border-b border-border/30">
@@ -399,59 +441,140 @@ const Reminders = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
-          {filteredReminders.map((reminder) => (
-            <Card
-              key={reminder.id}
-              className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-accent/30 bg-card/50 ${
-                reminder.completed ? "opacity-60" : ""
-              }`}
-            >
-              <CardContent className="p-5 sm:p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className="mt-1">
+        <div className="space-y-3 sm:space-y-4">
+          {filteredReminders.map((reminder) => {
+            const daysUntil = Math.ceil((new Date(reminder.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            const isOverdue = daysUntil < 0;
+            const isToday = daysUntil === 0;
+            const isTomorrow = daysUntil === 1;
+            
+            return (
+              <Card
+                key={reminder.id}
+                className={`group hover:shadow-md transition-all duration-200 border-l-4 ${
+                  reminder.completed 
+                    ? "opacity-60 border-l-border/50" 
+                    : isOverdue 
+                    ? "border-l-red-500/50 bg-red-500/5" 
+                    : isToday 
+                    ? "border-l-yellow-500/50 bg-yellow-500/5" 
+                    : isTomorrow 
+                    ? "border-l-blue-500/50 bg-blue-500/5" 
+                    : "border-l-accent/50"
+                } hover:border-l-accent border-border/50 hover:border-accent/40 bg-card/50`}
+              >
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Checkbox */}
+                    <div className="pt-0.5">
                       <Checkbox
                         checked={reminder.completed || false}
                         onCheckedChange={() =>
                           handleToggleComplete(reminder.id, reminder.completed || false)
                         }
-                        className="h-5 w-5"
+                        className="h-4 w-4"
                       />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="h-10 w-10 rounded bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
-                          <Bell className="h-5 w-5 text-accent" />
+
+                    {/* Main Content */}
+                    <div className="flex-1 min-w-0">
+                      {/* Title Row */}
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                          <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
+                            reminder.completed 
+                              ? "bg-muted/30 border border-border/50" 
+                              : isOverdue 
+                              ? "bg-red-500/20 border border-red-500/30 group-hover:bg-red-500/30" 
+                              : isToday 
+                              ? "bg-yellow-500/20 border border-yellow-500/30 group-hover:bg-yellow-500/30" 
+                              : isTomorrow 
+                              ? "bg-blue-500/20 border border-blue-500/30 group-hover:bg-blue-500/30" 
+                              : "bg-accent/15 border border-accent/25 group-hover:bg-accent/25"
+                          }`}>
+                            <Bell className={`h-4 w-4 ${
+                              reminder.completed 
+                                ? "text-secondary/50" 
+                                : isOverdue 
+                                ? "text-red-400" 
+                                : isToday 
+                                ? "text-yellow-400" 
+                                : isTomorrow 
+                                ? "text-blue-400" 
+                                : "text-accent"
+                            }`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3
+                              className={`font-semibold text-sm sm:text-base text-primary group-hover:text-accent transition-colors ${
+                                reminder.completed ? "line-through" : ""
+                              }`}
+                            >
+                              {reminder.title}
+                            </h3>
+                            {!reminder.description && (
+                              <div className="flex items-center gap-1.5 text-xs text-secondary/60 mt-0.5">
+                                <Clock className="h-3 w-3" />
+                                <span>Skapad {new Date(reminder.created_at).toLocaleDateString("sv-SE")}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <h3
-                          className={`font-semibold text-lg text-primary group-hover:text-accent transition-colors ${
-                            reminder.completed ? "line-through" : ""
-                          }`}
-                        >
-                          {reminder.title}
-                        </h3>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => handleOpenDialog(reminder)}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                            onClick={() => handleDelete(reminder.id)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </div>
+
+                      {/* Description */}
                       {reminder.description && (
-                        <p className="text-sm text-secondary/80 mb-3 ml-13">{reminder.description}</p>
+                        <div className="ml-[44px] mb-2.5">
+                          <p className="text-xs sm:text-sm text-secondary/80 leading-relaxed bg-muted/30 rounded-md p-2 border border-border/30">
+                            {reminder.description}
+                          </p>
+                        </div>
                       )}
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-secondary/80 ml-13">
+
+                      {/* Metadata Row */}
+                      <div className="flex flex-wrap items-center gap-2 ml-[44px] pt-2 border-t border-border/40">
                         {getCustomerName(reminder.customer_id) && (
-                          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-muted/50 border border-border/50">
-                            <Users className="h-3 w-3 text-accent" />
-                            <span>{getCustomerName(reminder.customer_id)}</span>
+                          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border border-border/50 text-xs font-medium">
+                            <Users className="h-3 w-3 text-accent flex-shrink-0" />
+                            <span className="text-secondary/90">{getCustomerName(reminder.customer_id)}</span>
                           </div>
                         )}
-                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-muted/50 border border-border/50">
-                          <Calendar className="h-3 w-3 text-accent" />
-                          <span>{new Date(reminder.due_date).toLocaleDateString("sv-SE")}</span>
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border border-border/50 text-xs font-medium">
+                          <Calendar className="h-3 w-3 text-accent flex-shrink-0" />
+                          <span className="text-secondary/90">{new Date(reminder.due_date).toLocaleDateString("sv-SE", { 
+                            weekday: 'short', 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}</span>
                         </div>
                         <Badge 
                           variant={getPriorityVariant(reminder.due_date, reminder.completed)}
                           className={cn(
-                            getPriorityVariant(reminder.due_date, reminder.completed) === "destructive" && "bg-red-500/20 text-red-400 border-red-500/30",
-                            getPriorityVariant(reminder.due_date, reminder.completed) === "default" && "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-                            getPriorityVariant(reminder.due_date, reminder.completed) === "secondary" && "bg-secondary/20 text-secondary border-border"
+                            "text-xs font-medium px-2 py-1",
+                            getPriorityVariant(reminder.due_date, reminder.completed) === "destructive" && "bg-red-500/20 text-red-400 border-red-500/40",
+                            getPriorityVariant(reminder.due_date, reminder.completed) === "default" && "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
+                            getPriorityVariant(reminder.due_date, reminder.completed) === "secondary" && "bg-secondary/20 text-secondary border-border/50"
                           )}
                         >
                           {getPriorityLabel(reminder.due_date, reminder.completed)}
@@ -459,28 +582,10 @@ const Reminders = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => handleOpenDialog(reminder)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-500 hover:text-red-600"
-                      onClick={() => handleDelete(reminder.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

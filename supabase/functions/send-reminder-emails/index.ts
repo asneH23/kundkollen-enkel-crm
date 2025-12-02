@@ -33,11 +33,11 @@ function getEmailContent(reminder: Reminder): { subject: string; html: string } 
   const dueDate = formatDate(reminder.due_date);
   const customerInfo = reminder.customer_name ? `<p><strong>Kund:</strong> ${reminder.customer_name}</p>` : '';
   const description = reminder.reminder_description ? `<p>${reminder.reminder_description}</p>` : '';
-  
+
   let subject = '';
   let heading = '';
   let message = '';
-  
+
   switch (reminder.notification_type) {
     case '7_days':
       subject = `Påminnelse om 1 vecka: ${reminder.reminder_title}`;
@@ -209,13 +209,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log("Starting reminder email job...");
-    
+
     // Create Supabase client with service role key (bypasses RLS)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get all reminders that need notifications
     const { data: reminders, error: remindersError } = await supabase.rpc('get_reminders_to_notify');
-    
+
     if (remindersError) {
       console.error("Error fetching reminders:", remindersError);
       throw remindersError;
@@ -231,13 +231,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const results = [];
-    
+
     for (const reminder of reminders as Reminder[]) {
       try {
         console.log(`Processing reminder ${reminder.reminder_id} for user ${reminder.user_email}`);
-        
+
         const { subject, html } = getEmailContent(reminder);
-        
+
         // Send email via Resend
         const emailResponse = await resend.emails.send({
           from: "Kundkollen <onboarding@resend.dev>",

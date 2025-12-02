@@ -73,7 +73,7 @@ const Quotes = () => {
 
   const fetchQuotes = async () => {
     if (!user) return;
-    
+
     try {
       const { data, error } = await supabase
         .from("quotes")
@@ -96,7 +96,7 @@ const Quotes = () => {
 
   const fetchCustomers = async () => {
     if (!user) return;
-    
+
     try {
       const { data, error } = await supabase
         .from("customers")
@@ -123,7 +123,7 @@ const Quotes = () => {
 
   const fetchUserProfile = async () => {
     if (!user) return;
-    
+
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -154,7 +154,7 @@ const Quotes = () => {
     // Remove all non-digit characters
     const digits = value.replace(/\D/g, "");
     if (!digits) return "";
-    
+
     // Format with spaces every 3 digits from right
     return digits.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
@@ -179,7 +179,7 @@ const Quotes = () => {
         amount: formattedAmount,
         status: quote.status || "draft",
         customerId: quote.customer_id || "none",
-        description: (quote.description || localStorage.getItem(`quote_description_${quote.id}`)) || "",
+        description: quote.description || "",
       });
     } else {
       resetForm();
@@ -191,7 +191,7 @@ const Quotes = () => {
     // Load description from localStorage if not in database
     const quoteWithDescription = {
       ...quote,
-      description: quote.description || localStorage.getItem(`quote_description_${quote.id}`) || null,
+      description: quote.description || null,
     };
     setSelectedQuote(quoteWithDescription);
     setDetailOpen(true);
@@ -235,35 +235,14 @@ const Quotes = () => {
           .eq("id", editingQuote.id);
 
         if (error) {
-          // If description column doesn't exist, save to localStorage
-          if (error.message?.includes("column") || error.message?.includes("does not exist")) {
-            if (formData.description.trim()) {
-              localStorage.setItem(`quote_description_${editingQuote.id}`, formData.description.trim());
-            } else {
-              localStorage.removeItem(`quote_description_${editingQuote.id}`);
-            }
-            // Retry update without description
-            const { error: retryError } = await supabase
-              .from("quotes")
-              .update({
-                title: quoteData.title,
-                amount: quoteData.amount,
-                status: quoteData.status,
-                customer_id: quoteData.customer_id,
-              })
-              .eq("id", editingQuote.id);
-            
-            if (retryError) throw retryError;
-          } else {
-            throw error;
-          }
+          throw error;
         }
 
         toast({
           title: "Uppdaterad",
           description: "Offerten har uppdaterats",
         });
-        
+
         // Refresh quotes to show updated status
         await fetchQuotes();
         setOpen(false);
@@ -276,10 +255,7 @@ const Quotes = () => {
 
         if (error) throw error;
 
-        // Save description to localStorage if database doesn't support it
-        if (data && formData.description.trim() && !quoteData.description) {
-          localStorage.setItem(`quote_description_${data.id}`, formData.description.trim());
-        }
+
 
         toast({
           title: "Skapad",
@@ -338,12 +314,12 @@ const Quotes = () => {
     // Pre-fill email if customer has email
     const email = getCustomerEmail(quote.customer_id);
     setCustomerEmail(email || "");
-    
+
     // Create professional email template
     const customerName = quote.customer_id ? getCustomerName(quote.customer_id) : "";
     const greeting = customerName ? `Hej ${customerName}!` : "Hej!";
-    const description = quote.description || localStorage.getItem(`quote_description_${quote.id}`) || "";
-    
+    const description = quote.description || "";
+
     const professionalMessage = `${greeting}
 
 Jag skickar härmed en offert för ${quote.title}.
@@ -357,7 +333,7 @@ Offerten är giltig i 30 dagar från datum nedan.
 Vid frågor, tveka inte att kontakta mig.
 
 Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_name}` : ""}`;
-    
+
     setEmailMessage(professionalMessage);
     setSendQuoteOpen(true);
   };
@@ -388,21 +364,21 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
     try {
       // Create professional email content
       const subject = `Offert: ${selectedQuote.title}`;
-      const description = selectedQuote.description || localStorage.getItem(`quote_description_${selectedQuote.id}`) || "";
+      const description = selectedQuote.description || "";
       const customerName = selectedQuote.customer_id ? getCustomerName(selectedQuote.customer_id) : "";
-      
+
       // Professional email body with better formatting
-      const offertDate = new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", { 
-        year: "numeric", 
-        month: "long", 
-        day: "numeric" 
+      const offertDate = new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
       });
       const validUntil = new Date(selectedQuote.created_at);
       validUntil.setDate(validUntil.getDate() + 30);
-      const validUntilDate = validUntil.toLocaleDateString("sv-SE", { 
-        year: "numeric", 
-        month: "long", 
-        day: "numeric" 
+      const validUntilDate = validUntil.toLocaleDateString("sv-SE", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
       });
 
       const emailBody = `${emailMessage}
@@ -520,352 +496,352 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
               Skapa offert
             </Button>
           </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {editingQuote ? "Redigera offert" : "Skapa ny offert"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Titel *</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="T.ex. Renovering av badrum"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="customer">Kund</Label>
-                  <Select 
-                    value={formData.customerId} 
-                    onValueChange={(value) => setFormData({ ...formData, customerId: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Välj kund (valfritt)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Ingen kund</SelectItem>
-                      {customers.map((customer) => (
-                        <SelectItem key={customer.id} value={customer.id}>
-                          {customer.company_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="amount">Belopp (kr)</Label>
-                  <Input
-                    id="amount"
-                    type="text"
-                    value={formData.amount}
-                    onChange={(e) => {
-                      const formatted = formatNumberInput(e.target.value);
-                      setFormData({ ...formData, amount: formatted });
-                    }}
-                    placeholder="100 000"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="status">Status</Label>
-                  <Select 
-                    value={formData.status} 
-                    onValueChange={(value) => setFormData({ ...formData, status: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Utkast</SelectItem>
-                      <SelectItem value="sent">Skickad</SelectItem>
-                      <SelectItem value="accepted">Accepterad</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="description">Beskrivning (valfritt)</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Lägg till mer information om offerten..."
-                    rows={4}
-                    className="resize-none"
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button type="submit" className="flex-1 min-h-[44px]">
-                    {editingQuote ? "Uppdatera" : "Skapa"}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={handleCloseDialog} className="min-h-[44px]">
-                    Avbryt
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-
-      {/* Detail View Dialog */}
-      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] duration-300">
-          {selectedQuote && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-2xl">{selectedQuote.title}</DialogTitle>
-                <DialogDescription>
-                  Offert skapad {new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                  })}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-6 mt-4">
-                {/* Status and Amount */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        className={cn(
-                          "text-sm px-3 py-1",
-                          selectedQuote.status === "accepted" && "bg-accent/20 text-accent border-accent/30",
-                          selectedQuote.status === "sent" && "bg-blue-500/20 text-blue-400 border-blue-500/30",
-                          selectedQuote.status === "draft" && "bg-secondary/20 text-secondary border-border"
-                        )}
-                      >
-                        {getStatusLabel(selectedQuote.status)}
-                      </Badge>
-                      <Select 
-                        value={selectedQuote.status || "draft"} 
-                        onValueChange={async (value) => {
-                          try {
-                            const { error } = await supabase
-                              .from("quotes")
-                              .update({ status: value })
-                              .eq("id", selectedQuote.id);
-                            
-                            if (error) throw error;
-                            
-                            // Update local state
-                            setSelectedQuote({ ...selectedQuote, status: value });
-                            // Refresh quotes list
-                            fetchQuotes();
-                            
-                            toast({
-                              title: "Status uppdaterad",
-                              description: `Offerten är nu markerad som "${getStatusLabel(value)}"`,
-                            });
-                          } catch (error: any) {
-                            toast({
-                              title: "Fel",
-                              description: error.message || "Kunde inte uppdatera status",
-                              variant: "destructive",
-                            });
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="w-full sm:w-36 h-9 min-h-[44px] sm:min-h-0 text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="draft">Utkast</SelectItem>
-                          <SelectItem value="sent">Skickad</SelectItem>
-                          <SelectItem value="accepted">Accepterad</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  {selectedQuote.amount && (
-                    <div className="text-2xl sm:text-3xl font-bold text-primary">
-                      {selectedQuote.amount.toLocaleString("sv-SE")} kr
-                    </div>
-                  )}
-                </div>
-
-                {/* Customer Info */}
-                {selectedQuote.customer_id && (
-                  <div className="flex items-center gap-3 p-4 rounded bg-muted/50 border border-border">
-                    <Users className="h-5 w-5 text-accent" />
-                    <div>
-                      <p className="text-sm text-secondary">Kund</p>
-                      <p className="font-semibold text-primary">{getCustomerName(selectedQuote.customer_id)}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Description */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-primary">Beskrivning</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setDetailOpen(false);
-                        handleOpenDialog(selectedQuote);
-                      }}
-                    >
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Redigera
-                    </Button>
-                  </div>
-                  <div className="p-4 rounded bg-muted/30 border border-border min-h-[100px]">
-                    {selectedQuote.description || localStorage.getItem(`quote_description_${selectedQuote.id}`) ? (
-                      <p className="text-primary whitespace-pre-wrap">
-                        {selectedQuote.description || localStorage.getItem(`quote_description_${selectedQuote.id}`) || ""}
-                      </p>
-                    ) : (
-                      <p className="text-secondary italic">Ingen beskrivning tillagd ännu.</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                  <Button
-                    className="w-full min-h-[44px]"
-                    onClick={() => {
-                      setDetailOpen(false);
-                      handleOpenSendQuote(selectedQuote);
-                    }}
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    Skicka offert till kund
-                  </Button>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 min-h-[44px]"
-                      onClick={() => {
-                        setDetailOpen(false);
-                        handleOpenDialog(selectedQuote);
-                      }}
-                    >
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Redigera
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="text-red-500 hover:text-red-600 hover:bg-red-500/10 min-h-[44px]"
-                      onClick={() => {
-                        setDetailOpen(false);
-                        handleDelete(selectedQuote.id);
-                      }}
-                    >
-                      Ta bort
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Send Quote Dialog */}
-      <Dialog open={sendQuoteOpen} onOpenChange={setSendQuoteOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5 text-accent" />
-              Skicka offert till kund
-            </DialogTitle>
-            <DialogDescription>
-              Fyll i kundens email-adress för att skicka offerten
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedQuote && (
-            <div className="space-y-4 mt-4">
-              <div className="p-4 rounded bg-muted/50 border border-border">
-                <p className="text-sm text-secondary mb-1">Offert</p>
-                <p className="font-semibold text-primary">{selectedQuote.title}</p>
-                {selectedQuote.amount && (
-                  <p className="text-lg font-bold text-accent mt-2">
-                    {selectedQuote.amount.toLocaleString("sv-SE")} kr
-                  </p>
-                )}
-              </div>
-
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {editingQuote ? "Redigera offert" : "Skapa ny offert"}
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="customerEmail">Kundens email *</Label>
+                <Label htmlFor="title">Titel *</Label>
                 <Input
-                  id="customerEmail"
-                  type="email"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  placeholder="kund@example.com"
-                  className="mt-2"
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="T.ex. Renovering av badrum"
                   required
                 />
-                {selectedQuote.customer_id && getCustomerEmail(selectedQuote.customer_id) && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Kundens sparade email: {getCustomerEmail(selectedQuote.customer_id)}
-                  </p>
-                )}
               </div>
-
               <div>
-                <Label htmlFor="emailMessage">Meddelande (valfritt)</Label>
-                <Textarea
-                  id="emailMessage"
-                  value={emailMessage}
-                  onChange={(e) => setEmailMessage(e.target.value)}
-                  placeholder="Skriv ett personligt meddelande till kunden..."
-                  rows={6}
-                  className="mt-2 resize-none"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Offertdetaljer läggs automatiskt till i slutet av meddelandet
-                </p>
+                <Label htmlFor="customer">Kund</Label>
+                <Select
+                  value={formData.customerId}
+                  onValueChange={(value) => setFormData({ ...formData, customerId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Välj kund (valfritt)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Ingen kund</SelectItem>
+                    {customers.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.id}>
+                        {customer.company_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                <Button
-                  onClick={handleSendQuote}
-                  disabled={sendingQuote || !customerEmail.trim()}
-                  className="flex-1 min-h-[44px]"
-                >
-                  {sendingQuote ? (
-                    <>
-                      <Mail className="h-4 w-4 mr-2 animate-pulse" />
-                      Skickar...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      Öppna email-klient
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSendQuoteOpen(false);
-                    setCustomerEmail("");
-                    setEmailMessage("");
+              <div>
+                <Label htmlFor="amount">Belopp (kr)</Label>
+                <Input
+                  id="amount"
+                  type="text"
+                  value={formData.amount}
+                  onChange={(e) => {
+                    const formatted = formatNumberInput(e.target.value);
+                    setFormData({ ...formData, amount: formatted });
                   }}
-                  className="min-h-[44px]"
+                  placeholder="100 000"
+                />
+              </div>
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
                 >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Utkast</SelectItem>
+                    <SelectItem value="sent">Skickad</SelectItem>
+                    <SelectItem value="accepted">Accepterad</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="description">Beskrivning (valfritt)</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Lägg till mer information om offerten..."
+                  rows={4}
+                  className="resize-none"
+                />
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button type="submit" className="flex-1 min-h-[44px]">
+                  {editingQuote ? "Uppdatera" : "Skapa"}
+                </Button>
+                <Button type="button" variant="outline" onClick={handleCloseDialog} className="min-h-[44px]">
                   Avbryt
                 </Button>
               </div>
+            </form>
+          </DialogContent>
+        </Dialog>
 
-              <div className="p-3 rounded bg-muted/30 border border-border">
-                <p className="text-xs text-secondary">
-                  <strong>Obs:</strong> Din standard email-klient öppnas med offerten förfylld. 
-                  Du kan redigera meddelandet innan du skickar.
-                </p>
+        {/* Detail View Dialog */}
+        <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] duration-300">
+            {selectedQuote && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">{selectedQuote.title}</DialogTitle>
+                  <DialogDescription>
+                    Offert skapad {new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric"
+                    })}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6 mt-4">
+                  {/* Status and Amount */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          className={cn(
+                            "text-sm px-3 py-1",
+                            selectedQuote.status === "accepted" && "bg-accent/20 text-accent border-accent/30",
+                            selectedQuote.status === "sent" && "bg-blue-500/20 text-blue-400 border-blue-500/30",
+                            selectedQuote.status === "draft" && "bg-secondary/20 text-secondary border-border"
+                          )}
+                        >
+                          {getStatusLabel(selectedQuote.status)}
+                        </Badge>
+                        <Select
+                          value={selectedQuote.status || "draft"}
+                          onValueChange={async (value) => {
+                            try {
+                              const { error } = await supabase
+                                .from("quotes")
+                                .update({ status: value })
+                                .eq("id", selectedQuote.id);
+
+                              if (error) throw error;
+
+                              // Update local state
+                              setSelectedQuote({ ...selectedQuote, status: value });
+                              // Refresh quotes list
+                              fetchQuotes();
+
+                              toast({
+                                title: "Status uppdaterad",
+                                description: `Offerten är nu markerad som "${getStatusLabel(value)}"`,
+                              });
+                            } catch (error: any) {
+                              toast({
+                                title: "Fel",
+                                description: error.message || "Kunde inte uppdatera status",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-full sm:w-36 h-9 min-h-[44px] sm:min-h-0 text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="draft">Utkast</SelectItem>
+                            <SelectItem value="sent">Skickad</SelectItem>
+                            <SelectItem value="accepted">Accepterad</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    {selectedQuote.amount && (
+                      <div className="text-2xl sm:text-3xl font-bold text-primary">
+                        {selectedQuote.amount.toLocaleString("sv-SE")} kr
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Customer Info */}
+                  {selectedQuote.customer_id && (
+                    <div className="flex items-center gap-3 p-4 rounded bg-muted/50 border border-border">
+                      <Users className="h-5 w-5 text-accent" />
+                      <div>
+                        <p className="text-sm text-secondary">Kund</p>
+                        <p className="font-semibold text-primary">{getCustomerName(selectedQuote.customer_id)}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg font-semibold text-primary">Beskrivning</h3>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setDetailOpen(false);
+                          handleOpenDialog(selectedQuote);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Redigera
+                      </Button>
+                    </div>
+                    <div className="p-4 rounded bg-muted/30 border border-border min-h-[100px]">
+                      {selectedQuote.description ? (
+                        <p className="text-primary whitespace-pre-wrap">
+                          {selectedQuote.description}
+                        </p>
+                      ) : (
+                        <p className="text-secondary italic">Ingen beskrivning tillagd ännu.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                    <Button
+                      className="w-full min-h-[44px]"
+                      onClick={() => {
+                        setDetailOpen(false);
+                        handleOpenSendQuote(selectedQuote);
+                      }}
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Skicka offert till kund
+                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1 min-h-[44px]"
+                        onClick={() => {
+                          setDetailOpen(false);
+                          handleOpenDialog(selectedQuote);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Redigera
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="text-red-500 hover:text-red-600 hover:bg-red-500/10 min-h-[44px]"
+                        onClick={() => {
+                          setDetailOpen(false);
+                          handleDelete(selectedQuote.id);
+                        }}
+                      >
+                        Ta bort
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Send Quote Dialog */}
+        <Dialog open={sendQuoteOpen} onOpenChange={setSendQuoteOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5 text-accent" />
+                Skicka offert till kund
+              </DialogTitle>
+              <DialogDescription>
+                Fyll i kundens email-adress för att skicka offerten
+              </DialogDescription>
+            </DialogHeader>
+
+            {selectedQuote && (
+              <div className="space-y-4 mt-4">
+                <div className="p-4 rounded bg-muted/50 border border-border">
+                  <p className="text-sm text-secondary mb-1">Offert</p>
+                  <p className="font-semibold text-primary">{selectedQuote.title}</p>
+                  {selectedQuote.amount && (
+                    <p className="text-lg font-bold text-accent mt-2">
+                      {selectedQuote.amount.toLocaleString("sv-SE")} kr
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="customerEmail">Kundens email *</Label>
+                  <Input
+                    id="customerEmail"
+                    type="email"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    placeholder="kund@example.com"
+                    className="mt-2"
+                    required
+                  />
+                  {selectedQuote.customer_id && getCustomerEmail(selectedQuote.customer_id) && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Kundens sparade email: {getCustomerEmail(selectedQuote.customer_id)}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="emailMessage">Meddelande (valfritt)</Label>
+                  <Textarea
+                    id="emailMessage"
+                    value={emailMessage}
+                    onChange={(e) => setEmailMessage(e.target.value)}
+                    placeholder="Skriv ett personligt meddelande till kunden..."
+                    rows={6}
+                    className="mt-2 resize-none"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Offertdetaljer läggs automatiskt till i slutet av meddelandet
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                  <Button
+                    onClick={handleSendQuote}
+                    disabled={sendingQuote || !customerEmail.trim()}
+                    className="flex-1 min-h-[44px]"
+                  >
+                    {sendingQuote ? (
+                      <>
+                        <Mail className="h-4 w-4 mr-2 animate-pulse" />
+                        Skickar...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Öppna email-klient
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSendQuoteOpen(false);
+                      setCustomerEmail("");
+                      setEmailMessage("");
+                    }}
+                    className="min-h-[44px]"
+                  >
+                    Avbryt
+                  </Button>
+                </div>
+
+                <div className="p-3 rounded bg-muted/30 border border-border">
+                  <p className="text-xs text-secondary">
+                    <strong>Obs:</strong> Din standard email-klient öppnas med offerten förfylld.
+                    Du kan redigera meddelandet innan du skickar.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-        </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 pb-4 border-b border-border/30">
@@ -892,48 +868,50 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       </div>
 
       {/* Quotes Grid */}
-      {filteredQuotes.length === 0 ? (
-        <Card className="border-border/50 bg-card/50">
-          <CardContent className="p-12 sm:p-16 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
-                <FileText className="h-10 w-10 text-accent" />
+      {
+        filteredQuotes.length === 0 ? (
+          <Card className="border-border/50 bg-card/50">
+            <CardContent className="p-12 sm:p-16 text-center">
+              <div className="max-w-md mx-auto">
+                <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
+                  <FileText className="h-10 w-10 text-accent" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">
+                  {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
+                </h3>
+                <p className="text-secondary/80 mb-8 text-sm sm:text-base">
+                  {quotes.length === 0
+                    ? "Börja med att skapa din första offert för att komma igång."
+                    : "Prova att ändra dina filter för att hitta fler resultat."}
+                </p>
+                {quotes.length === 0 && (
+                  <Button onClick={() => handleOpenDialog()} size="lg" className="min-h-[44px]">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Skapa din första offert
+                  </Button>
+                )}
               </div>
-              <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">
-                {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
-              </h3>
-              <p className="text-secondary/80 mb-8 text-sm sm:text-base">
-                {quotes.length === 0
-                  ? "Börja med att skapa din första offert för att komma igång."
-                  : "Prova att ändra dina filter för att hitta fler resultat."}
-              </p>
-              {quotes.length === 0 && (
-                <Button onClick={() => handleOpenDialog()} size="lg" className="min-h-[44px]">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Skapa din första offert
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredQuotes.map((quote) => (
-            <QuoteCard
-              key={quote.id}
-              title={quote.title}
-              customerName={getCustomerName(quote.customer_id)}
-              amount={quote.amount}
-              status={quote.status}
-              createdAt={quote.created_at}
-              onEdit={() => handleOpenDialog(quote)}
-              onDelete={() => handleDelete(quote.id)}
-              onClick={() => handleOpenDetail(quote)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredQuotes.map((quote) => (
+              <QuoteCard
+                key={quote.id}
+                title={quote.title}
+                customerName={getCustomerName(quote.customer_id)}
+                amount={quote.amount}
+                status={quote.status}
+                createdAt={quote.created_at}
+                onEdit={() => handleOpenDialog(quote)}
+                onDelete={() => handleDelete(quote.id)}
+                onClick={() => handleOpenDetail(quote)}
+              />
+            ))}
+          </div>
+        )
+      }
+    </div >
   );
 };
 

@@ -91,9 +91,35 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ---
 
+### 8. `LOVABLE_QUOTE_DESCRIPTION_PROMPT.md`
+**Vad:** Prompt för att lägga till `description` kolumn i `quotes` tabellen  
+**När att skicka:** När du vill att offertbeskrivningar ska sparas i databasen istället för localStorage  
+**Innehåll:**
+- SQL migration för att lägga till `description TEXT` kolumn
+- Instruktioner för att uppdatera frontend-koden
+- Ta bort localStorage-fallback koden
+- Uppdatera TypeScript types
+
+**Status:** ✅ Klar att skicka
+
+---
+
+### 9. `LOVABLE_FIX_CRON_JOB_SECURITY.md`
+**Vad:** Prompt för att fixa säkerhetsproblem i cron job (hårdkodad service role key)  
+**När att skicka:** När cron job använder hårdkodad service role key i SQL-koden  
+**Innehåll:**
+- Förklaring av säkerhetsproblemet
+- Lösningar (rekommenderat: använd Supabase Dashboard)
+- Steg-för-steg instruktioner
+- Verifiering att fixen fungerar
+
+**Status:** ✅ Klar att skicka (om cron job använder hårdkodad key)
+
+---
+
 ## 📖 Guider för dig (manuell konfiguration)
 
-### 8. `EMAIL_CONFIG_GUIDE.md`
+### 10. `EMAIL_CONFIG_GUIDE.md`
 **Vad:** Steg-för-steg guide för att konfigurera email manuellt i Supabase Dashboard  
 **När att använda:** Om du vill konfigurera email-templates själv istället för att be Lovable  
 **Innehåll:**
@@ -107,7 +133,7 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ## 📊 Granskningar och översikter
 
-### 9. `LOVABLE_IMPLEMENTATION_REVIEW.md`
+### 11. `LOVABLE_IMPLEMENTATION_REVIEW.md`
 **Vad:** Granskning av vad Lovable redan har implementerat  
 **När att läsa:** För att se vad som är klart och vad som saknas  
 **Innehåll:**
@@ -126,13 +152,14 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ### 🟡 SKICKA HÄRNÄST (Medel prioritet):
 2. **`LOVABLE_BACKEND_PROMPT.md`** - Profilbilder och profilfält (om du vill ha det)
-3. **`LOVABLE_RESEND_API_KEY.md`** - Resend API-nyckel (när Lovable frågar, lägg till nyckel först!)
+3. **`LOVABLE_QUOTE_DESCRIPTION_PROMPT.md`** - Lägg till description-kolumn i quotes-tabellen (viktigt för dataintegritet)
+4. **`LOVABLE_RESEND_API_KEY.md`** - Resend API-nyckel (när Lovable frågar, lägg till nyckel först!)
 
 ### 🟢 SKICKA SENARE (Låg prioritet):
-4. **`LOVABLE_EMAIL_REMINDERS_PROMPT.md`** - Email-påminnelser (översikt)
-5. **`LOVABLE_EDGE_FUNCTION_PROMPT.md`** - Slutför email-påminnelser (när du har credits, lägg till nyckel först!)
-6. **`LOVABLE_UPDATE_EMAIL_NAME.md`** - Uppdatera från "Kundkollen AB" till "Kundkollen" (efter push till GitHub)
-7. **`LOVABLE_FIX_EDGE_FUNCTION.md`** - Fixa build error i Edge Function (om build error uppstår)
+5. **`LOVABLE_EMAIL_REMINDERS_PROMPT.md`** - Email-påminnelser (översikt)
+6. **`LOVABLE_EDGE_FUNCTION_PROMPT.md`** - Slutför email-påminnelser (när du har credits, lägg till nyckel först!)
+7. **`LOVABLE_UPDATE_EMAIL_NAME.md`** - Uppdatera från "Kundkollen AB" till "Kundkollen" (efter push till GitHub)
+8. **`LOVABLE_FIX_EDGE_FUNCTION.md`** - Fixa build error i Edge Function (om build error uppstår)
 
 ### 📖 Dokument för dig (inte att skicka):
 - **`EMAIL_CONFIG_GUIDE.md`** - Manuell guide för email-konfiguration
@@ -158,7 +185,11 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 **Skicka:** `LOVABLE_BACKEND_PROMPT.md`  
 **Varför:** Lägger till stöd för profilbilder och extra profilfält (telefon, adress)
 
-#### Steg 3: Resend API (När Lovable frågar)
+#### Steg 3: Quote description i databas (Viktigt för dataintegritet)
+**Skicka:** `LOVABLE_QUOTE_DESCRIPTION_PROMPT.md`  
+**Varför:** Offerter kan ha beskrivningar som sparas i localStorage just nu. Detta flyttar dem till databasen för bättre dataintegritet.
+
+#### Steg 4: Resend API (När Lovable frågar)
 **Skicka:** `LOVABLE_RESEND_API_KEY.md` (lägg till din API-nyckel först!)  
 **Varför:** Behövs för att skicka email via Resend (när Lovable frågar efter nyckeln)
 
@@ -166,12 +197,12 @@ Här är en guide över alla dokument i kodbasen och vad varje en är till för.
 
 ### 🟢 LÅG PRIORITET - Gör senare
 
-#### Steg 4: Email-påminnelser (När du har credits)
+#### Steg 5: Email-påminnelser (När du har credits)
 1. **Första gången:** Skicka `LOVABLE_EMAIL_REMINDERS_PROMPT.md`
 2. **När du har credits igen:** Skicka `LOVABLE_EDGE_FUNCTION_PROMPT.md` (lägg till Resend API-nyckel först!)  
 **Varför senare:** Email-påminnelser är en "nice-to-have" funktion, inte kritisk för grundfunktionalitet
 
-#### Steg 5: Uppdatera email-avsändarnamn (Efter push till GitHub)
+#### Steg 6: Uppdatera email-avsändarnamn (Efter push till GitHub)
 1. Pusha ändringarna till GitHub först
 2. Skicka: `LOVABLE_UPDATE_EMAIL_NAME.md`  
 **Varför:** Uppdaterar från "Kundkollen AB" till "Kundkollen" (görs efter att grundkonfigurationen är klar)

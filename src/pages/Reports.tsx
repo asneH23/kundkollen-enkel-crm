@@ -432,6 +432,10 @@ const Reports = () => {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
+                        })}{" "}
+                        kl. {new Date(activity.date).toLocaleTimeString("sv-SE", {
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </p>
                     </div>
