@@ -95,7 +95,7 @@ const QuoteCard = ({
               {amount.toLocaleString("sv-SE")} <span className="text-lg text-primary/50 font-normal">kr</span>
             </div>
           ) : (
-            <div className="text-primary/30 italic text-sm">Belopp ej angivet</div>
+            <div className="text-primary/40 italic text-sm">Belopp ej angivet</div>
           )}
         </div>
 

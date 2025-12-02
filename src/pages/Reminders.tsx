@@ -403,7 +403,7 @@ const Reminders = () => {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-black/5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/50" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/40" />
           <Input
             placeholder="Sök på titel, beskrivning eller kund"
             value={searchTerm}

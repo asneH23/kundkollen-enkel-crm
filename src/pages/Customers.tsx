@@ -312,13 +312,15 @@ const Customers = () => {
 
       {/* Search */}
       <div className="relative max-w-md pb-6 border-b border-black/5">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/50" />
-        <Input
-          placeholder="Sök på företagsnamn, kontaktperson eller e-post"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="premium-input pl-10 h-11"
-        />
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40 pointer-events-none" />
+          <Input
+            placeholder="Sök på företagsnamn, kontaktperson eller e-post"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="premium-input pl-10 h-11 text-base"
+          />
+        </div>
       </div>
 
       {/* Customers Grid */}

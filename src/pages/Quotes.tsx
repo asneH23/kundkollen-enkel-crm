@@ -677,7 +677,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                           {selectedQuote.amount.toLocaleString("sv-SE")} <span className="text-lg text-secondary-foreground/40 font-normal">kr</span>
                         </div>
                       ) : (
-                        <span className="text-primary/50 italic">Ej angivet</span>
+                        <span className="text-primary/40 italic">Ej angivet</span>
                       )}
                     </div>
                   </div>
@@ -718,7 +718,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                           {selectedQuote.description}
                         </p>
                       ) : (
-                        <p className="text-primary/30 italic">Ingen beskrivning tillagd ännu.</p>
+                        <p className="text-primary/40 italic">Ingen beskrivning tillagd ännu.</p>
                       )}
                     </div>
                   </div>
@@ -869,7 +869,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-black/5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/50" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/40" />
           <Input
             placeholder="Sök på titel eller kund"
             value={searchTerm}
