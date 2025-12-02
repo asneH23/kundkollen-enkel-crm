@@ -10,7 +10,7 @@ import ActivityFeed from "@/components/ActivityFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, FileText, Bell, TrendingUp, ArrowRight, Plus, Edit2, Users } from "lucide-react";
+import { Building2, FileText, Bell, TrendingUp, ArrowRight, Plus, Users, Sparkles } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -28,13 +28,19 @@ const Dashboard = () => {
   const [goalInput, setGoalInput] = useState("");
   const { toast } = useToast();
 
+  // Get greeting based on time of day
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 10) return "God morgon";
+    if (hour < 14) return "God dag";
+    if (hour < 18) return "God eftermiddag";
+    return "God kväll";
+  };
+
   // Format number input with spaces (Swedish format: 100 000)
   const formatNumberInput = (value: string): string => {
-    // Remove all non-digit characters
     const digits = value.replace(/\D/g, "");
     if (!digits) return "";
-    
-    // Format with spaces every 3 digits from right
     return digits.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
 
@@ -78,7 +84,7 @@ const Dashboard = () => {
 
       // Fetch recent activities
       const recentActivities: any[] = [];
-      
+
       // Recent customers
       const { data: recentCustomers } = await supabase
         .from("customers")
@@ -95,7 +101,7 @@ const Dashboard = () => {
           description: customer.company_name,
           timestamp: customer.created_at,
           icon: Users,
-          color: "bg-accent/10 border border-accent/20",
+          color: "bg-accent/10 border border-accent/20 text-accent",
         });
       });
 
@@ -116,7 +122,7 @@ const Dashboard = () => {
           description: `${quote.title} - ${quote.amount?.toLocaleString("sv-SE")} kr`,
           timestamp: quote.created_at,
           icon: TrendingUp,
-          color: "bg-accent/10 border border-accent/20",
+          color: "bg-accent/10 border border-accent/20 text-accent",
         });
       });
 
@@ -137,7 +143,7 @@ const Dashboard = () => {
           description: quote.title,
           timestamp: quote.created_at,
           icon: FileText,
-          color: "bg-blue-500/10 border border-blue-500/20",
+          color: "bg-blue-500/10 border border-blue-500/20 text-blue-400",
         });
       });
 
@@ -157,7 +163,7 @@ const Dashboard = () => {
           description: reminder.title,
           timestamp: reminder.created_at,
           icon: Bell,
-          color: "bg-yellow-500/10 border border-yellow-500/20",
+          color: "bg-yellow-500/10 border border-yellow-500/20 text-yellow-400",
         });
       });
 
@@ -171,8 +177,7 @@ const Dashboard = () => {
 
   const fetchSalesGoal = async () => {
     if (!user) return;
-    
-    // Try to fetch from database first (if column exists)
+
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -182,15 +187,13 @@ const Dashboard = () => {
 
       if (!error && data?.sales_goal) {
         setSalesGoal(data.sales_goal);
-        // Also save to localStorage as backup
         localStorage.setItem(`sales_goal_${user.id}`, data.sales_goal.toString());
         return;
       }
     } catch (error) {
-      // Column might not exist, that's okay
+      // Column might not exist
     }
 
-    // Fallback to localStorage if database doesn't have it
     const savedGoal = localStorage.getItem(`sales_goal_${user.id}`);
     if (savedGoal) {
       setSalesGoal(parseFloat(savedGoal));
@@ -200,7 +203,7 @@ const Dashboard = () => {
   const handleSaveGoal = async () => {
     if (!user) return;
     const goalValue = parseFloat(goalInput.replace(/\s/g, "").replace(",", "."));
-    
+
     if (isNaN(goalValue) || goalValue <= 0) {
       toast({
         title: "Ogiltigt värde",
@@ -211,7 +214,6 @@ const Dashboard = () => {
     }
 
     try {
-      // Try to save to database first (if column exists)
       if (user) {
         try {
           const { error } = await supabase
@@ -220,12 +222,11 @@ const Dashboard = () => {
             .eq("id", user.id);
 
           if (!error) {
-            // Successfully saved to database
             setSalesGoal(goalValue);
             localStorage.setItem(`sales_goal_${user.id}`, goalValue.toString());
             setGoalDialogOpen(false);
             setGoalInput("");
-            
+
             toast({
               title: "Mål sparat",
               description: "Ditt försäljningsmål har uppdaterats",
@@ -233,20 +234,18 @@ const Dashboard = () => {
             return;
           }
         } catch (dbError: any) {
-          // Column might not exist, that's okay - we'll use localStorage
           if (dbError.code !== '42703' && !dbError.message?.includes('column')) {
             throw dbError;
           }
         }
       }
 
-      // Fallback: Save to localStorage (works without database changes)
       if (user) {
         localStorage.setItem(`sales_goal_${user.id}`, goalValue.toString());
         setSalesGoal(goalValue);
         setGoalDialogOpen(false);
         setGoalInput("");
-        
+
         toast({
           title: "Mål sparat",
           description: "Ditt försäljningsmål har sparats lokalt",
@@ -265,11 +264,21 @@ const Dashboard = () => {
   const goalProgress = salesGoal && salesGoal > 0 ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0;
 
   return (
-    <div className="space-y-8 sm:space-y-10">
+    <div className="space-y-8 animate-enter">
       {/* Header */}
-      <div className="border-b border-border/50 pb-6">
-        <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Dashboard</h1>
-        <p className="text-sm sm:text-base text-secondary/80">Välkommen tillbaka! Här är en översikt över din verksamhet.</p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
+        <div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">
+            {getGreeting()}, <span className="text-accent">Aston</span>
+          </h1>
+          <p className="text-secondary-foreground/60 text-lg">Här är en översikt över din verksamhet idag.</p>
+        </div>
+        <div className="flex gap-3">
+          <Button onClick={() => navigate("/offerter")} className="premium-button">
+            <Plus className="h-4 w-4 mr-2" />
+            Ny Offert
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -289,247 +298,194 @@ const Dashboard = () => {
           onClick={() => navigate("/offerter")}
         />
         <StatWidget
-          title={
-            <>
-              Aktiva<br />
-              Påminnelser
-            </>
-          }
+          title="Påminnelser"
           value={stats.reminders}
           icon={Bell}
-          description="Påminnelser att följa upp"
+          description="Att följa upp"
           onClick={() => navigate("/paminnelser")}
         />
         <StatWidget
-          title="Accepterade affärer"
-          value={stats.wonQuotes}
+          title="Konvertering"
+          value={`${conversionRate}%`}
           icon={TrendingUp}
-          description={`${conversionRate}% konvertering`}
+          description="Accepterade offerter"
           progress={conversionRate}
           onClick={() => navigate("/offerter")}
         />
-        </div>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Revenue Card */}
-        <Card className="lg:col-span-2 border-border/50 bg-card/50">
-          <CardHeader className="border-b border-border/30 pb-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <CardTitle className="text-base sm:text-lg font-semibold text-primary">Försäljningsöversikt</CardTitle>
-              <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button 
-                    variant={salesGoal ? "outline" : "default"} 
-                    size="sm" 
-                    className="flex items-center gap-2 w-full sm:w-auto min-h-[44px]"
-                  >
-                    {salesGoal ? "Ändra mål" : "Sätt försäljningsmål"}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Sätt försäljningsmål</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-            <div>
-                      <Label htmlFor="goal" className="text-base font-medium">
-                        Försäljningsmål (kr)
-                      </Label>
-                      <Input
-                        id="goal"
-                        type="text"
-                        value={goalInput}
-                        onChange={(e) => {
-                          const formatted = formatNumberInput(e.target.value);
-                          setGoalInput(formatted);
-                        }}
-                        placeholder={salesGoal ? salesGoal.toLocaleString("sv-SE") : "1 000 000"}
-                        className="mt-2 text-lg"
-                      />
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Ange ditt mål för total försäljning. Du kan alltid ändra detta senare.
-                      </p>
-                      {salesGoal && (
-                        <p className="text-xs text-secondary mt-1">
-                          Nuvarande mål: {salesGoal.toLocaleString("sv-SE")} kr
-                        </p>
-                      )}
-              </div>
-                    <div className="flex gap-2">
-                      <Button onClick={handleSaveGoal} className="flex-1">
-                        Spara mål
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setGoalDialogOpen(false);
-                          setGoalInput("");
-                        }}
-                      >
-                        Avbryt
-                      </Button>
-            </div>
-              </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                  <div>
-                    <span className="text-sm text-secondary block mb-1">Total försäljning</span>
-                    <span className="text-2xl sm:text-3xl font-bold text-primary">
-                      {stats.totalValue.toLocaleString("sv-SE")} kr
-                    </span>
-                  </div>
-                  {salesGoal && (
-                    <div className="text-left sm:text-right">
-                      <span className="text-sm text-secondary block mb-1">Mål</span>
-                      <span className="text-xl sm:text-2xl font-semibold text-primary">
-                        {salesGoal.toLocaleString("sv-SE")} kr
-                      </span>
-                    </div>
-                  )}
-                </div>
-                {salesGoal ? (
-                  <div className="space-y-2">
-                    <div className="h-3 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-accent transition-all duration-500 rounded-full"
-                        style={{ width: `${goalProgress}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-secondary">
-                        {goalProgress.toFixed(1)}% av målet
-                      </span>
-                      <span className="text-secondary">
-                        {((salesGoal - stats.totalValue) > 0 
-                          ? (salesGoal - stats.totalValue).toLocaleString("sv-SE")
-                          : "Mål uppnått!")} kr kvar
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3 p-4 rounded bg-muted/30 border border-dashed border-accent/30">
-                    <div className="text-sm text-secondary mb-2">
-                      <span className="font-medium">Inget försäljningsmål satt</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Sätt ett försäljningsmål för att spåra din framsteg och se hur nära du är ditt mål.
-                    </p>
-                    <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="default" size="sm" className="w-full sm:w-auto">
-                          Sätt försäljningsmål
-                        </Button>
-                      </DialogTrigger>
-                    </Dialog>
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3 sm:p-4 rounded bg-muted/50 border border-border hover:border-accent/30 transition-colors">
-                  <p className="text-xs text-secondary mb-1">Accepterade affärer</p>
-                  <p className="text-lg sm:text-xl font-bold text-primary">{stats.wonQuotes}</p>
-                </div>
-                <div className="p-3 sm:p-4 rounded bg-muted/50 border border-border hover:border-accent/30 transition-colors">
-                  <p className="text-xs text-secondary mb-1">Genomsnitt</p>
-                  <p className="text-lg sm:text-xl font-bold text-primary">
-                    {stats.wonQuotes > 0
-                      ? Math.round(stats.totalValue / stats.wonQuotes).toLocaleString("sv-SE")
-                      : 0}{" "}
-                    kr
-                  </p>
-                </div>
-              </div>
-            </div>
-              </CardContent>
-            </Card>
-
-        {/* Quick Actions */}
-        <Card className="border-border/50 bg-card/50">
-            <CardHeader className="border-b border-border/30 pb-4">
-            <CardTitle className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2">
-              <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-              Snabblänkar
-            </CardTitle>
-            </CardHeader>
-          <CardContent className="space-y-2 sm:space-y-3">
-            <Button
-              variant="outline"
-              className="w-full justify-between text-primary border-border hover:bg-muted/50 min-h-[44px]"
-              onClick={() => navigate("/kunder")}
-            >
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span className="text-sm sm:text-base">Hantera kunder</span>
-              </div>
-              <ArrowRight className="h-4 w-4" />
-              </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-between text-primary border-border hover:bg-muted/50 min-h-[44px]"
-              onClick={() => navigate("/offerter")}
-            >
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span className="text-sm sm:text-base">Skapa offert</span>
-              </div>
-              <ArrowRight className="h-4 w-4" />
-              </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-between text-primary border-border hover:bg-muted/50 min-h-[44px]"
-              onClick={() => navigate("/paminnelser")}
-            >
-              <div className="flex items-center gap-2">
-                <Bell className="h-4 w-4" />
-                <span className="text-sm sm:text-base">Lägg till påminnelse</span>
-              </div>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-            <div className="pt-2 border-t border-border">
-              <Button
-                variant="default"
-                className="w-full min-h-[44px]"
-                onClick={() => navigate("/kunder")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Lägg till kund
-              </Button>
-            </div>
-            </CardContent>
-          </Card>
       </div>
 
-      {/* Activity Feed */}
-      <div className="mt-6 sm:mt-8">
-        <ActivityFeed activities={activities} />
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Revenue Card */}
+        <div className="lg:col-span-2 glass-card rounded-xl p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Sparkles className="h-24 w-24 text-accent" />
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 relative z-10">
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-1">Försäljningsöversikt</h2>
+              <p className="text-sm text-secondary-foreground/60">Din försäljning mot målet</p>
+            </div>
+            <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-white/5 border-white/10 hover:bg-white/10 text-white"
+                >
+                  {salesGoal ? "Ändra mål" : "Sätt mål"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="glass-panel border-white/10 text-white">
+                <DialogHeader>
+                  <DialogTitle>Sätt försäljningsmål</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <div>
+                    <Label htmlFor="goal" className="text-base font-medium text-white">
+                      Försäljningsmål (kr)
+                    </Label>
+                    <Input
+                      id="goal"
+                      type="text"
+                      value={goalInput}
+                      onChange={(e) => {
+                        const formatted = formatNumberInput(e.target.value);
+                        setGoalInput(formatted);
+                      }}
+                      placeholder={salesGoal ? salesGoal.toLocaleString("sv-SE") : "1 000 000"}
+                      className="premium-input mt-2 text-lg"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveGoal} className="premium-button flex-1">
+                      Spara mål
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="space-y-8 relative z-10">
+            <div>
+              <div className="flex items-end gap-3 mb-2">
+                <span className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
+                  {stats.totalValue.toLocaleString("sv-SE")} <span className="text-2xl text-secondary-foreground/40 font-normal">kr</span>
+                </span>
+              </div>
+
+              {salesGoal ? (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-secondary-foreground/60">Framsteg mot {salesGoal.toLocaleString("sv-SE")} kr</span>
+                    <span className="text-accent font-medium">{goalProgress.toFixed(1)}%</span>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-accent shadow-[0_0_10px_rgba(0,229,153,0.5)] transition-all duration-1000 ease-out rounded-full"
+                      style={{ width: `${goalProgress}%` }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 rounded-lg bg-white/5 border border-white/10 border-dashed text-center">
+                  <p className="text-sm text-secondary-foreground/60">Inget mål satt än</p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+                <p className="text-xs text-secondary-foreground/60 mb-1 uppercase tracking-wider">Accepterade affärer</p>
+                <p className="text-2xl font-bold text-white">{stats.wonQuotes}</p>
+              </div>
+              <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+                <p className="text-xs text-secondary-foreground/60 mb-1 uppercase tracking-wider">Snittvärde</p>
+                <p className="text-2xl font-bold text-white">
+                  {stats.wonQuotes > 0
+                    ? Math.round(stats.totalValue / stats.wonQuotes).toLocaleString("sv-SE")
+                    : 0} kr
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions & Activity */}
+        <div className="space-y-6">
+          <div className="glass-card rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-accent" />
+              Snabblänkar
+            </h3>
+            <div className="space-y-3">
+              <Button
+                variant="ghost"
+                className="w-full justify-between text-white hover:bg-white/5 hover:text-accent group h-12"
+                onClick={() => navigate("/kunder")}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-md bg-white/5 group-hover:bg-accent/10 transition-colors">
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <span>Hantera kunder</span>
+                </div>
+                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-between text-white hover:bg-white/5 hover:text-accent group h-12"
+                onClick={() => navigate("/offerter")}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-md bg-white/5 group-hover:bg-accent/10 transition-colors">
+                    <FileText className="h-4 w-4" />
+                  </div>
+                  <span>Skapa offert</span>
+                </div>
+                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-between text-white hover:bg-white/5 hover:text-accent group h-12"
+                onClick={() => navigate("/paminnelser")}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-md bg-white/5 group-hover:bg-accent/10 transition-colors">
+                    <Bell className="h-4 w-4" />
+                  </div>
+                  <span>Lägg till påminnelse</span>
+                </div>
+                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Activity Feed Mini */}
+          <div className="glass-card rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Senaste händelser</h3>
+            <ActivityFeed activities={activities.slice(0, 3)} />
+          </div>
+        </div>
       </div>
 
       {/* Empty State */}
       {stats.customers === 0 && stats.quotes === 0 && (
-          <Card className="border-border/50 bg-card/50 mt-6 sm:mt-8">
-          <CardContent className="p-12 sm:p-16 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
-                <Building2 className="h-10 w-10 text-accent" />
-              </div>
-              <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">Kom igång med Kundkollen</h3>
-              <p className="text-secondary/80 mb-8 text-sm sm:text-base">
-                Börja med att lägga till din första kund för att få en fullständig översikt över din verksamhet.
-              </p>
-              <Button onClick={() => navigate("/kunder")} size="lg" className="min-h-[44px]">
-                <Plus className="h-4 w-4 mr-2" />
-                Lägg till din första kund
-              </Button>
-            </div>
-            </CardContent>
-          </Card>
+        <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+          <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
+            <Building2 className="h-10 w-10 text-accent" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-3">Välkommen till framtiden</h3>
+          <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
+            Ditt nya CRM är redo. Börja med att lägga till din första kund för att se magin hända.
+          </p>
+          <Button onClick={() => navigate("/kunder")} className="premium-button px-8 py-6 text-lg">
+            <Plus className="h-5 w-5 mr-2" />
+            Lägg till kund
+          </Button>
+        </div>
       )}
     </div>
   );

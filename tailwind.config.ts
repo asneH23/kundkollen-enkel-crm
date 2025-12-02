@@ -14,77 +14,80 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["'Space Grotesk'", "'IBM Plex Sans'", "system-ui", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
+        heading: ["Space Grotesk", "sans-serif"],
       },
       colors: {
         background: {
-          DEFAULT: "#1A1A1C",
-          section: "#222226",
-          elevated: "#2A2A2D",
+          DEFAULT: "#0F1115", // Deeper, richer dark
+          section: "#16181D",
+          elevated: "#1C1E24",
         },
-        card: { DEFAULT: "#2A2A2D", foreground: "#F3F4F6" },
-        section: { DEFAULT: "#242426" },
+        card: {
+          DEFAULT: "rgba(30, 32, 38, 0.7)", // Glass effect base
+          foreground: "#FFFFFF"
+        },
         primary: {
-          DEFAULT: "#F3F4F6",
-          softer: "#C7C7CC",
+          DEFAULT: "#FFFFFF",
+          muted: "#A1A1AA",
         },
         secondary: {
-          DEFAULT: "#C7C7CC",
+          DEFAULT: "#27272A",
+          foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#4ADE80",
-          foreground: "#052E16",
+          DEFAULT: "#00E599", // Vibrant Mint Green
+          hover: "#00CC88",
+          foreground: "#003322",
         },
-        border: "#3A3A3D",
-        input: "#242426",
-        muted: { DEFAULT: "#232328", foreground: "#777882" },
-        success: { DEFAULT: "#22C55E", background: "#24341B", foreground: "#DCFCE7" },
-        warning: { DEFAULT: "#FDE68A", background: "#50440D", foreground: "#FDE68A" },
-        danger: { DEFAULT: "#F87171", background: "#4B1818", foreground: "#FCA5A5" },
+        border: "rgba(255, 255, 255, 0.08)", // Subtle border
+        input: "rgba(255, 255, 255, 0.05)",
+        muted: {
+          DEFAULT: "#27272A",
+          foreground: "#A1A1AA"
+        },
+        success: { DEFAULT: "#00E599", foreground: "#003322" },
+        warning: { DEFAULT: "#F59E0B", foreground: "#451A03" },
+        danger: { DEFAULT: "#EF4444", foreground: "#450A0A" },
       },
       backgroundImage: {
-        "hero-gradient": "linear-gradient(135deg, hsl(var(--hero-gradient-from)), hsl(var(--hero-gradient-to)))",
+        "hero-gradient": "radial-gradient(circle at top center, #1C1E24 0%, #0F1115 100%)",
+        "glass": "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)",
+        "accent-gradient": "linear-gradient(135deg, #00E599 0%, #00B377 100%)",
       },
       boxShadow: {
-        sm: "0 2px 4px 0 #10101352",
-        md: "0 6px 24px -4px #18181b62",
-        lg: "0 14px 36px -8px #10101382",
-        elevated: "0 2px 12px 0 #1010136e",
-      },
-      transitionProperty: {
-        base: "background, color, border, box-shadow, opacity, transform",
+        sm: "0 1px 2px 0 rgba(0, 0, 0, 0.3)",
+        md: "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.18)",
+        lg: "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.18)",
+        xl: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.18)",
+        glow: "0 0 20px rgba(0, 229, 153, 0.15)", // Mint glow
       },
       borderRadius: {
-        lg: "4px",
-        md: "3px",
-        sm: "2px",
-        input: "3px",
+        lg: "12px",
+        md: "8px",
+        sm: "6px",
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "fade-in": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.4s ease-out forwards",
       },
-      spacing: {
-        'section-y': '3rem',
-        'card-y': '2.25rem'
+      backdropBlur: {
+        xs: '2px',
       },
     },
   },
