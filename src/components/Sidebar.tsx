@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+  Sparkles
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -39,7 +40,7 @@ const Sidebar = () => {
           variant="ghost"
           size="icon"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="bg-card border border-border h-12 w-12 min-h-[48px] min-w-[48px]"
+          className="glass-panel h-12 w-12 min-h-[48px] min-w-[48px] text-white hover:bg-white/10"
           aria-label="Toggle menu"
         >
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -49,40 +50,59 @@ const Sidebar = () => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full w-64 bg-card border-r border-border z-40 transition-transform duration-300",
+          "fixed left-0 top-0 h-full w-72 z-40 transition-transform duration-300 ease-out",
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="flex flex-col h-full">
+        <div className="h-full glass-panel border-r border-white/5 flex flex-col relative overflow-hidden">
+          {/* Background Glow */}
+          <div className="absolute top-0 left-0 w-full h-64 bg-accent/5 blur-3xl -z-10 pointer-events-none" />
+
           {/* Logo/Brand */}
-          <div className="p-6 border-b border-border">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded bg-accent/20 flex items-center justify-center border border-accent/30">
-                <span className="text-accent font-bold text-lg">K</span>
+          <div className="p-8 pb-6">
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="h-10 w-10 rounded-xl bg-accent flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform duration-300">
+                <span className="text-accent-foreground font-bold text-xl">K</span>
               </div>
-              <span className="text-xl font-bold text-primary">Kundkollen</span>
+              <div>
+                <span className="text-xl font-bold text-white tracking-tight block leading-none">Kundkollen</span>
+                <span className="text-xs text-secondary-foreground/60 font-medium tracking-widest uppercase">Premium CRM</span>
+              </div>
             </Link>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+            <div className="px-4 mb-2">
+              <p className="text-xs font-semibold text-secondary-foreground/40 uppercase tracking-wider">Meny</p>
+            </div>
             {navItems.map((item) => {
               const Icon = item.icon;
+              const active = isActive(item.path);
               return (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded text-sm font-medium transition-all duration-200 min-h-[44px]",
-                    isActive(item.path)
-                      ? "bg-accent/10 text-accent border border-accent/20"
-                      : "text-secondary hover:bg-muted/50 hover:text-primary"
+                    "flex items-center gap-3 px-4 py-3.5 rounded-lg text-sm font-medium transition-all duration-300 group relative overflow-hidden",
+                    active
+                      ? "text-white bg-white/10 shadow-lg border border-white/5"
+                      : "text-secondary-foreground/60 hover:text-white hover:bg-white/5"
                   )}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
-                  {item.label}
+                  {active && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent shadow-[0_0_10px_#00E599]" />
+                  )}
+                  <Icon className={cn(
+                    "h-5 w-5 flex-shrink-0 transition-colors duration-300",
+                    active ? "text-accent" : "group-hover:text-accent"
+                  )} />
+                  <span className="relative z-10">{item.label}</span>
+                  {active && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-transparent opacity-20" />
+                  )}
                 </Link>
               );
             })}
@@ -90,29 +110,38 @@ const Sidebar = () => {
 
           {/* User section */}
           {user && (
-            <div className="p-4 border-t border-border space-y-2">
-              <div className="px-4 py-2 text-xs text-muted-foreground truncate">
-                {user.email}
+            <div className="p-4 m-4 rounded-xl bg-white/5 border border-white/5 backdrop-blur-md">
+              <div className="flex items-center gap-3 mb-4 px-2">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">
+                  {user.email?.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">Inloggad som</p>
+                  <p className="text-xs text-secondary-foreground/60 truncate">{user.email}</p>
+                </div>
               </div>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-secondary hover:text-primary min-h-[44px]"
-                onClick={() => {
-                  navigate("/profil");
-                  setMobileOpen(false);
-                }}
-              >
-                <User className="h-4 w-4 mr-2 flex-shrink-0" />
-                Profil
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-secondary hover:text-primary min-h-[44px]"
-                onClick={signOut}
-              >
-                <LogOut className="h-4 w-4 mr-2 flex-shrink-0" />
-                Logga ut
-              </Button>
+
+              <div className="space-y-1">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-secondary-foreground/70 hover:text-white hover:bg-white/10 h-9"
+                  onClick={() => {
+                    navigate("/profil");
+                    setMobileOpen(false);
+                  }}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Profilinställningar
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10 h-9"
+                  onClick={signOut}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logga ut
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -121,7 +150,7 @@ const Sidebar = () => {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 animate-in fade-in duration-200"
           onClick={() => setMobileOpen(false)}
         />
       )}

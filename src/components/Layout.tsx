@@ -15,9 +15,9 @@ const Layout = ({ children }: LayoutProps) => {
   const isDashboard = location.pathname === "/dashboard";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Sidebar />
-      <main className="lg:ml-64 transition-all duration-300 pt-16 lg:pt-0 bg-background/50">
+      <main className="lg:ml-72 transition-all duration-300 pt-20 lg:pt-0">
         <div className="p-4 sm:p-6 lg:p-8 max-w-[1920px] mx-auto">
           {/* Back button - show on all pages except dashboard */}
           {!isDashboard && (
@@ -26,7 +26,7 @@ const Layout = ({ children }: LayoutProps) => {
               size="sm"
               onClick={() => navigate(-1)}
               className={cn(
-                "mb-4 sm:mb-6 text-secondary hover:text-primary",
+                "mb-6 text-secondary-foreground/60 hover:text-white hover:bg-white/5",
                 "flex items-center gap-2"
               )}
             >
