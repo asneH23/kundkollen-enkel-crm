@@ -54,7 +54,7 @@ const EmailVerification = () => {
         // Redirect to dashboard after a short delay
         setTimeout(() => {
           navigate("/dashboard");
-        }, 2000);
+        }, 1500);
       }
       // If user exists but not verified, we're good to stay on this page
       return;
@@ -63,6 +63,24 @@ const EmailVerification = () => {
     // If no user and no pending email, redirect to auth
     navigate("/auth");
   }, [user, authLoading, navigate, pendingEmail]);
+
+  // Listen for auth state changes (e.g., when user clicks email link in another tab)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+        // User verified via email link
+        setIsVerified(true);
+        sessionStorage.removeItem("pending_verification_email");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1500);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
