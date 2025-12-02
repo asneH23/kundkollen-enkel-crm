@@ -328,8 +328,6 @@ const Reminders = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                  </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="description" className="text-white">Beskrivning</Label>
@@ -458,14 +456,14 @@ const Reminders = () => {
               <Card
                 key={reminder.id}
                 className={`group hover:shadow-md transition-all duration-200 border-l-4 ${reminder.completed
-                    ? "opacity-60 border-l-border/50"
-                    : isOverdue
-                      ? "border-l-red-500/50 bg-red-500/5"
-                      : isToday
-                        ? "border-l-yellow-500/50 bg-yellow-500/5"
-                        : isTomorrow
-                          ? "border-l-blue-500/50 bg-blue-500/5"
-                          : "border-l-accent/50"
+                  ? "opacity-60 border-l-border/50"
+                  : isOverdue
+                    ? "border-l-red-500/50 bg-red-500/5"
+                    : isToday
+                      ? "border-l-yellow-500/50 bg-yellow-500/5"
+                      : isTomorrow
+                        ? "border-l-blue-500/50 bg-blue-500/5"
+                        : "border-l-accent/50"
                   } hover:border-l-accent border-border/50 hover:border-accent/40 bg-card/50`}
               >
                 <CardContent className="p-3 sm:p-4">
@@ -487,24 +485,24 @@ const Reminders = () => {
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <div className="flex items-start gap-2.5 flex-1 min-w-0">
                           <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 ${reminder.completed
-                              ? "bg-muted/30 border border-border/50"
-                              : isOverdue
-                                ? "bg-red-500/20 border border-red-500/30 group-hover:bg-red-500/30"
-                                : isToday
-                                  ? "bg-yellow-500/20 border border-yellow-500/30 group-hover:bg-yellow-500/30"
-                                  : isTomorrow
-                                    ? "bg-blue-500/20 border border-blue-500/30 group-hover:bg-blue-500/30"
-                                    : "bg-accent/15 border border-accent/25 group-hover:bg-accent/25"
+                            ? "bg-muted/30 border border-border/50"
+                            : isOverdue
+                              ? "bg-red-500/20 border border-red-500/30 group-hover:bg-red-500/30"
+                              : isToday
+                                ? "bg-yellow-500/20 border border-yellow-500/30 group-hover:bg-yellow-500/30"
+                                : isTomorrow
+                                  ? "bg-blue-500/20 border border-blue-500/30 group-hover:bg-blue-500/30"
+                                  : "bg-accent/15 border border-accent/25 group-hover:bg-accent/25"
                             }`}>
                             <Bell className={`h-4 w-4 ${reminder.completed
-                                ? "text-secondary/50"
-                                : isOverdue
-                                  ? "text-red-400"
-                                  : isToday
-                                    ? "text-yellow-400"
-                                    : isTomorrow
-                                      ? "text-blue-400"
-                                      : "text-accent"
+                              ? "text-secondary/50"
+                              : isOverdue
+                                ? "text-red-400"
+                                : isToday
+                                  ? "text-yellow-400"
+                                  : isTomorrow
+                                    ? "text-blue-400"
+                                    : "text-accent"
                               }`} />
                           </div>
                           <div className="flex-1 min-w-0">
