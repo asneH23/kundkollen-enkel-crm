@@ -311,76 +311,75 @@ const Reminders = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="customer" className="text-white">Kund</Label>
-                    <Select value={customerId} onValueChange={setCustomerId}>
-                      <SelectTrigger className="premium-input">
-                        <SelectValue placeholder="Välj kund (valfritt)" />
-                      </SelectTrigger>
-                      <SelectContent className="glass-panel border-white/10 text-white">
-                        <SelectItem value="none" className="focus:bg-white/10 focus:text-white">Ingen kund</SelectItem>
-                        {customers.map((customer) => (
-                          <SelectItem key={customer.id} value={customer.id} className="focus:bg-white/10 focus:text-white">
-                            {customer.company_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-white">Beskrivning</Label>
-                    <Textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Vad ska göras?"
-                      className="premium-input resize-none"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="dueDate" className="flex items-center gap-2 text-white">
-                      <Calendar className="h-4 w-4 text-accent" />
-                      Förfallodatum *
-                    </Label>
-                    <div className="relative group">
-                      <Input
-                        id="dueDate"
-                        type="date"
-                        value={dueDate}
-                        onChange={(e) => setDueDate(e.target.value)}
-                        required
-                        className="premium-input pr-12 cursor-pointer"
-                      />
-                      <label
-                        htmlFor="dueDate"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10 flex items-center justify-center w-8 h-8 rounded hover:bg-white/10 transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const input = document.getElementById('dueDate') as HTMLInputElement;
-                          if (input && 'showPicker' in input) {
-                            input.showPicker();
-                          } else {
-                            input?.focus();
-                            input?.click();
-                          }
-                        }}
-                      >
-                        <Calendar className="h-5 w-5 text-accent" />
-                      </label>
-                    </div>
-                    <p className="text-xs text-secondary-foreground/60">
-                      Du får email-påminnelser 7 dagar, 1 dag, idag och om den blir försenad.
-                    </p>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="customer" className="text-white">Kund</Label>
+                  <Select value={customerId} onValueChange={setCustomerId}>
+                    <SelectTrigger className="premium-input">
+                      <SelectValue placeholder="Välj kund (valfritt)" />
+                    </SelectTrigger>
+                    <SelectContent className="glass-panel border-white/10 text-white">
+                      <SelectItem value="none" className="focus:bg-white/10 focus:text-white">Ingen kund</SelectItem>
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} value={customer.id} className="focus:bg-white/10 focus:text-white">
+                          {customer.company_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <Button type="submit" className="premium-button w-full h-11">
-                  {editingReminder ? "Uppdatera påminnelse" : "Skapa påminnelse"}
-                </Button>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-white">Beskrivning</Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Vad ska göras?"
+                    className="premium-input resize-none"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dueDate" className="flex items-center gap-2 text-white">
+                    <Calendar className="h-4 w-4 text-accent" />
+                    Förfallodatum *
+                  </Label>
+                  <div className="relative group">
+                    <Input
+                      id="dueDate"
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      required
+                      className="premium-input pr-12 cursor-pointer"
+                    />
+                    <label
+                      htmlFor="dueDate"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10 flex items-center justify-center w-8 h-8 rounded hover:bg-white/10 transition-colors"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const input = document.getElementById('dueDate') as HTMLInputElement;
+                        if (input && 'showPicker' in input) {
+                          input.showPicker();
+                        } else {
+                          input?.focus();
+                          input?.click();
+                        }
+                      }}
+                    >
+                      <Calendar className="h-5 w-5 text-accent" />
+                    </label>
+                  </div>
+                  <p className="text-xs text-secondary-foreground/60">
+                    Du får email-påminnelser 7 dagar, 1 dag, idag och om den blir försenad.
+                  </p>
+                </div>
+              </div>
+
+              <Button type="submit" className="premium-button w-full h-11">
+                {editingReminder ? "Uppdatera påminnelse" : "Skapa påminnelse"}
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
