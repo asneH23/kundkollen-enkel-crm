@@ -214,78 +214,94 @@ const Customers = () => {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8 animate-enter">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-border/50">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Kunder</h1>
-          <p className="text-sm sm:text-base text-secondary/80">Hantera dina kundrelationer</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">Kunder</h1>
+          <p className="text-secondary-foreground/60 text-lg">Bygg starkare relationer med dina kunder.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto min-h-[44px]">
+            <Button onClick={() => handleOpenDialog()} className="premium-button">
               <Plus className="mr-2 h-4 w-4" />
               Lägg till kund
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="glass-panel border-white/10 text-white sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-2xl font-bold">
                 {editingCustomer ? "Redigera kund" : "Lägg till ny kund"}
               </DialogTitle>
             </DialogHeader>
-            <div className="bg-muted/50 p-3 rounded-md mb-4">
-              <p className="text-xs text-muted-foreground">
-                <strong>GDPR-information:</strong> Kunduppgifter sparas säkert och hanteras enligt dataskyddsförordningen (GDPR). 
-                Informationen används endast för att hantera dina kundrelationer och delas inte med tredje part. 
+            <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg mb-4">
+              <p className="text-xs text-blue-200">
+                <strong>GDPR-information:</strong> Kunduppgifter sparas säkert och hanteras enligt dataskyddsförordningen (GDPR).
+                Informationen används endast för att hantera dina kundrelationer och delas inte med tredje part.
                 Du kan när som helst radera kunduppgifter.
               </p>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="companyName">Företagsnamn *</Label>
-                <Input
-                  id="companyName"
-                  value={formData.companyName}
-                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  placeholder="Acme AB"
-                  required
-                />
+            <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="companyName" className="text-white">Företagsnamn *</Label>
+                  <Input
+                    id="companyName"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    placeholder="Acme AB"
+                    required
+                    className="premium-input"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPerson" className="text-white">Kontaktperson</Label>
+                    <Input
+                      id="contactPerson"
+                      value={formData.contactPerson}
+                      onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+                      placeholder="Anna Andersson"
+                      className="premium-input"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-white">Telefon</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
+                      placeholder="070-123-45-67"
+                      className="premium-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-white">E-post</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="anna@acme.se"
+                    className="premium-input"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="contactPerson">Kontaktperson</Label>
-                <Input
-                  id="contactPerson"
-                  value={formData.contactPerson}
-                  onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
-                  placeholder="Anna Andersson"
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">E-post</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="anna@acme.se"
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone">Telefon</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
-                  placeholder="070-123-45-67"
-                />
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button type="submit" className="flex-1 min-h-[44px]">
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button type="submit" className="premium-button flex-1 h-11">
                   {editingCustomer ? "Uppdatera" : "Lägg till"}
                 </Button>
-                <Button type="button" variant="outline" onClick={handleCloseDialog} className="min-h-[44px]">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseDialog}
+                  className="h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
+                >
                   Avbryt
                 </Button>
               </div>
@@ -295,42 +311,39 @@ const Customers = () => {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary/60" />
+      <div className="relative max-w-md pb-6 border-b border-white/5">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
         <Input
           placeholder="Sök på företagsnamn, kontaktperson eller e-post"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 w-full bg-card/50 border-border/50 focus:border-accent/50"
+          className="premium-input pl-10 h-11"
         />
       </div>
+
       {/* Customers Grid */}
       {filteredCustomers.length === 0 ? (
-        <Card className="border-border/50 bg-card/50">
-          <CardContent className="p-12 sm:p-16 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
-                <Plus className="h-10 w-10 text-accent" />
-              </div>
-              <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">
-                {customers.length === 0 ? "Inga kunder ännu" : "Inga kunder matchar din sökning"}
-              </h3>
-              <p className="text-secondary/80 mb-8 text-sm sm:text-base">
-                {customers.length === 0
-                  ? "Börja med att lägga till din första kund för att komma igång."
-                  : "Prova att ändra din sökning för att hitta fler resultat."}
-              </p>
-              {customers.length === 0 && (
-                <Button onClick={() => handleOpenDialog()} size="lg" className="min-h-[44px]">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Lägg till din första kund
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+          <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
+            <Plus className="h-10 w-10 text-accent" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-3">
+            {customers.length === 0 ? "Inga kunder ännu" : "Inga kunder matchar din sökning"}
+          </h3>
+          <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
+            {customers.length === 0
+              ? "Börja med att lägga till din första kund för att komma igång med din kundhantering."
+              : "Prova att ändra din sökning eller filtrera för att hitta det du letar efter."}
+          </p>
+          {customers.length === 0 && (
+            <Button onClick={() => handleOpenDialog()} className="premium-button px-8 py-6 text-lg">
+              <Plus className="h-5 w-5 mr-2" />
+              Lägg till din första kund
+            </Button>
+          )}
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCustomers.map((customer) => (
             <CustomerCard
               key={customer.id}
