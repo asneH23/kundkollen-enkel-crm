@@ -1,6 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 interface StatWidgetProps {
   title: string | React.ReactNode;
@@ -18,37 +17,49 @@ const StatWidget = ({
   icon: Icon,
   description,
   progress,
-  trend,
   onClick,
 }: StatWidgetProps) => {
   return (
-    <Card
-      className={`group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-border hover:border-accent/30 ${
-        onClick ? "cursor-pointer" : ""
-      }`}
+    <div
+      className={cn(
+        "glass-card rounded-xl p-6 relative overflow-hidden group transition-all duration-300",
+        onClick ? "cursor-pointer hover:-translate-y-1" : ""
+      )}
       onClick={onClick}
     >
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex items-start justify-between mb-3 sm:mb-4">
-          <div className="flex-1 min-w-0">
-            <div className="text-xs sm:text-sm font-medium text-secondary mb-1 group-hover:text-primary transition-colors">{title}</div>
-            <div className="text-2xl sm:text-3xl font-bold text-primary group-hover:text-accent transition-colors">{value}</div>
-            {description && (
-              <p className="text-xs text-muted-foreground mt-1 sm:mt-2 group-hover:text-secondary transition-colors">{description}</p>
-            )}
+      {/* Hover Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-4">
+          <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-accent/30 group-hover:bg-accent/10 transition-all duration-300 shadow-lg group-hover:shadow-glow">
+            <Icon className="h-6 w-6 text-white group-hover:text-accent transition-colors duration-300" />
           </div>
-          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300 flex-shrink-0 ml-2">
-            <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
-          </div>
+          {progress !== undefined && (
+            <div className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full border border-white/5">
+              <span className="text-xs font-medium text-accent">{progress}%</span>
+            </div>
+          )}
         </div>
+
+        <div>
+          <div className="text-sm font-medium text-secondary-foreground/60 mb-1 uppercase tracking-wide">{title}</div>
+          <div className="text-3xl font-bold text-white tracking-tight mb-2 group-hover:text-accent transition-colors duration-300">{value}</div>
+          {description && (
+            <p className="text-xs text-secondary-foreground/40 group-hover:text-secondary-foreground/60 transition-colors">{description}</p>
+          )}
+        </div>
+
         {progress !== undefined && (
-          <div className="mt-4">
-            <Progress value={progress} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-1">{progress}%</p>
+          <div className="mt-4 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-accent shadow-[0_0_8px_rgba(0,229,153,0.5)] transition-all duration-1000 ease-out rounded-full"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
