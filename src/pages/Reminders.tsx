@@ -46,7 +46,7 @@ const Reminders = () => {
 
   const fetchReminders = async () => {
     if (!user) return;
-    
+
     try {
       const { data, error } = await supabase
         .from("reminders")
@@ -69,7 +69,7 @@ const Reminders = () => {
 
   const fetchCustomers = async () => {
     if (!user) return;
-    
+
     try {
       const { data, error } = await supabase
         .from("customers")
@@ -232,7 +232,7 @@ const Reminders = () => {
 
   const getPriorityVariant = (dueDate: string, completed: boolean | null) => {
     if (completed) return "secondary";
-    
+
     const days = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
     if (days < 0) return "destructive";
     if (days <= 3) return "destructive";
@@ -242,7 +242,7 @@ const Reminders = () => {
 
   const getPriorityLabel = (dueDate: string, completed: boolean | null) => {
     if (completed) return "Klar";
-    
+
     const days = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
     if (days < 0) return "Försenad";
     if (days === 0) return "Idag";
@@ -276,170 +276,176 @@ const Reminders = () => {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8 animate-enter">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-border/50">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Påminnelser</h1>
-          <p className="text-sm sm:text-base text-secondary/80">Missa aldrig en viktig uppföljning</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">Påminnelser</h1>
+          <p className="text-secondary-foreground/60 text-lg">Håll koll på alla viktiga uppföljningar.</p>
         </div>
 
         <Dialog open={open} onOpenChange={(isOpen) => (isOpen ? setOpen(true) : handleCloseDialog())}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto min-h-[44px]">
+            <Button onClick={() => handleOpenDialog()} className="premium-button">
               <Bell className="mr-2 h-4 w-4" />
               Skapa påminnelse
             </Button>
           </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {editingReminder ? "Redigera påminnelse" : "Skapa ny påminnelse"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Titel *</Label>
+          <DialogContent className="glass-panel border-white/10 text-white sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">
+                {editingReminder ? "Redigera påminnelse" : "Skapa ny påminnelse"}
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-white">Titel *</Label>
                   <Input
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="T.ex. Följ upp med Acme AB"
                     required
+                    className="premium-input"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="customer">Kund</Label>
-                  <Select value={customerId} onValueChange={setCustomerId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Välj kund (valfritt)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Ingen kund</SelectItem>
-                      {customers.map((customer) => (
-                        <SelectItem key={customer.id} value={customer.id}>
-                          {customer.company_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="description">Beskrivning</Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Vad ska göras?"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="dueDate" className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-accent" />
-                    Förfallodatum *
-                  </Label>
-                  <div className="relative mt-2 group">
-                    <Input
-                      id="dueDate"
-                      type="date"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      required
-                      className="pr-12 cursor-pointer bg-input border-border hover:border-accent/50 focus:border-accent transition-colors"
-                    />
-                    <label
-                      htmlFor="dueDate"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10 flex items-center justify-center w-8 h-8 rounded hover:bg-accent/10 transition-colors"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        const input = document.getElementById('dueDate') as HTMLInputElement;
-                        if (input && 'showPicker' in input) {
-                          input.showPicker();
-                        } else {
-                          input?.focus();
-                          input?.click();
-                        }
-                      }}
-                    >
-                      <Calendar className="h-5 w-5 text-accent group-hover:text-accent-foreground" />
-                    </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="customer" className="text-white">Kund</Label>
+                    <Select value={customerId} onValueChange={setCustomerId}>
+                      <SelectTrigger className="premium-input">
+                        <SelectValue placeholder="Välj kund (valfritt)" />
+                      </SelectTrigger>
+                      <SelectContent className="glass-panel border-white/10 text-white">
+                        <SelectItem value="none" className="focus:bg-white/10 focus:text-white">Ingen kund</SelectItem>
+                        {customers.map((customer) => (
+                          <SelectItem key={customer.id} value={customer.id} className="focus:bg-white/10 focus:text-white">
+                            {customer.company_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <p className="text-xs text-secondary/70 mt-1.5">
-                    Klicka på kalender-ikonen eller i fältet för att välja datum. Du får email-påminnelser 7 dagar, 1 dag, idag och om den blir försenad.
-                  </p>
+                  <div className="space-y-2">
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-white">Beskrivning</Label>
+                    <Textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Vad ska göras?"
+                      className="premium-input resize-none"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="dueDate" className="flex items-center gap-2 text-white">
+                      <Calendar className="h-4 w-4 text-accent" />
+                      Förfallodatum *
+                    </Label>
+                    <div className="relative group">
+                      <Input
+                        id="dueDate"
+                        type="date"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                        required
+                        className="premium-input pr-12 cursor-pointer"
+                      />
+                      <label
+                        htmlFor="dueDate"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10 flex items-center justify-center w-8 h-8 rounded hover:bg-white/10 transition-colors"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const input = document.getElementById('dueDate') as HTMLInputElement;
+                          if (input && 'showPicker' in input) {
+                            input.showPicker();
+                          } else {
+                            input?.focus();
+                            input?.click();
+                          }
+                        }}
+                      >
+                        <Calendar className="h-5 w-5 text-accent" />
+                      </label>
+                    </div>
+                    <p className="text-xs text-secondary-foreground/60">
+                      Du får email-påminnelser 7 dagar, 1 dag, idag och om den blir försenad.
+                    </p>
+                  </div>
                 </div>
-                <Button type="submit" className="w-full min-h-[44px]">
+
+                <Button type="submit" className="premium-button w-full h-11">
                   {editingReminder ? "Uppdatera påminnelse" : "Skapa påminnelse"}
                 </Button>
-              </form>
-            </DialogContent>
+            </form>
+          </DialogContent>
         </Dialog>
       </div>
 
       {/* Email Notification Info */}
-      <Card className="border-accent/30 bg-accent/5">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/30 flex-shrink-0">
-              <Mail className="h-5 w-5 text-accent" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-sm sm:text-base text-primary mb-1">Automatiska email-påminnelser</h3>
-              <p className="text-xs sm:text-sm text-secondary/80 leading-relaxed">
-                Du får automatiskt email när påminnelser närmar sig: <span className="font-medium text-primary">7 dagar innan</span>, <span className="font-medium text-primary">1 dag innan</span>, <span className="font-medium text-primary">idag</span> och om de blir <span className="font-medium text-primary">försenade</span>.
-              </p>
-            </div>
+      <div className="glass-card rounded-xl p-4 border-accent/20">
+        <div className="flex items-start gap-3">
+          <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center border border-accent/20 flex-shrink-0 shadow-glow">
+            <Mail className="h-5 w-5 text-accent" />
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex-1">
+            <h3 className="font-semibold text-base text-white mb-1">Automatiska email-påminnelser</h3>
+            <p className="text-sm text-secondary-foreground/60 leading-relaxed">
+              Du får automatiskt email när påminnelser närmar sig: <span className="font-medium text-white">7 dagar innan</span>, <span className="font-medium text-white">1 dag innan</span>, <span className="font-medium text-white">idag</span> och om de blir <span className="font-medium text-white">försenade</span>.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 pb-4 border-b border-border/30">
+      <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-white/5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary/60" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
           <Input
             placeholder="Sök på titel, beskrivning eller kund"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full bg-card/50 border-border/50 focus:border-accent/50"
+            className="premium-input pl-10 h-11"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-48 h-11 premium-input">
             <SelectValue placeholder="Filtera status" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="active">Aktiva</SelectItem>
-            <SelectItem value="completed">Klara</SelectItem>
-            <SelectItem value="all">Alla</SelectItem>
+          <SelectContent className="glass-panel border-white/10 text-white">
+            <SelectItem value="active" className="focus:bg-white/10 focus:text-white">Aktiva</SelectItem>
+            <SelectItem value="completed" className="focus:bg-white/10 focus:text-white">Klara</SelectItem>
+            <SelectItem value="all" className="focus:bg-white/10 focus:text-white">Alla</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {filteredReminders.length === 0 ? (
-        <Card className="border-border/50 bg-card/50">
-          <CardContent className="p-12 sm:p-16 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
-                <Bell className="h-10 w-10 text-accent" />
-              </div>
-              <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">
-                {reminders.length === 0 ? "Inga påminnelser ännu" : "Inga påminnelser matchar dina filter"}
-              </h3>
-              <p className="text-secondary/80 mb-8 text-sm sm:text-base">
-                {reminders.length === 0
-                  ? "Börja med att skapa din första påminnelse för att komma igång."
-                  : "Prova att ändra dina filter för att hitta fler resultat."}
-              </p>
-              {reminders.length === 0 && (
-                <Button onClick={() => handleOpenDialog()} size="lg" className="min-h-[44px]">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Skapa din första påminnelse
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+          <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
+            <Bell className="h-10 w-10 text-accent" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-3">
+            {reminders.length === 0 ? "Inga påminnelser ännu" : "Inga påminnelser matchar dina filter"}
+          </h3>
+          <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
+            {reminders.length === 0
+              ? "Börja med att skapa din första påminnelse för att aldrig missa en uppföljning."
+              : "Prova att ändra dina filter eller söktermer för att hitta det du letar efter."}
+          </p>
+          {reminders.length === 0 && (
+            <Button onClick={() => handleOpenDialog()} className="premium-button px-8 py-6 text-lg">
+              <Bell className="h-5 w-5 mr-2" />
+              Skapa din första påminnelse
+            </Button>
+          )}
+        </div>
       ) : (
         <div className="space-y-3 sm:space-y-4">
           {filteredReminders.map((reminder) => {
@@ -447,21 +453,20 @@ const Reminders = () => {
             const isOverdue = daysUntil < 0;
             const isToday = daysUntil === 0;
             const isTomorrow = daysUntil === 1;
-            
+
             return (
               <Card
                 key={reminder.id}
-                className={`group hover:shadow-md transition-all duration-200 border-l-4 ${
-                  reminder.completed 
-                    ? "opacity-60 border-l-border/50" 
-                    : isOverdue 
-                    ? "border-l-red-500/50 bg-red-500/5" 
-                    : isToday 
-                    ? "border-l-yellow-500/50 bg-yellow-500/5" 
-                    : isTomorrow 
-                    ? "border-l-blue-500/50 bg-blue-500/5" 
-                    : "border-l-accent/50"
-                } hover:border-l-accent border-border/50 hover:border-accent/40 bg-card/50`}
+                className={`group hover:shadow-md transition-all duration-200 border-l-4 ${reminder.completed
+                    ? "opacity-60 border-l-border/50"
+                    : isOverdue
+                      ? "border-l-red-500/50 bg-red-500/5"
+                      : isToday
+                        ? "border-l-yellow-500/50 bg-yellow-500/5"
+                        : isTomorrow
+                          ? "border-l-blue-500/50 bg-blue-500/5"
+                          : "border-l-accent/50"
+                  } hover:border-l-accent border-border/50 hover:border-accent/40 bg-card/50`}
               >
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex items-start gap-3">
@@ -481,34 +486,31 @@ const Reminders = () => {
                       {/* Title Row */}
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                          <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
-                            reminder.completed 
-                              ? "bg-muted/30 border border-border/50" 
-                              : isOverdue 
-                              ? "bg-red-500/20 border border-red-500/30 group-hover:bg-red-500/30" 
-                              : isToday 
-                              ? "bg-yellow-500/20 border border-yellow-500/30 group-hover:bg-yellow-500/30" 
-                              : isTomorrow 
-                              ? "bg-blue-500/20 border border-blue-500/30 group-hover:bg-blue-500/30" 
-                              : "bg-accent/15 border border-accent/25 group-hover:bg-accent/25"
-                          }`}>
-                            <Bell className={`h-4 w-4 ${
-                              reminder.completed 
-                                ? "text-secondary/50" 
-                                : isOverdue 
-                                ? "text-red-400" 
-                                : isToday 
-                                ? "text-yellow-400" 
-                                : isTomorrow 
-                                ? "text-blue-400" 
-                                : "text-accent"
-                            }`} />
+                          <div className={`h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 ${reminder.completed
+                              ? "bg-muted/30 border border-border/50"
+                              : isOverdue
+                                ? "bg-red-500/20 border border-red-500/30 group-hover:bg-red-500/30"
+                                : isToday
+                                  ? "bg-yellow-500/20 border border-yellow-500/30 group-hover:bg-yellow-500/30"
+                                  : isTomorrow
+                                    ? "bg-blue-500/20 border border-blue-500/30 group-hover:bg-blue-500/30"
+                                    : "bg-accent/15 border border-accent/25 group-hover:bg-accent/25"
+                            }`}>
+                            <Bell className={`h-4 w-4 ${reminder.completed
+                                ? "text-secondary/50"
+                                : isOverdue
+                                  ? "text-red-400"
+                                  : isToday
+                                    ? "text-yellow-400"
+                                    : isTomorrow
+                                      ? "text-blue-400"
+                                      : "text-accent"
+                              }`} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3
-                              className={`font-semibold text-sm sm:text-base text-primary group-hover:text-accent transition-colors ${
-                                reminder.completed ? "line-through" : ""
-                              }`}
+                              className={`font-semibold text-sm sm:text-base text-primary group-hover:text-accent transition-colors ${reminder.completed ? "line-through" : ""
+                                }`}
                             >
                               {reminder.title}
                             </h3>
@@ -520,7 +522,7 @@ const Reminders = () => {
                             )}
                           </div>
                         </div>
-                        
+
                         {/* Action Buttons */}
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                           <Button
@@ -561,14 +563,14 @@ const Reminders = () => {
                         )}
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border border-border/50 text-xs font-medium">
                           <Calendar className="h-3 w-3 text-accent flex-shrink-0" />
-                          <span className="text-secondary/90">{new Date(reminder.due_date).toLocaleDateString("sv-SE", { 
-                            weekday: 'short', 
-                            year: 'numeric', 
-                            month: 'short', 
-                            day: 'numeric' 
+                          <span className="text-secondary/90">{new Date(reminder.due_date).toLocaleDateString("sv-SE", {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
                           })}</span>
                         </div>
-                        <Badge 
+                        <Badge
                           variant={getPriorityVariant(reminder.due_date, reminder.completed)}
                           className={cn(
                             "text-xs font-medium px-2 py-1",
