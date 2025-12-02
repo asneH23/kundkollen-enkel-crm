@@ -269,88 +269,25 @@ const EmailVerification = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Code Input Method */}
-            <form onSubmit={handleVerifyCode} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="code" className="text-base font-medium">
-                  Verifieringskod
-                </Label>
-                <Input
-                  id="code"
-                  type="text"
-                  value={verificationCode}
-                  onChange={(e) => {
-                    // Only allow numbers and limit to 6 digits
-                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
-                    setVerificationCode(value);
-                  }}
-                  placeholder="123456"
-                  maxLength={6}
-                  className="text-center text-2xl tracking-widest font-mono"
-                  autoFocus
-                />
-                <p className="text-sm text-muted-foreground text-center">
-                  Ange den 6-siffriga koden från ditt email
-                </p>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading || verificationCode.length !== 6}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Verifierar...
-                  </>
-                ) : (
-                  "Verifiera email"
-                )}
-              </Button>
-            </form>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Eller</span>
-              </div>
-            </div>
-
-            {/* Quick Verify Button */}
-            <div className="space-y-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleQuickVerify}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Skickar...
-                  </>
-                ) : (
-                  "Skicka verifieringslänk"
-                )}
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                Klicka på länken i mailet för snabb verifiering
+            {/* Instructions */}
+            <div className="text-center space-y-4">
+              <p className="text-secondary">
+                Vi har skickat en verifieringslänk till din email.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Klicka på länken i mailet för att verifiera din email och komma igång.
               </p>
             </div>
 
-            {/* Resend Code */}
+            {/* Resend Link */}
             <div className="pt-4 border-t border-border">
               <div className="text-center space-y-2">
                 <p className="text-sm text-secondary">
-                  Har du inte fått koden?
+                  Har du inte fått mailet?
                 </p>
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={handleResendCode}
                   disabled={resending}
@@ -362,7 +299,7 @@ const EmailVerification = () => {
                       Skickar...
                     </>
                   ) : (
-                    "Skicka ny kod"
+                    "Skicka nytt mail"
                   )}
                 </Button>
               </div>
