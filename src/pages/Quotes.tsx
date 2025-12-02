@@ -482,101 +482,116 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8 animate-enter">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-border/50">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Offerter</h1>
-          <p className="text-sm sm:text-base text-secondary/80">Följ upp dina offerter och affärer</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-tight">Offerter</h1>
+          <p className="text-secondary-foreground/60 text-lg">Hantera dina affärer och skapa nya möjligheter.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto min-h-[44px]">
+            <Button onClick={() => handleOpenDialog()} className="premium-button">
               <Plus className="mr-2 h-4 w-4" />
               Skapa offert
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="glass-panel border-white/10 text-white sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-2xl font-bold">
                 {editingQuote ? "Redigera offert" : "Skapa ny offert"}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="title">Titel *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="T.ex. Renovering av badrum"
-                  required
-                />
+            <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-white">Titel *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="T.ex. Renovering av badrum"
+                    required
+                    className="premium-input"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="customer" className="text-white">Kund</Label>
+                    <Select
+                      value={formData.customerId}
+                      onValueChange={(value) => setFormData({ ...formData, customerId: value })}
+                    >
+                      <SelectTrigger className="premium-input">
+                        <SelectValue placeholder="Välj kund (valfritt)" />
+                      </SelectTrigger>
+                      <SelectContent className="glass-panel border-white/10 text-white">
+                        <SelectItem value="none" className="focus:bg-white/10 focus:text-white">Ingen kund</SelectItem>
+                        {customers.map((customer) => (
+                          <SelectItem key={customer.id} value={customer.id} className="focus:bg-white/10 focus:text-white">
+                            {customer.company_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="amount" className="text-white">Belopp (kr)</Label>
+                    <Input
+                      id="amount"
+                      type="text"
+                      value={formData.amount}
+                      onChange={(e) => {
+                        const formatted = formatNumberInput(e.target.value);
+                        setFormData({ ...formData, amount: formatted });
+                      }}
+                      placeholder="100 000"
+                      className="premium-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="status" className="text-white">Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  >
+                    <SelectTrigger className="premium-input">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="glass-panel border-white/10 text-white">
+                      <SelectItem value="draft" className="focus:bg-white/10 focus:text-white">Utkast</SelectItem>
+                      <SelectItem value="sent" className="focus:bg-white/10 focus:text-white">Skickad</SelectItem>
+                      <SelectItem value="accepted" className="focus:bg-white/10 focus:text-white">Accepterad</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-white">Beskrivning (valfritt)</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Lägg till mer information om offerten..."
+                    rows={4}
+                    className="premium-input resize-none"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="customer">Kund</Label>
-                <Select
-                  value={formData.customerId}
-                  onValueChange={(value) => setFormData({ ...formData, customerId: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj kund (valfritt)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Ingen kund</SelectItem>
-                    {customers.map((customer) => (
-                      <SelectItem key={customer.id} value={customer.id}>
-                        {customer.company_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="amount">Belopp (kr)</Label>
-                <Input
-                  id="amount"
-                  type="text"
-                  value={formData.amount}
-                  onChange={(e) => {
-                    const formatted = formatNumberInput(e.target.value);
-                    setFormData({ ...formData, amount: formatted });
-                  }}
-                  placeholder="100 000"
-                />
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Utkast</SelectItem>
-                    <SelectItem value="sent">Skickad</SelectItem>
-                    <SelectItem value="accepted">Accepterad</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="description">Beskrivning (valfritt)</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Lägg till mer information om offerten..."
-                  rows={4}
-                  className="resize-none"
-                />
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button type="submit" className="flex-1 min-h-[44px]">
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button type="submit" className="premium-button flex-1 h-11">
                   {editingQuote ? "Uppdatera" : "Skapa"}
                 </Button>
-                <Button type="button" variant="outline" onClick={handleCloseDialog} className="min-h-[44px]">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseDialog}
+                  className="h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
+                >
                   Avbryt
                 </Button>
               </div>
@@ -586,12 +601,12 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
         {/* Detail View Dialog */}
         <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] duration-300">
+          <DialogContent className="glass-panel border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
             {selectedQuote && (
               <>
                 <DialogHeader>
-                  <DialogTitle className="text-2xl">{selectedQuote.title}</DialogTitle>
-                  <DialogDescription>
+                  <DialogTitle className="text-3xl font-bold tracking-tight">{selectedQuote.title}</DialogTitle>
+                  <DialogDescription className="text-secondary-foreground/60">
                     Offert skapad {new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", {
                       year: "numeric",
                       month: "long",
@@ -600,17 +615,18 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-6 mt-4">
+                <div className="space-y-8 mt-6">
                   {/* Status and Amount */}
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                      <div className="flex items-center gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 p-6 rounded-xl bg-white/5 border border-white/5">
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm text-secondary-foreground/60 uppercase tracking-wider font-medium">Status</span>
+                      <div className="flex items-center gap-3">
                         <Badge
                           className={cn(
-                            "text-sm px-3 py-1",
-                            selectedQuote.status === "accepted" && "bg-accent/20 text-accent border-accent/30",
-                            selectedQuote.status === "sent" && "bg-blue-500/20 text-blue-400 border-blue-500/30",
-                            selectedQuote.status === "draft" && "bg-secondary/20 text-secondary border-border"
+                            "text-sm px-3 py-1 border-0",
+                            selectedQuote.status === "accepted" && "bg-accent/20 text-accent",
+                            selectedQuote.status === "sent" && "bg-blue-500/20 text-blue-400",
+                            selectedQuote.status === "draft" && "bg-white/10 text-white"
                           )}
                         >
                           {getStatusLabel(selectedQuote.status)}
@@ -626,9 +642,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
                               if (error) throw error;
 
-                              // Update local state
                               setSelectedQuote({ ...selectedQuote, status: value });
-                              // Refresh quotes list
                               fetchQuotes();
 
                               toast({
@@ -644,39 +658,47 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                             }
                           }}
                         >
-                          <SelectTrigger className="w-full sm:w-36 h-9 min-h-[44px] sm:min-h-0 text-sm">
+                          <SelectTrigger className="w-32 h-8 bg-transparent border-white/10 text-xs">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="draft">Utkast</SelectItem>
-                            <SelectItem value="sent">Skickad</SelectItem>
-                            <SelectItem value="accepted">Accepterad</SelectItem>
+                          <SelectContent className="glass-panel border-white/10 text-white">
+                            <SelectItem value="draft" className="focus:bg-white/10 focus:text-white">Utkast</SelectItem>
+                            <SelectItem value="sent" className="focus:bg-white/10 focus:text-white">Skickad</SelectItem>
+                            <SelectItem value="accepted" className="focus:bg-white/10 focus:text-white">Accepterad</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
-                    {selectedQuote.amount && (
-                      <div className="text-2xl sm:text-3xl font-bold text-primary">
-                        {selectedQuote.amount.toLocaleString("sv-SE")} kr
-                      </div>
-                    )}
+
+                    <div className="flex flex-col gap-1 sm:text-right">
+                      <span className="text-sm text-secondary-foreground/60 uppercase tracking-wider font-medium">Belopp</span>
+                      {selectedQuote.amount ? (
+                        <div className="text-3xl font-bold text-white tracking-tight">
+                          {selectedQuote.amount.toLocaleString("sv-SE")} <span className="text-lg text-secondary-foreground/40 font-normal">kr</span>
+                        </div>
+                      ) : (
+                        <span className="text-white/40 italic">Ej angivet</span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Customer Info */}
                   {selectedQuote.customer_id && (
-                    <div className="flex items-center gap-3 p-4 rounded bg-muted/50 border border-border">
-                      <Users className="h-5 w-5 text-accent" />
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:bg-white/5 transition-colors">
+                      <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+                        <Users className="h-5 w-5 text-accent" />
+                      </div>
                       <div>
-                        <p className="text-sm text-secondary">Kund</p>
-                        <p className="font-semibold text-primary">{getCustomerName(selectedQuote.customer_id)}</p>
+                        <p className="text-xs text-secondary-foreground/60 uppercase tracking-wider font-medium mb-0.5">Kund</p>
+                        <p className="font-semibold text-white text-lg">{getCustomerName(selectedQuote.customer_id)}</p>
                       </div>
                     </div>
                   )}
 
                   {/* Description */}
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-primary">Beskrivning</h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-white">Beskrivning</h3>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -684,38 +706,39 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                           setDetailOpen(false);
                           handleOpenDialog(selectedQuote);
                         }}
+                        className="text-secondary-foreground/60 hover:text-white hover:bg-white/10"
                       >
                         <Pencil className="h-4 w-4 mr-2" />
                         Redigera
                       </Button>
                     </div>
-                    <div className="p-4 rounded bg-muted/30 border border-border min-h-[100px]">
+                    <div className="p-6 rounded-xl bg-white/5 border border-white/5 min-h-[100px]">
                       {selectedQuote.description ? (
-                        <p className="text-primary whitespace-pre-wrap">
+                        <p className="text-white/90 whitespace-pre-wrap leading-relaxed">
                           {selectedQuote.description}
                         </p>
                       ) : (
-                        <p className="text-secondary italic">Ingen beskrivning tillagd ännu.</p>
+                        <p className="text-white/30 italic">Ingen beskrivning tillagd ännu.</p>
                       )}
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                  <div className="flex flex-col gap-3 pt-6 border-t border-white/10">
                     <Button
-                      className="w-full min-h-[44px]"
+                      className="premium-button w-full h-12 text-base"
                       onClick={() => {
                         setDetailOpen(false);
                         handleOpenSendQuote(selectedQuote);
                       }}
                     >
-                      <Send className="h-4 w-4 mr-2" />
+                      <Send className="h-5 w-5 mr-2" />
                       Skicka offert till kund
                     </Button>
-                    <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button
                         variant="outline"
-                        className="flex-1 min-h-[44px]"
+                        className="flex-1 h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
                         onClick={() => {
                           setDetailOpen(false);
                           handleOpenDialog(selectedQuote);
@@ -726,7 +749,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                       </Button>
                       <Button
                         variant="outline"
-                        className="text-red-500 hover:text-red-600 hover:bg-red-500/10 min-h-[44px]"
+                        className="h-11 border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/10 hover:border-red-500/30"
                         onClick={() => {
                           setDetailOpen(false);
                           handleDelete(selectedQuote.id);
@@ -744,67 +767,67 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
 
         {/* Send Quote Dialog */}
         <Dialog open={sendQuoteOpen} onOpenChange={setSendQuoteOpen}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="glass-panel border-white/10 text-white max-w-lg">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
+              <DialogTitle className="flex items-center gap-2 text-xl">
                 <Mail className="h-5 w-5 text-accent" />
                 Skicka offert till kund
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-secondary-foreground/60">
                 Fyll i kundens email-adress för att skicka offerten
               </DialogDescription>
             </DialogHeader>
 
             {selectedQuote && (
-              <div className="space-y-4 mt-4">
-                <div className="p-4 rounded bg-muted/50 border border-border">
-                  <p className="text-sm text-secondary mb-1">Offert</p>
-                  <p className="font-semibold text-primary">{selectedQuote.title}</p>
+              <div className="space-y-6 mt-4">
+                <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+                  <p className="text-xs text-secondary-foreground/60 uppercase tracking-wider font-medium mb-1">Offert</p>
+                  <p className="font-semibold text-white text-lg">{selectedQuote.title}</p>
                   {selectedQuote.amount && (
-                    <p className="text-lg font-bold text-accent mt-2">
+                    <p className="text-xl font-bold text-accent mt-1">
                       {selectedQuote.amount.toLocaleString("sv-SE")} kr
                     </p>
                   )}
                 </div>
 
-                <div>
-                  <Label htmlFor="customerEmail">Kundens email *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="customerEmail" className="text-white">Kundens email *</Label>
                   <Input
                     id="customerEmail"
                     type="email"
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     placeholder="kund@example.com"
-                    className="mt-2"
+                    className="premium-input"
                     required
                   />
                   {selectedQuote.customer_id && getCustomerEmail(selectedQuote.customer_id) && (
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-secondary-foreground/60 mt-1">
                       Kundens sparade email: {getCustomerEmail(selectedQuote.customer_id)}
                     </p>
                   )}
                 </div>
 
-                <div>
-                  <Label htmlFor="emailMessage">Meddelande (valfritt)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="emailMessage" className="text-white">Meddelande (valfritt)</Label>
                   <Textarea
                     id="emailMessage"
                     value={emailMessage}
                     onChange={(e) => setEmailMessage(e.target.value)}
                     placeholder="Skriv ett personligt meddelande till kunden..."
                     rows={6}
-                    className="mt-2 resize-none"
+                    className="premium-input resize-none"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-secondary-foreground/60">
                     Offertdetaljer läggs automatiskt till i slutet av meddelandet
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <Button
                     onClick={handleSendQuote}
                     disabled={sendingQuote || !customerEmail.trim()}
-                    className="flex-1 min-h-[44px]"
+                    className="premium-button flex-1 h-11"
                   >
                     {sendingQuote ? (
                       <>
@@ -825,14 +848,14 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                       setCustomerEmail("");
                       setEmailMessage("");
                     }}
-                    className="min-h-[44px]"
+                    className="h-11 border-white/10 text-white hover:bg-white/5 hover:text-white"
                   >
                     Avbryt
                   </Button>
                 </div>
 
-                <div className="p-3 rounded bg-muted/30 border border-border">
-                  <p className="text-xs text-secondary">
+                <div className="p-3 rounded bg-blue-500/10 border border-blue-500/20">
+                  <p className="text-xs text-blue-200">
                     <strong>Obs:</strong> Din standard email-klient öppnas med offerten förfylld.
                     Du kan redigera meddelandet innan du skickar.
                   </p>
@@ -844,25 +867,25 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 pb-4 border-b border-border/30">
+      <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-white/5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary/60" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
           <Input
             placeholder="Sök på titel eller kund"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full bg-card/50 border-border/50 focus:border-accent/50"
+            className="premium-input pl-10 h-11"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-48 h-11 premium-input">
             <SelectValue placeholder="Filtera status" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Alla statusar</SelectItem>
-            <SelectItem value="draft">Utkast</SelectItem>
-            <SelectItem value="sent">Skickad</SelectItem>
-            <SelectItem value="accepted">Accepterad</SelectItem>
+          <SelectContent className="glass-panel border-white/10 text-white">
+            <SelectItem value="all" className="focus:bg-white/10 focus:text-white">Alla statusar</SelectItem>
+            <SelectItem value="draft" className="focus:bg-white/10 focus:text-white">Utkast</SelectItem>
+            <SelectItem value="sent" className="focus:bg-white/10 focus:text-white">Skickad</SelectItem>
+            <SelectItem value="accepted" className="focus:bg-white/10 focus:text-white">Accepterad</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -870,31 +893,27 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       {/* Quotes Grid */}
       {
         filteredQuotes.length === 0 ? (
-          <Card className="border-border/50 bg-card/50">
-            <CardContent className="p-12 sm:p-16 text-center">
-              <div className="max-w-md mx-auto">
-                <div className="h-20 w-20 rounded bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20">
-                  <FileText className="h-10 w-10 text-accent" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-semibold text-primary mb-3">
-                  {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
-                </h3>
-                <p className="text-secondary/80 mb-8 text-sm sm:text-base">
-                  {quotes.length === 0
-                    ? "Börja med att skapa din första offert för att komma igång."
-                    : "Prova att ändra dina filter för att hitta fler resultat."}
-                </p>
-                {quotes.length === 0 && (
-                  <Button onClick={() => handleOpenDialog()} size="lg" className="min-h-[44px]">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Skapa din första offert
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="glass-card rounded-xl p-12 text-center border-dashed border-white/10">
+            <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
+              <FileText className="h-10 w-10 text-accent" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">
+              {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
+            </h3>
+            <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
+              {quotes.length === 0
+                ? "Börja med att skapa din första offert för att komma igång med din försäljning."
+                : "Prova att ändra dina filter eller söktermer för att hitta det du letar efter."}
+            </p>
+            {quotes.length === 0 && (
+              <Button onClick={() => handleOpenDialog()} className="premium-button px-8 py-6 text-lg">
+                <Plus className="h-5 w-5 mr-2" />
+                Skapa din första offert
+              </Button>
+            )}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredQuotes.map((quote) => (
               <QuoteCard
                 key={quote.id}
