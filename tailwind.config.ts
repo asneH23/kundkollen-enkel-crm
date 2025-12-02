@@ -19,35 +19,35 @@ export default {
       },
       colors: {
         background: {
-          DEFAULT: "#0F1115", // Deeper, richer dark
-          section: "#16181D",
-          elevated: "#1C1E24",
+          DEFAULT: "#F8F7F4", // Warm light beige
+          section: "#FFFFFF",
+          elevated: "#FEFEFE",
         },
         card: {
-          DEFAULT: "rgba(30, 32, 38, 0.7)", // Glass effect base
-          foreground: "#FFFFFF"
+          DEFAULT: "rgba(255, 255, 255, 0.85)", // Light glass effect
+          foreground: "#1F2937"
         },
         primary: {
-          DEFAULT: "#FFFFFF",
-          muted: "#A1A1AA",
+          DEFAULT: "#1F2937", // Dark gray for text
+          muted: "#6B7280",
         },
         secondary: {
-          DEFAULT: "#27272A",
-          foreground: "#FFFFFF",
+          DEFAULT: "#F3F4F6",
+          foreground: "#1F2937",
         },
         accent: {
-          DEFAULT: "#00E599", // Vibrant Mint Green
-          hover: "#00CC88",
-          foreground: "#003322",
+          DEFAULT: "#2D6F4A", // Forest green - earthy and professional
+          hover: "#236039",
+          foreground: "#FFFFFF",
         },
-        border: "rgba(255, 255, 255, 0.08)", // Subtle border
-        input: "rgba(255, 255, 255, 0.05)",
+        border: "rgba(0, 0, 0, 0.08)", // Subtle dark border
+        input: "rgba(0, 0, 0, 0.03)",
         muted: {
-          DEFAULT: "#27272A",
-          foreground: "#A1A1AA"
+          DEFAULT: "#F3F4F6",
+          foreground: "#6B7280"
         },
-        success: { DEFAULT: "#00E599", foreground: "#003322" },
-        warning: { DEFAULT: "#F59E0B", foreground: "#451A03" },
+        success: { DEFAULT: "#2D6F4A", foreground: "#FFFFFF" },
+        warning: { DEFAULT: "#F59E0B", foreground: "#FFFFFF" },
         danger: { DEFAULT: "#EF4444", foreground: "#450A0A" },
       },
       backgroundImage: {
