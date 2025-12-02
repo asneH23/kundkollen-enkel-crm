@@ -229,7 +229,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_reminders_to_notify: {
+        Args: never
+        Returns: {
+          customer_name: string
+          days_until: number
+          due_date: string
+          notification_type: string
+          reminder_description: string
+          reminder_id: string
+          reminder_title: string
+          user_email: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
