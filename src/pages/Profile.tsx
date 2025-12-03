@@ -54,7 +54,8 @@ const Profile = () => {
 
       if (data) {
         setCompanyName(data.company_name || "");
-        setDisplayName((data as any).display_name || "");
+        // Try database first, then localStorage for display_name
+        setDisplayName((data as any).display_name || localStorage.getItem(`profile_display_name_${user.id}`) || "");
         // Load additional fields if they exist in the database
         setPhone((data as any).phone || localStorage.getItem(`profile_phone_${user.id}`) || "");
         setAddress((data as any).address || localStorage.getItem(`profile_address_${user.id}`) || "");
@@ -103,6 +104,13 @@ const Profile = () => {
     setSaving(true);
 
     try {
+      // Save display_name to localStorage as fallback
+      if (displayName) {
+        localStorage.setItem(`profile_display_name_${user.id}`, displayName);
+      } else {
+        localStorage.removeItem(`profile_display_name_${user.id}`);
+      }
+
       // Try to update with all fields (some might not exist in DB yet)
       const updateData: any = {
         company_name: companyName || null,
@@ -161,6 +169,41 @@ const Profile = () => {
         <div className="mb-6 pb-6 border-b border-border/50">
           <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Profilinställningar</h1>
           <p className="text-secondary/80">Hantera dina kontoinställningar och profilinformation</p>
+        </div>
+
+        {/* Stats Section - Black Hero Card */}
+        <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300 mb-8">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-6">
+                <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
+                  <User className="h-8 w-8" />
+                </div>
+                <div>
+                  <div className="text-5xl font-bold text-white tracking-tight mb-1">
+                    {stats.totalValue.toLocaleString('sv-SE')}
+                    <span className="text-2xl text-white/60 font-normal ml-3">kr</span>
+                  </div>
+                  <p className="text-white/60 text-lg">Total försäljning</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm text-center">
+                  <div className="text-2xl font-bold text-white">{stats.customers}</div>
+                  <div className="text-white/60 text-sm">Kunder</div>
+                </div>
+                <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm text-center">
+                  <div className="text-2xl font-bold text-white">{stats.quotes}</div>
+                  <div className="text-white/60 text-sm">Offerter</div>
+                </div>
+                <div className="bg-accent/20 rounded-2xl p-4 border border-accent/30 text-center">
+                  <div className="text-2xl font-bold text-accent">{stats.reminders}</div>
+                  <div className="text-accent text-sm">Påminnelser</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
