@@ -174,7 +174,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-white rounded-t-[3rem] border-t border-black/5">
+      <section id="features" className="py-24 bg-white rounded-t-[3rem] border-t border-black/5">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary mb-4">Allt du behöver. Inget du inte behöver.</h2>
