@@ -13,7 +13,7 @@ import {
   X,
   Sparkles
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -25,6 +25,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [displayName, setDisplayName] = useState<string>("");
 
   const navItems = [
     { path: "/dashboard", label: "Översikt", icon: LayoutDashboard },
@@ -37,6 +38,16 @@ const Sidebar = ({ mobile }: SidebarProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  useEffect(() => {
+    if (user) {
+      // Try to get display_name from localStorage
+      const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+      if (storedName) {
+        setDisplayName(storedName);
+      }
+    }
+  }, [user]);
+
   const SidebarContent = () => (
     <div className="h-full glass-panel flex flex-col relative overflow-hidden bg-card border border-white/50 shadow-xl">
       {/* Logo/Brand */}
@@ -47,7 +58,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
           </div>
           <div>
             <span className="text-2xl font-bold text-primary tracking-tight block leading-none">Kundkollen</span>
-            <span className="text-xs text-primary/60 font-medium tracking-wider uppercase mt-1 block">CRM System</span>
+            <span className="text-xs text-primary/70 font-medium tracking-wider uppercase mt-1 block">CRM System</span>
           </div>
         </Link>
       </div>
@@ -66,7 +77,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
                 "flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all duration-300 group relative overflow-hidden",
                 active
                   ? "text-white bg-primary shadow-lg scale-[1.02]"
-                  : "text-primary/60 hover:text-primary hover:bg-white/50"
+                  : "text-primary/70 hover:text-primary hover:bg-white/50"
               )}
             >
               <Icon className={cn(
@@ -87,20 +98,20 @@ const Sidebar = ({ mobile }: SidebarProps) => {
         <div className="glass-card p-4 rounded-2xl bg-white/50 border border-white/60">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold">
-              {user?.email?.charAt(0).toUpperCase()}
+              {displayName ? displayName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-primary truncate">
-                {user?.email?.split("@")[0]}
+                {displayName || user?.email?.split("@")[0]}
               </p>
-              <p className="text-xs text-primary/60 truncate">
+              <p className="text-xs text-primary/70 truncate">
                 {user?.email}
               </p>
             </div>
           </div>
           <Button
             variant="ghost"
-            className="w-full justify-start text-primary/60 hover:text-red-600 hover:bg-red-50 rounded-xl"
+            className="w-full justify-start text-primary/70 hover:text-red-600 hover:bg-red-50 rounded-xl"
             onClick={() => signOut()}
           >
             <LogOut className="mr-2 h-4 w-4" />
