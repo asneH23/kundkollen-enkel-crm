@@ -72,6 +72,12 @@ const Dashboard = () => {
         .eq("id", user.id)
         .single();
 
+      // Ignore error if column doesn't exist yet
+      if (error && error.code === "42703") {
+        console.log("display_name column not yet created in database");
+        return;
+      }
+
       if (error && error.code !== "PGRST116") throw error;
 
       if (data?.display_name) {
