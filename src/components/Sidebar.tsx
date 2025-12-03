@@ -57,8 +57,8 @@ const Sidebar = ({ mobile }: SidebarProps) => {
             <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
           </div>
           <div>
-            <span className="text-2xl font-bold text-primary tracking-tight block leading-none">Kundkollen</span>
-            <span className="text-xs text-primary/70 font-medium tracking-wider uppercase mt-1 block">CRM System</span>
+            <span className="text-2xl font-bold text-primary tracking-tight block leading-none group-hover:text-accent transition-colors">Kundkollen</span>
+            <span className="text-xs text-primary/70 font-medium tracking-wider uppercase mt-1 block group-hover:text-accent/80 transition-colors">CRM System</span>
           </div>
         </Link>
       </div>
