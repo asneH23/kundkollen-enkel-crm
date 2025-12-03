@@ -26,6 +26,7 @@ const Dashboard = () => {
   const [salesGoal, setSalesGoal] = useState<number | null>(null);
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [goalInput, setGoalInput] = useState("");
+  const [displayName, setDisplayName] = useState<string>("");
   const { toast } = useToast();
 
   // Get greeting based on time of day
@@ -55,10 +56,31 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
+      fetchDisplayName();
       fetchStats();
       fetchSalesGoal();
     }
   }, [user]);
+
+  const fetchDisplayName = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+
+      if (data?.display_name) {
+        setDisplayName(data.display_name);
+      }
+    } catch (error) {
+      console.error("Error fetching display name:", error);
+    }
+  };
 
   const fetchStats = async () => {
     if (!user) return;

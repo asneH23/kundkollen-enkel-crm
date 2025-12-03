@@ -22,6 +22,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [companyName, setCompanyName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [createdAt, setCreatedAt] = useState<string | null>(null);
@@ -53,6 +54,7 @@ const Profile = () => {
 
       if (data) {
         setCompanyName(data.company_name || "");
+        setDisplayName((data as any).display_name || "");
         // Load additional fields if they exist in the database
         setPhone((data as any).phone || localStorage.getItem(`profile_phone_${user.id}`) || "");
         setAddress((data as any).address || localStorage.getItem(`profile_address_${user.id}`) || "");
@@ -104,6 +106,7 @@ const Profile = () => {
       // Try to update with all fields (some might not exist in DB yet)
       const updateData: any = {
         company_name: companyName || null,
+        display_name: displayName || null,
       };
 
       // Only include these if the columns exist in the database
@@ -186,6 +189,24 @@ const Profile = () => {
                     />
                     <p className="text-sm text-muted-foreground mt-1">
                       E-postadressen kan inte ändras
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="displayName" className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-accent" />
+                      Ditt namn
+                    </Label>
+                    <Input
+                      id="displayName"
+                      type="text"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Förnamn Efternamn"
+                      className="mt-2"
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Visas i hälsningen på Dashboard
                     </p>
                   </div>
 
