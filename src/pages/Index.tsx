@@ -144,18 +144,22 @@ const Index = () => {
                       <span className="font-bold text-primary">Senaste offerter</span>
                       <span className="text-xs text-primary/40">Visa alla</span>
                     </div>
-                    {[1, 2, 3].map((i) => (
+                    {[
+                      { title: "Renovering av badrum", customer: "Familjen Andersson", amount: "85 000" },
+                      { title: "Köksinstallation", customer: "Villa Ekbacken", amount: "125 000" },
+                      { title: "Takrenovering", customer: "Fastighets AB", amount: "65 000" }
+                    ].map((quote, i) => (
                       <div key={i} className="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center">
                             <FileText className="h-4 w-4 text-primary/40" />
                           </div>
                           <div>
-                            <div className="font-medium text-sm">Webbdesign Projekt</div>
-                            <div className="text-xs text-primary/40">AB Företaget</div>
+                            <div className="font-medium text-sm">{quote.title}</div>
+                            <div className="text-xs text-primary/40">{quote.customer}</div>
                           </div>
                         </div>
-                        <span className="text-sm font-bold">45 000 kr</span>
+                        <span className="text-sm font-bold">{quote.amount} kr</span>
                       </div>
                     ))}
                   </div>
