@@ -99,7 +99,13 @@ const Index = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="h-14 px-8 rounded-full text-lg border-2 border-black/10 hover:bg-white hover:border-black/20 bg-transparent"
+                  onClick={() => {
+                    document.getElementById('features')?.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  }}
+                  className="h-14 px-8 rounded-full text-lg border-2 border-black/10 hover:border-accent/50 hover:bg-white/50 text-primary font-bold"
                 >
                   Läs mer
                 </Button>
@@ -171,7 +177,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-white rounded-t-[3rem] border-t border-black/5">
+      <section id="features" className="py-24 bg-white rounded-t-[3rem] border-t border-black/5">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary mb-4">Allt du behöver. Inget du inte behöver.</h2>
