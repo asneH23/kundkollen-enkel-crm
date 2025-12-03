@@ -53,7 +53,7 @@ const StatWidget = ({
         {progress !== undefined && (
           <div className="mt-4 h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
             <div
-              className="h-full bg-accent shadow-[0_0_8px_rgba(204,255,0,0.5)] transition-all duration-1000 ease-out rounded-full"
+              className="h-full bg-accent shadow-[0_0_8px_rgba(22,163,74,0.5)] transition-all duration-1000 ease-out rounded-full"
               style={{ width: `${progress}%` }}
             />
           </div>
