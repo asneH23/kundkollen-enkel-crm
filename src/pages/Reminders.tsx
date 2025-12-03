@@ -281,7 +281,7 @@ const Reminders = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
           <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Påminnelser</h1>
-          <p className="text-secondary-foreground/60 text-lg">Håll koll på alla viktiga uppföljningar.</p>
+          <p className="text-primary/70 text-lg">Håll koll på alla viktiga uppföljningar.</p>
         </div>
 
         <Dialog open={open} onOpenChange={(isOpen) => (isOpen ? setOpen(true) : handleCloseDialog())}>
@@ -371,7 +371,7 @@ const Reminders = () => {
                       <Calendar className="h-5 w-5 text-accent" />
                     </label>
                   </div>
-                  <p className="text-xs text-secondary-foreground/60">
+                  <p className="text-xs text-primary/70">
                     Du får email-påminnelser 7 dagar, 1 dag, idag och om den blir försenad.
                   </p>
                 </div>
@@ -427,7 +427,7 @@ const Reminders = () => {
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-base text-primary mb-1">Automatiska email-påminnelser</h3>
-            <p className="text-sm text-secondary-foreground/60 leading-relaxed">
+            <p className="text-sm text-primary/70 leading-relaxed">
               Du får automatiskt email när påminnelser närmar sig: <span className="font-medium text-primary">7 dagar innan</span>, <span className="font-medium text-primary">1 dag innan</span>, <span className="font-medium text-primary">idag</span> och om de blir <span className="font-medium text-primary">försenade</span>.
             </p>
           </div>
@@ -465,7 +465,7 @@ const Reminders = () => {
           <h3 className="text-2xl font-bold text-primary mb-3">
             {reminders.length === 0 ? "Inga påminnelser ännu" : "Inga påminnelser matchar dina filter"}
           </h3>
-          <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
+          <p className="text-primary/70 mb-8 max-w-md mx-auto">
             {reminders.length === 0
               ? "Börja med att skapa din första påminnelse för att aldrig missa en uppföljning."
               : "Prova att ändra dina filter eller söktermer för att hitta det du letar efter."}

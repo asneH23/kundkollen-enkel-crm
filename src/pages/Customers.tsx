@@ -220,7 +220,7 @@ const Customers = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
           <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Kunder</h1>
-          <p className="text-secondary-foreground/60 text-lg">Bygg starkare relationer med dina kunder.</p>
+          <p className="text-primary/70 text-lg">Bygg starkare relationer med dina kunder.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -354,7 +354,7 @@ const Customers = () => {
           <h3 className="text-2xl font-bold text-primary mb-3">
             {customers.length === 0 ? "Inga kunder ännu" : "Inga kunder matchar din sökning"}
           </h3>
-          <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
+          <p className="text-primary/70 mb-8 max-w-md mx-auto">
             {customers.length === 0
               ? "Börja med att lägga till din första kund för att komma igång med din kundhantering."
               : "Prova att ändra din sökning eller filtrera för att hitta det du letar efter."}

@@ -487,7 +487,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
           <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Offerter</h1>
-          <p className="text-secondary-foreground/60 text-lg">Hantera dina affärer och skapa nya möjligheter.</p>
+          <p className="text-primary/70 text-lg">Hantera dina affärer och skapa nya möjligheter.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -606,7 +606,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
               <>
                 <DialogHeader>
                   <DialogTitle className="text-3xl font-bold tracking-tight">{selectedQuote.title}</DialogTitle>
-                  <DialogDescription className="text-secondary-foreground/60">
+                  <DialogDescription className="text-primary/70">
                     Offert skapad {new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", {
                       year: "numeric",
                       month: "long",
@@ -619,7 +619,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                   {/* Status and Amount */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 p-6 rounded-xl bg-black/5 border border-black/5">
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm text-secondary-foreground/60 uppercase tracking-wider font-medium">Status</span>
+                      <span className="text-sm text-primary/70 uppercase tracking-wider font-medium">Status</span>
                       <div className="flex items-center gap-3">
                         <Badge
                           className={cn(
@@ -671,10 +671,10 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                     </div>
 
                     <div className="flex flex-col gap-1 sm:text-right">
-                      <span className="text-sm text-secondary-foreground/60 uppercase tracking-wider font-medium">Belopp</span>
+                      <span className="text-sm text-primary/70 uppercase tracking-wider font-medium">Belopp</span>
                       {selectedQuote.amount ? (
                         <div className="text-3xl font-bold text-primary tracking-tight">
-                          {selectedQuote.amount.toLocaleString("sv-SE")} <span className="text-lg text-secondary-foreground/40 font-normal">kr</span>
+                          {selectedQuote.amount.toLocaleString("sv-SE")} <span className="text-lg text-primary/60 font-normal">kr</span>
                         </div>
                       ) : (
                         <span className="text-primary/60 italic">Ej angivet</span>
@@ -689,7 +689,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                         <Users className="h-5 w-5 text-accent" />
                       </div>
                       <div>
-                        <p className="text-xs text-secondary-foreground/60 uppercase tracking-wider font-medium mb-0.5">Kund</p>
+                        <p className="text-xs text-primary/70 uppercase tracking-wider font-medium mb-0.5">Kund</p>
                         <p className="font-semibold text-primary text-lg">{getCustomerName(selectedQuote.customer_id)}</p>
                       </div>
                     </div>
@@ -706,7 +706,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                           setDetailOpen(false);
                           handleOpenDialog(selectedQuote);
                         }}
-                        className="text-secondary-foreground/60 hover:text-accent hover:bg-black/10"
+                        className="text-primary/70 hover:text-accent hover:bg-black/10"
                       >
                         <Pencil className="h-4 w-4 mr-2" />
                         Redigera
@@ -773,7 +773,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                 <Mail className="h-5 w-5 text-accent" />
                 Skicka offert till kund
               </DialogTitle>
-              <DialogDescription className="text-secondary-foreground/60">
+              <DialogDescription className="text-primary/70">
                 Fyll i kundens email-adress för att skicka offerten
               </DialogDescription>
             </DialogHeader>
@@ -781,7 +781,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
             {selectedQuote && (
               <div className="space-y-6 mt-4">
                 <div className="p-4 rounded-lg bg-black/5 border border-black/5">
-                  <p className="text-xs text-secondary-foreground/60 uppercase tracking-wider font-medium mb-1">Offert</p>
+                  <p className="text-xs text-primary/70 uppercase tracking-wider font-medium mb-1">Offert</p>
                   <p className="font-semibold text-primary text-lg">{selectedQuote.title}</p>
                   {selectedQuote.amount && (
                     <p className="text-xl font-bold text-accent mt-1">
@@ -802,7 +802,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                     required
                   />
                   {selectedQuote.customer_id && getCustomerEmail(selectedQuote.customer_id) && (
-                    <p className="text-xs text-secondary-foreground/60 mt-1">
+                    <p className="text-xs text-primary/70 mt-1">
                       Kundens sparade email: {getCustomerEmail(selectedQuote.customer_id)}
                     </p>
                   )}
@@ -818,7 +818,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                     rows={6}
                     className="premium-input resize-none"
                   />
-                  <p className="text-xs text-secondary-foreground/60">
+                  <p className="text-xs text-primary/70">
                     Offertdetaljer läggs automatiskt till i slutet av meddelandet
                   </p>
                 </div>
@@ -931,7 +931,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
             <h3 className="text-2xl font-bold text-primary mb-3">
               {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
             </h3>
-            <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
+            <p className="text-primary/70 mb-8 max-w-md mx-auto">
               {quotes.length === 0
                 ? "Börja med att skapa din första offert för att komma igång med din försäljning."
                 : "Prova att ändra dina filter eller söktermer för att hitta det du letar efter."}
