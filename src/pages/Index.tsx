@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, BarChart3, Users, FileText, Shield, Zap } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,12 +35,12 @@ const Index = () => {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#E8E8E8]/80 backdrop-blur-md border-b border-black/5">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+          <Link to="/" className="flex items-center gap-3 group cursor-pointer">
+            <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden group-hover:scale-105 transition-transform duration-300">
               <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
             </div>
-            <span className="text-2xl font-bold text-primary tracking-tight">Kundkollen</span>
-          </div>
+            <span className="text-2xl font-bold text-primary tracking-tight group-hover:text-accent transition-colors">Kundkollen</span>
+          </Link>
           <div className="flex items-center gap-4">
             {user ? (
               <Button
