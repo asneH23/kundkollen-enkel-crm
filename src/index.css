@@ -65,7 +65,7 @@
   }
 
   .premium-input {
-    @apply bg-card border border-transparent text-black placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all duration-200 hover:bg-white/80 rounded-xl;
+    @apply bg-card border border-transparent text-black placeholder:text-gray-500 focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all duration-200 hover:bg-white/80 rounded-xl;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(0, 0, 0, 0.03);
   }
 

@@ -236,7 +236,7 @@ const Customers = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg mb-4">
-              <p className="text-xs text-blue-200">
+              <p className="text-xs text-blue-900/70">
                 <strong>GDPR-information:</strong> Kunduppgifter sparas säkert och hanteras enligt dataskyddsförordningen (GDPR).
                 Informationen används endast för att hantera dina kundrelationer och delas inte med tredje part.
                 Du kan när som helst radera kunduppgifter.
@@ -250,7 +250,7 @@ const Customers = () => {
                     id="companyName"
                     value={formData.companyName}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    placeholder="Acme AB"
+                    placeholder="Anderssons Bygg AB"
                     required
                     className="premium-input"
                   />
@@ -263,7 +263,7 @@ const Customers = () => {
                       id="contactPerson"
                       value={formData.contactPerson}
                       onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
-                      placeholder="Anna Andersson"
+                      placeholder="Erik Andersson"
                       className="premium-input"
                     />
                   </div>
@@ -287,7 +287,7 @@ const Customers = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="anna@acme.se"
+                    placeholder="erik@anderssonsbygg.se"
                     className="premium-input"
                   />
                 </div>

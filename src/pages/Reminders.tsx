@@ -305,7 +305,7 @@ const Reminders = () => {
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="T.ex. Följ upp med Acme AB"
+                    placeholder="T.ex. Ring angående badrumsrenovering"
                     required
                     className="premium-input"
                   />
