@@ -9,18 +9,16 @@
   html {
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 16px;
-    background-color: #FAFAFA;
-    color: #111827;
+    background-color: #F2F2F2;
+    color: #000000;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-background text-primary min-h-screen selection:bg-accent/50 selection:text-black;
-    /* Subtle mesh gradient feel */
-    background-image:
-      radial-gradient(circle at 0% 0%, rgba(204, 255, 0, 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 100% 100%, rgba(204, 255, 0, 0.03) 0%, transparent 50%);
+    @apply bg-background text-primary min-h-screen selection:bg-accent selection:text-black;
+    /* Clean, solid background for industrial look */
+    background-image: none;
   }
 
   h1,
@@ -29,13 +27,13 @@
   h4,
   h5,
   h6 {
-    @apply font-heading font-bold tracking-tight text-primary;
+    @apply font-heading font-bold tracking-tight text-black;
   }
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
@@ -43,40 +41,45 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-200 rounded-full hover:bg-gray-300 transition-colors;
+    @apply bg-black/20 rounded-full hover:bg-black/30 transition-colors;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white border border-gray-100 shadow-xl rounded-2xl;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+    @apply bg-white border border-transparent shadow-xl rounded-2xl;
+    /* Softer, more diffused shadow for modern feel */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 20px 40px -10px rgba(0, 0, 0, 0.08);
   }
 
   .glass-card {
-    @apply bg-white border border-gray-100 shadow-sm rounded-2xl transition-all duration-300;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+    @apply bg-white border border-transparent shadow-sm rounded-2xl transition-all duration-300;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
   .glass-card:hover {
-    @apply border-gray-200 shadow-md transform -translate-y-1;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+    @apply transform -translate-y-1;
+    /* Neon glow on hover */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 12px 24px -8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(204, 255, 0, 0.5);
   }
 
   .premium-input {
-    @apply bg-gray-50 border border-gray-200 text-primary placeholder:text-gray-400 focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-accent/20 transition-all duration-200 hover:bg-gray-100 rounded-xl;
+    @apply bg-white border border-transparent text-black placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all duration-200 hover:bg-white rounded-xl;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), inset 0 2px 4px rgba(0, 0, 0, 0.02);
   }
 
   .premium-input:focus {
     outline: none;
+    box-shadow: 0 0 0 2px #000000;
   }
 
   .premium-button {
-    @apply bg-accent text-black font-bold px-8 py-3 rounded-full hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md;
+    @apply bg-black text-white font-bold px-8 py-3 rounded-full hover:bg-gray-900 active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl;
   }
 
-  .premium-button:hover {
-    /* No extra shadow needed for this flat style, just color change */
+  /* Variant for accent buttons */
+  .premium-button-accent {
+    @apply bg-accent text-black font-bold px-8 py-3 rounded-full hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl;
   }
 
   .page-container {
@@ -84,23 +87,23 @@
   }
 
   .shadow-glow {
-    /* Subtle lime glow */
-    box-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
+    /* Stronger neon glow */
+    box-shadow: 0 0 30px rgba(204, 255, 0, 0.4);
   }
 
   .animate-enter {
-    animation: slideUp 0.4s ease-out;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   @keyframes slideUp {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(20px) scale(0.98);
     }
 
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 }

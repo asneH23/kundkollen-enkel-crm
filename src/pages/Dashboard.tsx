@@ -384,7 +384,7 @@ const Dashboard = () => {
                   </div>
                   <div className="h-2 bg-black/5 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-accent shadow-[0_0_10px_rgba(0,229,153,0.5)] transition-all duration-1000 ease-out rounded-full"
+                      className="h-full bg-accent shadow-[0_0_10px_rgba(204,255,0,0.5)] transition-all duration-1000 ease-out rounded-full"
                       style={{ width: `${goalProgress}%` }}
                     />
                   </div>

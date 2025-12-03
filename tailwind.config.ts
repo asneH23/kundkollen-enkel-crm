@@ -19,34 +19,34 @@ export default {
       },
       colors: {
         background: {
-          DEFAULT: "#FAFAFA", // Crisp light gray/white
+          DEFAULT: "#F2F2F2", // Light gray background (Industrial feel)
           section: "#FFFFFF",
           elevated: "#FFFFFF",
         },
         card: {
           DEFAULT: "#FFFFFF",
-          foreground: "#111827"
+          foreground: "#000000"
         },
         primary: {
-          DEFAULT: "#111827", // Almost black for high contrast text
-          muted: "#6B7280",
+          DEFAULT: "#000000", // Pure black for maximum contrast and modern feel
+          muted: "#525252",   // Neutral gray
         },
         secondary: {
-          DEFAULT: "#F3F4F6",
-          foreground: "#111827",
+          DEFAULT: "#E5E5E5", // Slightly darker gray for secondary elements
+          foreground: "#000000",
         },
         accent: {
-          DEFAULT: "#CCFF00", // The Neon Lime from Framer
+          DEFAULT: "#CCFF00", // Neon Lime
           hover: "#B3E600",
-          foreground: "#000000", // Black text on neon background for readability
+          foreground: "#000000",
         },
-        border: "#E5E7EB", // Very subtle light gray border
-        input: "#F3F4F6", // Light gray input background
+        border: "#E5E5E5", // Visible but subtle borders
+        input: "#FFFFFF", // White inputs on gray background
         muted: {
-          DEFAULT: "#F3F4F6",
-          foreground: "#6B7280"
+          DEFAULT: "#F5F5F5",
+          foreground: "#737373"
         },
-        success: { DEFAULT: "#CCFF00", foreground: "#000000" }, // Using accent for success too as it fits the vibe
+        success: { DEFAULT: "#CCFF00", foreground: "#000000" },
         warning: { DEFAULT: "#F59E0B", foreground: "#FFFFFF" },
         danger: { DEFAULT: "#EF4444", foreground: "#450A0A" },
       },

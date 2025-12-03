@@ -92,7 +92,7 @@ const Sidebar = () => {
                   )}
                 >
                   {active && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent shadow-[0_0_10px_rgba(45,111,74,0.5)]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent shadow-[0_0_10px_rgba(204,255,0,0.5)]" />
                   )}
                   <Icon className={cn(
                     "h-5 w-5 flex-shrink-0 transition-colors duration-300",
