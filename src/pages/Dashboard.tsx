@@ -355,7 +355,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="bg-black/5 p-3 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-primary" />
+                <TrendingUp className="h-5 w-5 text-primary" />
               </div>
             </div>
 
@@ -370,7 +370,7 @@ const Dashboard = () => {
                   style={{ width: `${salesGoal ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0}%` }}
                 />
               </div>
-              <p className="text-xs text-primary/40 mt-2">Klicka för att ändra mål</p>
+              <p className="text-xs text-primary/60 mt-2">Klicka för att ändra mål</p>
             </div>
           </div>
         </div>
@@ -390,7 +390,7 @@ const Dashboard = () => {
       </div>
 
       <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
-        <DialogContent className="glass-panel border-none sm:max-w-[425px]">
+        <DialogContent className="bg-white border border-black/10 text-primary sm:max-w-[425px] rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">Sätt försäljningsmål</DialogTitle>
           </DialogHeader>

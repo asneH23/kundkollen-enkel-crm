@@ -36,7 +36,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
             <h3 className="text-xl font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300">
               {customer.name}
             </h3>
-            <div className="flex items-center gap-2 text-sm text-primary/40 mt-1">
+            <div className="flex items-center gap-2 text-sm text-primary/60 mt-1">
               <span className="bg-black/5 px-2 py-0.5 rounded-md text-xs font-medium uppercase tracking-wide">
                 {customer.org_number || "Inget org.nr"}
               </span>
@@ -46,7 +46,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/40 hover:text-primary">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -67,7 +67,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
             href={`mailto:${customer.email}`}
             className="flex items-center gap-3 p-3 rounded-xl hover:bg-black/5 transition-colors group/item"
           >
-            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/40 group-hover/item:text-primary transition-colors">
+            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/60 group-hover/item:text-primary transition-colors">
               <Mail className="h-4 w-4" />
             </div>
             <span className="text-sm font-medium text-primary/80 truncate">{customer.email}</span>
@@ -79,7 +79,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
             href={`tel:${customer.phone}`}
             className="flex items-center gap-3 p-3 rounded-xl hover:bg-black/5 transition-colors group/item"
           >
-            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/40 group-hover/item:text-primary transition-colors">
+            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/60 group-hover/item:text-primary transition-colors">
               <Phone className="h-4 w-4" />
             </div>
             <span className="text-sm font-medium text-primary/80 truncate">{customer.phone}</span>
@@ -88,7 +88,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
 
         {customer.address && (
           <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-black/5 transition-colors group/item">
-            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/40 group-hover/item:text-primary transition-colors">
+            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/60 group-hover/item:text-primary transition-colors">
               <MapPin className="h-4 w-4" />
             </div>
             <span className="text-sm font-medium text-primary/80 truncate">
@@ -103,7 +103,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onEdit(customer)}
-          className="text-primary/40 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
+          className="text-primary/60 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
         >
           Hantera <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>
         </Button>

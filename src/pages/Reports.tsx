@@ -258,8 +258,8 @@ const Reports = () => {
             <div className="text-5xl font-bold text-primary tracking-tight">
               {stats.totalValue >= 1000000
                 ? `${(stats.totalValue / 1000000).toFixed(1)}M`
-                : `${(stats.totalValue / 1000).toFixed(0)}k`}
-              <span className="text-2xl text-primary/40 font-normal ml-2">kr</span>
+                : `${Math.round(stats.totalValue / 1000)}k`}
+              <span className="text-2xl text-primary/60 font-normal ml-2">kr</span>
             </div>
             <p className="text-primary/60 mt-2">Totalt värde av accepterade offerter</p>
           </div>
@@ -294,21 +294,21 @@ const Reports = () => {
         <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold text-primary">Senaste Aktivitet</h3>
-            <Button variant="ghost" size="sm" className="text-primary/40 hover:text-primary">
+            <Button variant="ghost" size="sm" className="text-primary/60 hover:text-primary">
               Visa alla <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
 
           <div className="space-y-6">
             {activities.length === 0 ? (
-              <div className="text-center py-8 text-primary/40">Inga aktiviteter ännu</div>
+              <div className="text-center py-8 text-primary/60">Inga aktiviteter ännu</div>
             ) : (
               activities.map((activity) => (
                 <div key={activity.id} className="flex gap-4 group">
                   <div className="mt-1 h-2 w-2 rounded-full bg-accent flex-shrink-0 group-hover:scale-125 transition-transform" />
                   <div>
                     <p className="text-primary font-medium">{activity.description}</p>
-                    <p className="text-sm text-primary/40 mt-1">
+                    <p className="text-sm text-primary/60 mt-1">
                       {new Date(activity.date).toLocaleDateString("sv-SE", {
                         month: "short",
                         day: "numeric",
@@ -331,14 +331,14 @@ const Reports = () => {
               <Bell className="h-5 w-5 text-accent" />
               Kommande
             </h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/paminnelser")} className="text-primary/40 hover:text-primary">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/paminnelser")} className="text-primary/60 hover:text-primary">
               Hantera <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
 
           <div className="space-y-3">
             {upcomingReminders.length === 0 ? (
-              <div className="text-center py-8 text-primary/40">Inga kommande påminnelser</div>
+              <div className="text-center py-8 text-primary/60">Inga kommande påminnelser</div>
             ) : (
               upcomingReminders.slice(0, 3).map((reminder) => (
                 <div key={reminder.id} className="flex items-center justify-between p-4 rounded-2xl bg-black/5 hover:bg-black/10 transition-colors">

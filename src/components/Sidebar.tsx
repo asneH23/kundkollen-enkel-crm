@@ -46,7 +46,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
           </div>
           <div>
             <span className="text-2xl font-bold text-primary tracking-tight block leading-none">Kundkollen</span>
-            <span className="text-xs text-primary/40 font-medium tracking-wider uppercase mt-1 block">CRM System</span>
+            <span className="text-xs text-primary/60 font-medium tracking-wider uppercase mt-1 block">CRM System</span>
           </div>
         </Link>
       </div>
@@ -92,7 +92,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
               <p className="text-sm font-bold text-primary truncate">
                 {user?.email?.split("@")[0]}
               </p>
-              <p className="text-xs text-primary/40 truncate">
+              <p className="text-xs text-primary/60 truncate">
                 {user?.email}
               </p>
             </div>

@@ -291,7 +291,7 @@ const Reminders = () => {
               Skapa påminnelse
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-panel border-black/10 text-primary sm:max-w-[600px]">
+          <DialogContent className="bg-white border border-black/10 text-primary sm:max-w-[600px] rounded-3xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold">
                 {editingReminder ? "Redigera påminnelse" : "Skapa ny påminnelse"}
@@ -403,7 +403,7 @@ const Reminders = () => {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-black/5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/40" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/60" />
           <Input
             placeholder="Sök på titel, beskrivning eller kund"
             value={searchTerm}

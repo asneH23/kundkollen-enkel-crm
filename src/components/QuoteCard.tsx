@@ -69,7 +69,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) 
             <h3 className="text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300">
               {quote.title}
             </h3>
-            <div className="flex items-center gap-2 text-sm text-primary/40 mt-1">
+            <div className="flex items-center gap-2 text-sm text-primary/60 mt-1">
               <User className="h-3 w-3" />
               {quote.customer_name || "Okänd kund"}
             </div>
@@ -78,7 +78,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) 
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/40 hover:text-primary">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -104,13 +104,13 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) 
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-black/5 rounded-2xl p-3">
-          <div className="text-xs text-primary/40 uppercase tracking-wider mb-1 font-medium">Värde</div>
+          <div className="text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Värde</div>
           <div className="text-lg font-bold text-primary flex items-center gap-1">
-            {quote.total_amount?.toLocaleString()} <span className="text-sm font-normal text-primary/40">kr</span>
+            {quote.total_amount?.toLocaleString()} <span className="text-sm font-normal text-primary/60">kr</span>
           </div>
         </div>
         <div className="bg-black/5 rounded-2xl p-3">
-          <div className="text-xs text-primary/40 uppercase tracking-wider mb-1 font-medium">Datum</div>
+          <div className="text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Datum</div>
           <div className="text-lg font-bold text-primary">
             {format(new Date(quote.created_at), "d MMM", { locale: sv })}
           </div>
@@ -130,7 +130,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) 
           variant="ghost"
           size="sm"
           onClick={() => onEdit(quote)}
-          className="text-primary/40 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
+          className="text-primary/60 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
         >
           Öppna <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>
         </Button>

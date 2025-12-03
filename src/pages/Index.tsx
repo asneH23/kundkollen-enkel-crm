@@ -105,7 +105,7 @@ const Index = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center gap-8 pt-8 text-sm text-primary/40 font-medium">
+              <div className="flex items-center gap-8 pt-8 text-sm text-primary/60 font-medium">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-accent" /> Inget kreditkort
                 </div>
@@ -129,20 +129,20 @@ const Index = () => {
                       <BarChart3 className="h-6 w-6" />
                     </div>
                     <div className="text-2xl font-bold text-primary">275 000 kr</div>
-                    <div className="text-sm text-primary/40">Försäljning i år</div>
+                    <div className="text-sm text-primary/60">Försäljning i år</div>
                   </div>
                   <div className="bg-[#F5F5F5] p-6 rounded-3xl">
                     <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 text-blue-500">
                       <Users className="h-6 w-6" />
                     </div>
                     <div className="text-2xl font-bold text-primary">48</div>
-                    <div className="text-sm text-primary/40">Aktiva kunder</div>
+                    <div className="text-sm text-primary/60">Aktiva kunder</div>
                   </div>
                   {/* Mock Quote List */}
                   <div className="col-span-2 bg-[#F5F5F5] p-6 rounded-3xl space-y-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-bold text-primary">Senaste offerter</span>
-                      <span className="text-xs text-primary/40">Visa alla</span>
+                      <span className="text-xs text-primary/60">Visa alla</span>
                     </div>
                     {[
                       { title: "Renovering av badrum", customer: "Familjen Andersson", amount: "85 000" },
@@ -152,11 +152,11 @@ const Index = () => {
                       <div key={i} className="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center">
-                            <FileText className="h-4 w-4 text-primary/40" />
+                            <FileText className="h-4 w-4 text-primary/60" />
                           </div>
                           <div>
                             <div className="font-medium text-sm">{quote.title}</div>
-                            <div className="text-xs text-primary/40">{quote.customer}</div>
+                            <div className="text-xs text-primary/60">{quote.customer}</div>
                           </div>
                         </div>
                         <span className="text-sm font-bold">{quote.amount} kr</span>
@@ -199,7 +199,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-white pt-0 pb-12">
         <div className="container mx-auto px-6 text-center border-t border-black/5 pt-12">
-          <p className="text-primary/40 font-medium">
+          <p className="text-primary/60 font-medium">
             © 2025 Kundkollen. Byggt med ❤️ i Sverige.
           </p>
         </div>

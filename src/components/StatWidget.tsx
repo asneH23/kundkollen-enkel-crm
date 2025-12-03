@@ -45,7 +45,7 @@ const StatWidget = ({
           {title}
         </div>
         {description && (
-          <p className={cn("text-xs mt-2 opacity-40", className ? "text-white/60" : "text-primary/40")}>
+          <p className={cn("text-xs mt-2 opacity-40", className ? "text-white/60" : "text-primary/60")}>
             {description}
           </p>
         )}
