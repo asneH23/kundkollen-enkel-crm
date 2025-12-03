@@ -171,9 +171,9 @@ const Profile = () => {
           <p className="text-primary/70">Hantera dina kontoinställningar och profilinformation</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
           {/* Profile Card */}
-          <Card className="lg:col-span-2 border-border/50 bg-card/50">
+          <Card className="border-border/50 bg-card/50 max-w-2xl mx-auto w-full">
             <CardHeader className="border-b border-border/30 pb-4">
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold text-primary">
                 <User className="h-5 w-5 text-accent" />
@@ -182,8 +182,8 @@ const Profile = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSave} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="sm:col-span-2">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
                     <Label htmlFor="email" className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-accent" />
                       E-post
@@ -245,7 +245,7 @@ const Profile = () => {
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div>
                     <Label htmlFor="address" className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-accent" />
                       Adress
@@ -261,62 +261,16 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-border">
-                  <Button type="submit" disabled={saving} className="w-full sm:w-auto min-h-[44px]">
+                <div className="pt-4 border-t border-border flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar className="h-3 w-3" />
+                    <span>Medlem sedan {createdAt ? new Date(createdAt).toLocaleDateString("sv-SE", { year: "numeric", month: "long" }) : "nyligen"}</span>
+                  </div>
+                  <Button type="submit" disabled={saving} className="min-h-[44px]">
                     {saving ? "Sparar..." : "Spara ändringar"}
                   </Button>
                 </div>
               </form>
-            </CardContent>
-          </Card>
-
-          {/* Stats Card */}
-          <Card className="border-border/50 bg-card/50">
-            <CardHeader className="border-b border-border/30 pb-4">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold text-primary">
-                <TrendingUp className="h-5 w-5 text-accent" />
-                Statistik
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded bg-muted/50 border border-border">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-accent" />
-                    <span className="text-sm text-secondary">Kunder</span>
-                  </div>
-                  <span className="font-bold text-primary">{stats.customers}</span>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded bg-muted/50 border border-border">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-accent" />
-                    <span className="text-sm text-secondary">Offerter</span>
-                  </div>
-                  <span className="font-bold text-primary">{stats.quotes}</span>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded bg-muted/50 border border-border">
-                  <div className="flex items-center gap-2">
-                    <Bell className="h-4 w-4 text-accent" />
-                    <span className="text-sm text-secondary">Påminnelser</span>
-                  </div>
-                  <span className="font-bold text-primary">{stats.reminders}</span>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded bg-accent/10 border border-accent/20">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-accent" />
-                    <span className="text-sm text-accent">Total försäljning</span>
-                  </div>
-                  <span className="font-bold text-accent">
-                    {stats.totalValue.toLocaleString("sv-SE")} kr
-                  </span>
-                </div>
-              </div>
-              <div className="pt-4 border-t border-border">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Calendar className="h-3 w-3" />
-                  <span>Medlem sedan {createdAt ? new Date(createdAt).toLocaleDateString("sv-SE", { year: "numeric", month: "long" }) : "nyligen"}</span>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
