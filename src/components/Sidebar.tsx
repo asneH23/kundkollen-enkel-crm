@@ -32,6 +32,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
     { path: "/offerter", label: "Offerter", icon: FileText },
     { path: "/paminnelser", label: "Påminnelser", icon: Bell },
     { path: "/rapporter", label: "Rapporter", icon: BarChart3 },
+    { path: "/profil", label: "Profil", icon: User },
   ];
 
   const isActive = (path: string) => location.pathname === path;
