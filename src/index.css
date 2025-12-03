@@ -59,8 +59,8 @@
 
   .glass-card:hover {
     @apply transform -translate-y-1;
-    /* Neon glow on hover with stronger shadow for visibility on gray */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 12px 24px -8px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(204, 255, 0, 0.6);
+    /* Dark green glow on hover with stronger shadow for visibility on gray */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 12px 24px -8px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(22, 163, 74, 0.4);
   }
 
   .premium-input {
@@ -88,8 +88,8 @@
   }
 
   .shadow-glow {
-    /* Stronger neon glow */
-    box-shadow: 0 0 30px rgba(204, 255, 0, 0.5);
+    /* Dark green glow */
+    box-shadow: 0 0 30px rgba(22, 163, 74, 0.4);
   }
 
   .animate-enter {

@@ -36,9 +36,9 @@ export default {
           foreground: "#000000",
         },
         accent: {
-          DEFAULT: "#CCFF00", // Neon Lime
-          hover: "#B3E600",
-          foreground: "#000000",
+          DEFAULT: "#16A34A", // Dark Green (professional and readable)
+          hover: "#15803D",
+          foreground: "#FFFFFF", // White text on dark green
         },
         border: "#D4D4D4", // Visible gray borders
         input: "#F5F5F5", // Light gray inputs
@@ -46,7 +46,7 @@ export default {
           DEFAULT: "#E8E8E8",
           foreground: "#737373"
         },
-        success: { DEFAULT: "#CCFF00", foreground: "#000000" },
+        success: { DEFAULT: "#16A34A", foreground: "#FFFFFF" },
         warning: { DEFAULT: "#F59E0B", foreground: "#FFFFFF" },
         danger: { DEFAULT: "#EF4444", foreground: "#450A0A" },
       },
