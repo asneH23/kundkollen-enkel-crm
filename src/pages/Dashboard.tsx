@@ -72,16 +72,26 @@ const Dashboard = () => {
         .eq("id", user.id)
         .single();
 
-      // Ignore error if column doesn't exist yet
       if (error && error.code === "42703") {
         console.log("display_name column not yet created in database");
+        // Try localStorage fallback
+        const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+        if (storedName) {
+          setDisplayName(storedName);
+        }
         return;
       }
 
       if (error && error.code !== "PGRST116") throw error;
 
-      if (data?.display_name) {
-        setDisplayName(data.display_name);
+      if (data && 'display_name' in data && data.display_name) {
+        setDisplayName(data.display_name as string);
+      } else {
+        // Try localStorage fallback if database has no value
+        const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+        if (storedName) {
+          setDisplayName(storedName);
+        }
       }
     } catch (error) {
       console.error("Error fetching display name:", error);
@@ -297,9 +307,9 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl sm:text-5xl font-bold text-primary tracking-tight mb-2">
-            {getGreeting()}{displayName && `, ${displayName}`}
+            {getGreeting()}{displayName && <>, <span className="text-accent">{displayName}</span></>}
           </h1>
-          <p className="text-primary/60 text-lg">
+          <p className="text-primary/70 text-lg">
             Här är din översikt för idag.
           </p>
         </div>
@@ -377,7 +387,7 @@ const Dashboard = () => {
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-lg font-medium text-primary/60 mb-1">Månadsmål</h3>
+                <h3 className="text-lg font-medium text-primary/70 mb-1">Månadsmål</h3>
                 <div className="text-4xl font-bold text-primary tracking-tight">
                   {salesGoal ? `${Math.round((stats.totalValue / salesGoal) * 100)}%` : "0%"}
                 </div>
@@ -389,7 +399,7 @@ const Dashboard = () => {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm font-medium">
-                <span className="text-primary/60">{stats.totalValue.toLocaleString()} kr</span>
+                <span className="text-primary/70">{stats.totalValue.toLocaleString()} kr</span>
                 <span className="text-primary">{salesGoal?.toLocaleString() || "0"} kr</span>
               </div>
               <div className="h-4 bg-black/5 rounded-full overflow-hidden">
@@ -398,7 +408,7 @@ const Dashboard = () => {
                   style={{ width: `${salesGoal ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0}%` }}
                 />
               </div>
-              <p className="text-xs text-primary/60 mt-2">Klicka för att ändra mål</p>
+              <p className="text-xs text-primary/70 mt-2">Klicka för att ändra mål</p>
             </div>
           </div>
         </div>
@@ -408,7 +418,7 @@ const Dashboard = () => {
           <div className="glass-panel p-8">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-primary">Senaste Händelser</h3>
-              <Button variant="ghost" size="sm" className="text-primary/60 hover:text-primary">
+              <Button variant="ghost" size="sm" className="text-primary/70 hover:text-primary">
                 Visa alla <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>

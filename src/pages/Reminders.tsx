@@ -546,7 +546,7 @@ const Reminders = () => {
                               {reminder.title}
                             </h3>
                             {!reminder.description && (
-                              <div className="flex items-center gap-1.5 text-xs text-secondary/60 mt-0.5">
+                              <div className="flex items-center gap-1.5 text-xs text-primary/70 mt-0.5">
                                 <Clock className="h-3 w-3" />
                                 <span>Skapad {new Date(reminder.created_at).toLocaleDateString("sv-SE")}</span>
                               </div>
@@ -578,7 +578,7 @@ const Reminders = () => {
                       {/* Description */}
                       {reminder.description && (
                         <div className="ml-[44px] mb-2.5">
-                          <p className="text-xs sm:text-sm text-secondary/80 leading-relaxed bg-muted/30 rounded-md p-2 border border-border/30">
+                          <p className="text-xs sm:text-sm text-primary/80 leading-relaxed bg-muted/30 rounded-md p-2 border border-border/30">
                             {reminder.description}
                           </p>
                         </div>
@@ -589,12 +589,12 @@ const Reminders = () => {
                         {getCustomerName(reminder.customer_id) && (
                           <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border border-border/50 text-xs font-medium">
                             <Users className="h-3 w-3 text-accent flex-shrink-0" />
-                            <span className="text-secondary/90">{getCustomerName(reminder.customer_id)}</span>
+                            <span className="text-primary/80">{getCustomerName(reminder.customer_id)}</span>
                           </div>
                         )}
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border border-border/50 text-xs font-medium">
                           <Calendar className="h-3 w-3 text-accent flex-shrink-0" />
-                          <span className="text-secondary/90">{new Date(reminder.due_date).toLocaleDateString("sv-SE", {
+                          <span className="text-primary/80">{new Date(reminder.due_date).toLocaleDateString("sv-SE", {
                             weekday: 'short',
                             year: 'numeric',
                             month: 'short',
