@@ -256,9 +256,7 @@ const Reports = () => {
           </div>
           <div className="mt-8">
             <div className="text-5xl font-bold text-primary tracking-tight">
-              {stats.totalValue >= 1000000
-                ? `${(stats.totalValue / 1000000).toFixed(1)}M`
-                : `${Math.round(stats.totalValue / 1000)}k`}
+              {stats.totalValue.toLocaleString('sv-SE')}
               <span className="text-2xl text-primary/60 font-normal ml-2">kr</span>
             </div>
             <p className="text-primary/60 mt-2">Totalt värde av accepterade offerter</p>
