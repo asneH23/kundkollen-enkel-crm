@@ -41,11 +41,11 @@ const StatWidget = ({
 
       <div>
         <div className="text-4xl font-bold tracking-tight mb-1">{value}</div>
-        <div className={cn("text-sm font-medium opacity-60 uppercase tracking-wide", className ? "text-white/80" : "text-primary/60")}>
+        <div className={cn("text-sm font-medium opacity-70 uppercase tracking-wide", className ? "text-white/80" : "text-primary/70")}>
           {title}
         </div>
         {description && (
-          <p className={cn("text-xs mt-2 opacity-40", className ? "text-white/60" : "text-primary/60")}>
+          <p className={cn("text-xs mt-2 opacity-60", className ? "text-white/70" : "text-primary/70")}>
             {description}
           </p>
         )}
