@@ -290,8 +290,8 @@ const Dashboard = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-primary mb-2">
-            {getGreeting()}, {user?.email?.split("@")[0]}
+          <h1 className="text-4xl sm:text-5xl font-bold text-primary tracking-tight mb-2">
+            {getGreeting()}{displayName && `, ${displayName}`}
           </h1>
           <p className="text-primary/60 text-lg">
             Här är din översikt för idag.
