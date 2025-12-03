@@ -19,20 +19,20 @@ export default {
       },
       colors: {
         background: {
-          DEFAULT: "#F2F2F2", // Light gray background (Industrial feel)
-          section: "#FFFFFF",
-          elevated: "#FFFFFF",
+          DEFAULT: "#E8E8E8", // Medium gray background
+          section: "#F5F5F5", // Lighter gray for sections
+          elevated: "#FAFAFA", // Almost white for elevated elements
         },
         card: {
-          DEFAULT: "#FFFFFF",
+          DEFAULT: "#F5F5F5", // Light gray cards (not pure white)
           foreground: "#000000"
         },
         primary: {
-          DEFAULT: "#000000", // Pure black for maximum contrast and modern feel
-          muted: "#525252",   // Neutral gray
+          DEFAULT: "#000000", // Pure black text
+          muted: "#525252",   // Medium gray
         },
         secondary: {
-          DEFAULT: "#E5E5E5", // Slightly darker gray for secondary elements
+          DEFAULT: "#D4D4D4", // Medium-light gray
           foreground: "#000000",
         },
         accent: {
@@ -40,10 +40,10 @@ export default {
           hover: "#B3E600",
           foreground: "#000000",
         },
-        border: "#E5E5E5", // Visible but subtle borders
-        input: "#FFFFFF", // White inputs on gray background
+        border: "#D4D4D4", // Visible gray borders
+        input: "#F5F5F5", // Light gray inputs
         muted: {
-          DEFAULT: "#F5F5F5",
+          DEFAULT: "#E8E8E8",
           foreground: "#737373"
         },
         success: { DEFAULT: "#CCFF00", foreground: "#000000" },

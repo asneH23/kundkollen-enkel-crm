@@ -9,7 +9,7 @@
   html {
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 16px;
-    background-color: #F2F2F2;
+    background-color: #E8E8E8;
     color: #000000;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -41,40 +41,41 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-black/20 rounded-full hover:bg-black/30 transition-colors;
+    @apply bg-black/30 rounded-full hover:bg-black/40 transition-colors;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white border border-transparent shadow-xl rounded-2xl;
-    /* Softer, more diffused shadow for modern feel */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+    @apply bg-card border border-transparent shadow-xl rounded-2xl;
+    /* Softer shadow for gray-on-gray */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 20px 40px -10px rgba(0, 0, 0, 0.12);
   }
 
   .glass-card {
-    @apply bg-white border border-transparent shadow-sm rounded-2xl transition-all duration-300;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.04);
+    @apply bg-card border border-transparent shadow-sm rounded-2xl transition-all duration-300;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
   .glass-card:hover {
     @apply transform -translate-y-1;
-    /* Neon glow on hover */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 12px 24px -8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(204, 255, 0, 0.5);
+    /* Neon glow on hover with stronger shadow for visibility on gray */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 12px 24px -8px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(204, 255, 0, 0.6);
   }
 
   .premium-input {
-    @apply bg-white border border-transparent text-black placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all duration-200 hover:bg-white rounded-xl;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    @apply bg-card border border-transparent text-black placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all duration-200 hover:bg-white/80 rounded-xl;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(0, 0, 0, 0.03);
   }
 
   .premium-input:focus {
     outline: none;
     box-shadow: 0 0 0 2px #000000;
+    @apply bg-white;
   }
 
   .premium-button {
-    @apply bg-black text-white font-bold px-8 py-3 rounded-full hover:bg-gray-900 active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl;
+    @apply bg-black text-white font-bold px-8 py-3 rounded-full hover:bg-gray-800 active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl;
   }
 
   /* Variant for accent buttons */
@@ -88,7 +89,7 @@
 
   .shadow-glow {
     /* Stronger neon glow */
-    box-shadow: 0 0 30px rgba(204, 255, 0, 0.4);
+    box-shadow: 0 0 30px rgba(204, 255, 0, 0.5);
   }
 
   .animate-enter {
