@@ -264,229 +264,154 @@ const Dashboard = () => {
   const goalProgress = salesGoal && salesGoal > 0 ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0;
 
   return (
-    <div className="space-y-8 animate-enter">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
+    <div className="space-y-8 animate-enter pb-8">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">
-            {getGreeting()}, <span className="text-accent">Aston</span>
+          <h1 className="text-4xl font-bold tracking-tight text-primary mb-2">
+            {getGreeting()}, {user?.email?.split("@")[0]}
           </h1>
-          <p className="text-secondary-foreground/60 text-lg">Här är en översikt över din verksamhet idag.</p>
+          <p className="text-primary/60 text-lg">
+            Här är din översikt för idag.
+          </p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={() => navigate("/offerter")} className="premium-button">
-            <Plus className="h-4 w-4 mr-2" />
+          <Button
+            onClick={() => navigate("/offerter")}
+            className="premium-button shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <Plus className="mr-2 h-5 w-5" />
             Ny Offert
           </Button>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <StatWidget
-          title="Kunder"
-          value={stats.customers}
-          icon={Users}
-          description="Totalt antal kunder"
-          onClick={() => navigate("/kunder")}
-        />
-        <StatWidget
-          title="Offerter"
-          value={stats.quotes}
-          icon={FileText}
-          description="Totalt antal offerter"
-          onClick={() => navigate("/offerter")}
-        />
-        <StatWidget
-          title="Påminnelser"
-          value={stats.reminders}
-          icon={Bell}
-          description="Att följa upp"
-          onClick={() => navigate("/paminnelser")}
-        />
-        <StatWidget
-          title="Konvertering"
-          value={`${conversionRate}%`}
-          icon={TrendingUp}
-          description="Accepterade offerter"
-          progress={conversionRate}
-          onClick={() => navigate("/offerter")}
-        />
-      </div>
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Main Stats - Row 1 */}
+        <div className="lg:col-span-2">
+          <StatWidget
+            title="Total Försäljning"
+            value={`${stats.totalValue.toLocaleString()} kr`}
+            icon={TrendingUp}
+            description="Totalt värde av vunna offerter"
+            trend="up"
+            className="h-full bg-primary text-white"
+            iconClassName="text-accent"
+          />
+        </div>
+        <div className="lg:col-span-1">
+          <StatWidget
+            title="Aktiva Kunder"
+            value={stats.customers}
+            icon={Users}
+            description="Totalt antal kunder"
+            onClick={() => navigate("/kunder")}
+          />
+        </div>
+        <div className="lg:col-span-1">
+          <StatWidget
+            title="Vunna Offerter"
+            value={stats.wonQuotes}
+            icon={Sparkles}
+            description="Accepterade offerter"
+            className="bg-accent text-white"
+            iconClassName="text-white"
+          />
+        </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Revenue Card */}
-        <div className="lg:col-span-2 glass-card rounded-xl p-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Sparkles className="h-24 w-24 text-accent" />
+        {/* Secondary Stats & Goal - Row 2 */}
+        <div className="lg:col-span-1">
+          <StatWidget
+            title="Skickade Offerter"
+            value={stats.quotes}
+            icon={FileText}
+            description="Totalt antal offerter"
+            onClick={() => navigate("/offerter")}
+          />
+        </div>
+        <div className="lg:col-span-1">
+          <StatWidget
+            title="Påminnelser"
+            value={stats.reminders}
+            icon={Bell}
+            description="Att hantera"
+            onClick={() => navigate("/paminnelser")}
+          />
+        </div>
+
+        {/* Sales Goal Card - Spans 2 columns */}
+        <div className="lg:col-span-2 glass-card p-8 relative overflow-hidden group cursor-pointer" onClick={() => setGoalDialogOpen(true)}>
+          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+            <TrendingUp className="h-32 w-32" />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 relative z-10">
-            <div>
-              <h2 className="text-xl font-semibold text-primary mb-1">Försäljningsöversikt</h2>
-              <p className="text-sm text-secondary-foreground/60">Din försäljning mot målet</p>
-            </div>
-            <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-black/5 border-black/10 hover:bg-black/10 text-primary"
-                >
-                  {salesGoal ? "Ändra mål" : "Sätt mål"}
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="glass-panel border-black/10 text-primary">
-                <DialogHeader>
-                  <DialogTitle>Sätt försäljningsmål</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 pt-4">
-                  <div>
-                    <Label htmlFor="goal" className="text-base font-medium text-primary">
-                      Försäljningsmål (kr)
-                    </Label>
-                    <Input
-                      id="goal"
-                      type="text"
-                      value={goalInput}
-                      onChange={(e) => {
-                        const formatted = formatNumberInput(e.target.value);
-                        setGoalInput(formatted);
-                      }}
-                      placeholder={salesGoal ? salesGoal.toLocaleString("sv-SE") : "1 000 000"}
-                      className="premium-input mt-2 text-lg"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleSaveGoal} className="premium-button flex-1">
-                      Spara mål
-                    </Button>
-                  </div>
+          <div className="relative z-10">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-lg font-medium text-primary/60 mb-1">Månadsmål</h3>
+                <div className="text-4xl font-bold text-primary tracking-tight">
+                  {salesGoal ? `${Math.round((stats.totalValue / salesGoal) * 100)}%` : "0%"}
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className="space-y-8 relative z-10">
-            <div>
-              <div className="flex items-end gap-3 mb-2">
-                <span className="text-4xl sm:text-5xl font-bold text-primary tracking-tight">
-                  {stats.totalValue.toLocaleString("sv-SE")} <span className="text-2xl text-secondary-foreground/40 font-normal">kr</span>
-                </span>
               </div>
-
-              {salesGoal ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-secondary-foreground/60">Framsteg mot {salesGoal.toLocaleString("sv-SE")} kr</span>
-                    <span className="text-accent font-medium">{goalProgress.toFixed(1)}%</span>
-                  </div>
-                  <div className="h-2 bg-black/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-accent shadow-[0_0_10px_rgba(22,163,74,0.5)] transition-all duration-1000 ease-out rounded-full"
-                      style={{ width: `${goalProgress}%` }}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4 rounded-lg bg-black/5 border border-black/10 border-dashed text-center">
-                  <p className="text-sm text-secondary-foreground/60">Inget mål satt än</p>
-                </div>
-              )}
+              <div className="bg-black/5 p-3 rounded-xl">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-black/5 border border-black/5">
-                <p className="text-xs text-secondary-foreground/60 mb-1 uppercase tracking-wider">Accepterade affärer</p>
-                <p className="text-2xl font-bold text-primary">{stats.wonQuotes}</p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm font-medium">
+                <span className="text-primary/60">{stats.totalValue.toLocaleString()} kr</span>
+                <span className="text-primary">{salesGoal?.toLocaleString() || "0"} kr</span>
               </div>
-              <div className="p-4 rounded-lg bg-black/5 border border-black/5">
-                <p className="text-xs text-secondary-foreground/60 mb-1 uppercase tracking-wider">Snittvärde</p>
-                <p className="text-2xl font-bold text-primary">
-                  {stats.wonQuotes > 0
-                    ? Math.round(stats.totalValue / stats.wonQuotes).toLocaleString("sv-SE")
-                    : 0} kr
-                </p>
+              <div className="h-4 bg-black/5 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-accent shadow-[0_0_10px_rgba(22,163,74,0.5)] transition-all duration-1000 ease-out rounded-full"
+                  style={{ width: `${salesGoal ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0}%` }}
+                />
               </div>
+              <p className="text-xs text-primary/40 mt-2">Klicka för att ändra mål</p>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions & Activity */}
-        <div className="space-y-6">
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-accent" />
-              Snabblänkar
-            </h3>
-            <div className="space-y-3">
-              <Button
-                variant="ghost"
-                className="w-full justify-between text-primary hover:bg-black/5 hover:text-accent group h-12"
-                onClick={() => navigate("/kunder")}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-black/5 group-hover:bg-accent/10 transition-colors">
-                    <Users className="h-4 w-4" />
-                  </div>
-                  <span>Hantera kunder</span>
-                </div>
-                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-between text-primary hover:bg-black/5 hover:text-accent group h-12"
-                onClick={() => navigate("/offerter")}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-black/5 group-hover:bg-accent/10 transition-colors">
-                    <FileText className="h-4 w-4" />
-                  </div>
-                  <span>Skapa offert</span>
-                </div>
-                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-between text-primary hover:bg-black/5 hover:text-accent group h-12"
-                onClick={() => navigate("/paminnelser")}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-black/5 group-hover:bg-accent/10 transition-colors">
-                    <Bell className="h-4 w-4" />
-                  </div>
-                  <span>Lägg till påminnelse</span>
-                </div>
-                <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Activity Feed - Row 3 (Full Width) */}
+        <div className="lg:col-span-4">
+          <div className="glass-panel p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-primary">Senaste Händelser</h3>
+              <Button variant="ghost" size="sm" className="text-primary/60 hover:text-primary">
+                Visa alla <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-          </div>
-
-          {/* Activity Feed Mini */}
-          <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-primary mb-4">Senaste händelser</h3>
-            <ActivityFeed activities={activities.slice(0, 3)} />
+            <ActivityFeed activities={activities} />
           </div>
         </div>
       </div>
 
-      {/* Empty State */}
-      {stats.customers === 0 && stats.quotes === 0 && (
-        <div className="glass-card rounded-xl p-12 text-center border-dashed border-black/10">
-          <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
-            <Building2 className="h-10 w-10 text-accent" />
+      <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
+        <DialogContent className="glass-panel border-none sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Sätt försäljningsmål</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-6 py-6">
+            <div className="space-y-2">
+              <Label htmlFor="goal" className="text-sm font-medium text-primary/80">Månadsmål (kr)</Label>
+              <Input
+                id="goal"
+                type="text"
+                value={goalInput}
+                onChange={(e) => setGoalInput(formatNumberInput(e.target.value))}
+                placeholder="T.ex. 100 000"
+                className="premium-input text-lg h-12"
+              />
+            </div>
+            <Button onClick={handleSaveGoal} className="premium-button w-full">
+              Spara mål
+            </Button>
           </div>
-          <h3 className="text-2xl font-bold text-primary mb-3">Välkommen till framtiden</h3>
-          <p className="text-secondary-foreground/60 mb-8 max-w-md mx-auto">
-            Ditt nya CRM är redo. Börja med att lägga till din första kund för att se magin hända.
-          </p>
-          <Button onClick={() => navigate("/kunder")} className="premium-button px-8 py-6 text-lg">
-            <Plus className="h-5 w-5 mr-2" />
-            Lägg till kund
-          </Button>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

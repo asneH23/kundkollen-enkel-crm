@@ -48,19 +48,20 @@
 @layer components {
   .glass-panel {
     @apply bg-card border border-transparent shadow-xl rounded-2xl;
-    /* Softer shadow for gray-on-gray */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 20px 40px -10px rgba(0, 0, 0, 0.12);
+    /* Clean, solid shadow */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 24px 48px -12px rgba(0, 0, 0, 0.1);
   }
 
   .glass-card {
     @apply bg-card border border-transparent shadow-sm rounded-2xl transition-all duration-300;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.06);
+    /* Subtle shadow for cards */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.03);
   }
 
   .glass-card:hover {
     @apply transform -translate-y-1;
-    /* Dark green glow on hover with stronger shadow for visibility on gray */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 12px 24px -8px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(22, 163, 74, 0.4);
+    /* Stronger lift on hover */
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 20px 40px -12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(22, 163, 74, 0.1);
   }
 
   .premium-input {

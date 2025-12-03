@@ -15,10 +15,15 @@ const Layout = ({ children }: LayoutProps) => {
   const isDashboard = location.pathname === "/dashboard";
 
   return (
-    <div className="min-h-screen">
-      <Sidebar />
-      <main className="lg:ml-72 transition-all duration-300 pt-20 lg:pt-0">
-        <div className="p-4 sm:p-6 lg:p-8 max-w-[1920px] mx-auto">
+    <div className="min-h-screen bg-background p-4 lg:p-6 flex gap-6 overflow-hidden h-screen">
+      {/* Floating Sidebar */}
+      <div className="hidden lg:block w-72 flex-shrink-0 h-full">
+        <Sidebar />
+      </div>
+
+      {/* Main Content Area */}
+      <main className="flex-1 h-full overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-y-auto rounded-3xl bg-white/50 border border-white/60 shadow-sm p-6 lg:p-8 relative custom-scrollbar">
           {/* Back button - show on all pages except dashboard */}
           {!isDashboard && (
             <Button
@@ -26,7 +31,7 @@ const Layout = ({ children }: LayoutProps) => {
               size="sm"
               onClick={() => navigate(-1)}
               className={cn(
-                "mb-6 text-secondary-foreground/60 hover:text-accent hover:bg-black/5",
+                "mb-6 text-secondary-foreground/60 hover:text-accent hover:bg-black/5 rounded-full",
                 "flex items-center gap-2"
               )}
             >
@@ -37,6 +42,11 @@ const Layout = ({ children }: LayoutProps) => {
           {children}
         </div>
       </main>
+
+      {/* Mobile Sidebar (handled within Sidebar component, but we need to ensure it doesn't conflict) */}
+      <div className="lg:hidden fixed top-0 left-0 z-50">
+        <Sidebar mobile />
+      </div>
     </div>
   );
 };

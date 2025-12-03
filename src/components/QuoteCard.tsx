@@ -1,130 +1,139 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, Calendar, Pencil, Trash2, ArrowRight } from "lucide-react";
+import {
+  Calendar,
+  DollarSign,
+  FileText,
+  User,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Send,
+  CheckCircle,
+  XCircle,
+  Clock
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
+import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 interface QuoteCardProps {
-  title: string;
-  customerName: string;
-  amount: number | null;
-  status: string | null;
-  createdAt: string;
-  onEdit: () => void;
-  onDelete: () => void;
-  onClick?: () => void;
+  quote: any;
+  onEdit: (quote: any) => void;
+  onDelete: (id: string) => void;
+  onStatusChange: (id: string, status: string) => void;
 }
 
-const QuoteCard = ({
-  title,
-  customerName,
-  amount,
-  status,
-  createdAt,
-  onEdit,
-  onDelete,
-  onClick,
-}: QuoteCardProps) => {
-  const getStatusLabel = (status: string | null) => {
-    switch (status) {
-      case "accepted":
-        return "Accepterad";
-      case "sent":
-        return "Skickad";
-      case "draft":
-        return "Utkast";
-      default:
-        return "Okänd";
-    }
+const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) => {
+  const statusColors = {
+    draft: "bg-gray-100 text-gray-700 border-gray-200",
+    sent: "bg-blue-50 text-blue-700 border-blue-200",
+    accepted: "bg-green-50 text-green-700 border-green-200",
+    rejected: "bg-red-50 text-red-700 border-red-200",
   };
 
+  const statusLabels = {
+    draft: "Utkast",
+    sent: "Skickad",
+    accepted: "Accepterad",
+    rejected: "Avvisad",
+  };
+
+  const statusIcons = {
+    draft: Clock,
+    sent: Send,
+    accepted: CheckCircle,
+    rejected: XCircle,
+  };
+
+  const StatusIcon = statusIcons[quote.status as keyof typeof statusIcons];
+
   return (
-    <div
-      className={cn(
-        "glass-card rounded-xl p-6 relative overflow-hidden group transition-all duration-300",
-        onClick && "cursor-pointer hover:-translate-y-1"
-      )}
-      onClick={onClick}
-    >
-      {/* Hover Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      <div className="relative z-10 space-y-4">
-        {/* Header Section */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-primary text-xl mb-2 break-words group-hover:text-accent transition-colors leading-tight">
-              {title}
+    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-6 border border-border hover:border-accent/30 hover:shadow-lg">
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex items-center gap-4">
+          <div className={cn(
+            "h-12 w-12 rounded-2xl flex items-center justify-center transition-colors duration-300",
+            quote.status === 'accepted' ? "bg-accent/10 text-accent" : "bg-black/5 text-primary/60 group-hover:text-primary"
+          )}>
+            <FileText className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300">
+              {quote.title}
             </h3>
-            <div className="flex items-center gap-2 text-sm text-secondary-foreground/60">
-              <Users className="h-4 w-4 flex-shrink-0" />
-              <span className="truncate">{customerName}</span>
+            <div className="flex items-center gap-2 text-sm text-primary/40 mt-1">
+              <User className="h-3 w-3" />
+              {quote.customer_name || "Okänd kund"}
             </div>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-black/10 text-primary/60 hover:text-accent"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit();
-              }}
-            >
-              <Pencil className="h-4 w-4" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/40 hover:text-primary">
+              <MoreVertical className="h-4 w-4" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-red-500/10 text-red-400 hover:text-red-300"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete();
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 rounded-xl bg-white border-black/10 shadow-xl p-2">
+            <DropdownMenuItem onClick={() => onEdit(quote)} className="rounded-lg cursor-pointer">
+              <Pencil className="mr-2 h-4 w-4" /> Redigera
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onStatusChange(quote.id, "sent")} className="rounded-lg cursor-pointer">
+              <Send className="mr-2 h-4 w-4" /> Markera som skickad
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onStatusChange(quote.id, "accepted")} className="rounded-lg cursor-pointer text-green-600 focus:text-green-700 focus:bg-green-50">
+              <CheckCircle className="mr-2 h-4 w-4" /> Markera som vunnen
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onStatusChange(quote.id, "rejected")} className="rounded-lg cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
+              <XCircle className="mr-2 h-4 w-4" /> Markera som förlorad
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete(quote.id)} className="text-red-600 focus:text-red-700 focus:bg-red-50 rounded-lg cursor-pointer">
+              <Trash2 className="mr-2 h-4 w-4" /> Ta bort
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="bg-black/5 rounded-2xl p-3">
+          <div className="text-xs text-primary/40 uppercase tracking-wider mb-1 font-medium">Värde</div>
+          <div className="text-lg font-bold text-primary flex items-center gap-1">
+            {quote.total_amount?.toLocaleString()} <span className="text-sm font-normal text-primary/40">kr</span>
           </div>
         </div>
+        <div className="bg-black/5 rounded-2xl p-3">
+          <div className="text-xs text-primary/40 uppercase tracking-wider mb-1 font-medium">Datum</div>
+          <div className="text-lg font-bold text-primary">
+            {format(new Date(quote.created_at), "d MMM", { locale: sv })}
+          </div>
+        </div>
+      </div>
 
-        {/* Amount Section */}
-        <div className="py-4 border-y border-black/5">
-          {amount ? (
-            <div className="text-3xl font-bold text-primary group-hover:text-accent transition-colors tracking-tight">
-              {amount.toLocaleString("sv-SE")} <span className="text-lg text-primary/50 font-normal">kr</span>
-            </div>
-          ) : (
-            <div className="text-primary/40 italic text-sm">Belopp ej angivet</div>
-          )}
+      <div className="flex items-center justify-between pt-2">
+        <div className={cn(
+          "px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border flex items-center gap-2",
+          statusColors[quote.status as keyof typeof statusColors]
+        )}>
+          <StatusIcon className="h-3 w-3" />
+          {statusLabels[quote.status as keyof typeof statusLabels]}
         </div>
 
-        {/* Footer Section */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-secondary-foreground/60">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>{new Date(createdAt).toLocaleDateString("sv-SE")}</span>
-          </div>
-
-          <Badge
-            className={cn(
-              "text-xs font-medium border-0",
-              status === "accepted" && "bg-accent/20 text-accent",
-              status === "sent" && "bg-blue-500/20 text-blue-400",
-              status === "draft" && "bg-black/10 text-primary"
-            )}
-          >
-            {getStatusLabel(status)}
-          </Badge>
-        </div>
-
-        {/* Click to view hint */}
-        {onClick && (
-          <div className="flex items-center gap-2 text-xs text-accent/60 group-hover:text-accent transition-colors pt-2">
-            <span>Visa detaljer</span>
-            <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-          </div>
-        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onEdit(quote)}
+          className="text-primary/40 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
+        >
+          Öppna <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>
+        </Button>
       </div>
     </div>
   );

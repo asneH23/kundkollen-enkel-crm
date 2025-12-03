@@ -6,9 +6,10 @@ interface StatWidgetProps {
   value: number | string;
   icon: LucideIcon;
   description?: string;
-  progress?: number; // 0-100
   trend?: "up" | "down" | "neutral";
   onClick?: () => void;
+  className?: string;
+  iconClassName?: string;
 }
 
 const StatWidget = ({
@@ -16,47 +17,37 @@ const StatWidget = ({
   value,
   icon: Icon,
   description,
-  progress,
   onClick,
+  className,
+  iconClassName,
 }: StatWidgetProps) => {
   return (
     <div
       className={cn(
-        "glass-card rounded-xl p-6 relative overflow-hidden group transition-all duration-300",
-        onClick ? "cursor-pointer hover:-translate-y-1" : ""
+        "glass-card p-6 relative overflow-hidden group transition-all duration-300 h-full flex flex-col justify-between",
+        onClick ? "cursor-pointer hover:-translate-y-1" : "",
+        className
       )}
       onClick={onClick}
     >
-      {/* Hover Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      <div className="relative z-10">
-        <div className="flex items-start justify-between mb-4">
-          <div className="h-12 w-12 rounded-xl bg-black/5 flex items-center justify-center border border-black/10 group-hover:border-accent/30 group-hover:bg-accent/10 transition-all duration-300 shadow-lg group-hover:shadow-glow">
-            <Icon className="h-6 w-6 text-primary group-hover:text-accent transition-colors duration-300" />
-          </div>
-          {progress !== undefined && (
-            <div className="flex items-center gap-1 bg-black/5 px-2 py-1 rounded-full border border-black/5">
-              <span className="text-xs font-medium text-accent">{progress}%</span>
-            </div>
-          )}
+      <div className="flex justify-between items-start mb-4">
+        <div className={cn(
+          "h-12 w-12 rounded-2xl bg-black/5 flex items-center justify-center transition-all duration-300",
+          iconClassName?.includes("text-accent") ? "bg-white/10" : "bg-black/5"
+        )}>
+          <Icon className={cn("h-6 w-6 text-primary", iconClassName)} />
         </div>
+      </div>
 
-        <div>
-          <div className="text-sm font-medium text-secondary-foreground/60 mb-1 uppercase tracking-wide">{title}</div>
-          <div className="text-3xl font-bold text-primary tracking-tight mb-2 group-hover:text-accent transition-colors duration-300">{value}</div>
-          {description && (
-            <p className="text-xs text-secondary-foreground/40 group-hover:text-secondary-foreground/60 transition-colors">{description}</p>
-          )}
+      <div>
+        <div className="text-4xl font-bold tracking-tight mb-1">{value}</div>
+        <div className={cn("text-sm font-medium opacity-60 uppercase tracking-wide", className ? "text-white/80" : "text-primary/60")}>
+          {title}
         </div>
-
-        {progress !== undefined && (
-          <div className="mt-4 h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-accent shadow-[0_0_8px_rgba(22,163,74,0.5)] transition-all duration-1000 ease-out rounded-full"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+        {description && (
+          <p className={cn("text-xs mt-2 opacity-40", className ? "text-white/60" : "text-primary/40")}>
+            {description}
+          </p>
         )}
       </div>
     </div>

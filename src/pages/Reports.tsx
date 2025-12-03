@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Users, FileText, Bell, Calendar, AlertCircle } from "lucide-react";
+import { BarChart3, TrendingUp, Users, FileText, Bell, Calendar, AlertCircle, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -182,16 +182,16 @@ const Reports = () => {
         if (reminders) {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
-          
+
           const upcoming: UpcomingReminder[] = reminders
             .map((reminder) => {
               const dueDate = new Date(reminder.due_date);
               dueDate.setHours(0, 0, 0, 0);
               const diffTime = dueDate.getTime() - today.getTime();
               const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-              
+
               const customer = allCustomers?.find(c => c.id === reminder.customer_id);
-              
+
               return {
                 id: reminder.id,
                 title: reminder.title,
@@ -205,7 +205,7 @@ const Reports = () => {
             .filter((r) => r.daysUntil <= 7 || r.isOverdue) // Show reminders within 7 days or overdue
             .sort((a, b) => a.daysUntil - b.daysUntil)
             .slice(0, 10); // Show max 10 reminders
-          
+
           setUpcomingReminders(upcoming);
         }
 
@@ -232,219 +232,144 @@ const Reports = () => {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="pb-6 border-b border-border/50">
-        <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-3">Rapporter</h1>
-        <p className="text-sm sm:text-base text-secondary/80">Snabba insikter baserade på dina offerter och accepterade affärer</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold text-primary tracking-tight mb-2">Rapporter</h1>
+          <p className="text-lg text-primary/60">Överblick över din verksamhet</p>
+        </div>
       </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10">
-          <Card className="rounded border-border/50 bg-card/50">
-            <CardHeader className="pb-3 border-b border-border/30">
-              <CardTitle className="text-sm sm:text-base font-semibold text-primary">Totala kunder</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div className="text-2xl sm:text-3xl font-extrabold text-primary">{stats.totalCustomers}</div>
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-accent flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="rounded border-border/50 bg-card/50">
-            <CardHeader className="pb-3 border-b border-border/30">
-              <CardTitle className="text-sm sm:text-base font-semibold text-primary">Aktiva offerter</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div className="text-2xl sm:text-3xl font-extrabold text-primary">{stats.activeQuotes}</div>
-                <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-accent flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="rounded border-border/50 bg-card/50">
-            <CardHeader className="pb-3 border-b border-border/30">
-              <CardTitle className="text-sm sm:text-base font-semibold text-primary">Accepterade offerter</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div className="text-2xl sm:text-3xl font-extrabold text-primary">{stats.wonDeals}</div>
-                <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-accent flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="rounded border-border/50 bg-card/50">
-            <CardHeader className="pb-3 border-b border-border/30">
-              <CardTitle className="text-sm sm:text-base font-semibold text-primary">Värde accepterade offerter</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div className="text-2xl sm:text-3xl font-extrabold text-primary">
-                  {stats.totalValue >= 1000000 
-                    ? `${(stats.totalValue / 1000000).toFixed(1)}M`
-                    : `${Math.round(stats.totalValue / 1000)}k`}
-                </div>
-                <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-accent flex-shrink-0" />
-              </div>
-            </CardContent>
-          </Card>
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        {/* Total Value Card - Large */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-1 bg-card rounded-3xl p-8 border border-border shadow-sm flex flex-col justify-between group hover:border-accent/30 transition-all duration-300">
+          <div className="flex justify-between items-start">
+            <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
+              <BarChart3 className="h-6 w-6" />
+            </div>
+            <Badge className="bg-accent/10 text-accent hover:bg-accent/20 border-accent/20">
+              Total Försäljning
+            </Badge>
+          </div>
+          <div className="mt-8">
+            <div className="text-5xl font-bold text-primary tracking-tight">
+              {stats.totalValue >= 1000000
+                ? `${(stats.totalValue / 1000000).toFixed(1)}M`
+                : `${(stats.totalValue / 1000).toFixed(0)}k`}
+              <span className="text-2xl text-primary/40 font-normal ml-2">kr</span>
+            </div>
+            <p className="text-primary/60 mt-2">Totalt värde av accepterade offerter</p>
+          </div>
         </div>
 
-        {/* Upcoming Reminders */}
-        {upcomingReminders.length > 0 && (
-          <Card className="border-border/50 bg-card/50 mt-6 sm:mt-8">
-            <CardHeader className="border-b border-border/30 pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base sm:text-lg font-semibold text-primary flex items-center gap-2">
-                  <Bell className="h-5 w-5 text-accent" />
-                  Kommande påminnelser
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate("/paminnelser")}
-                  className="text-xs sm:text-sm min-h-[44px] sm:min-h-0"
-                >
-                  Visa alla
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-3">
-                {upcomingReminders.map((reminder, index) => {
-                  const getDaysText = () => {
-                    if (reminder.isOverdue) {
-                      return `${Math.abs(reminder.daysUntil)} dag${Math.abs(reminder.daysUntil) !== 1 ? "ar" : ""} försenad`;
-                    } else if (reminder.daysUntil === 0) {
-                      return "Idag";
-                    } else if (reminder.daysUntil === 1) {
-                      return "Imorgon";
-                    } else if (reminder.daysUntil <= 7) {
-                      return `${reminder.daysUntil} dag${reminder.daysUntil !== 1 ? "ar" : ""} kvar`;
-                    } else {
-                      return `${reminder.daysUntil} dagar kvar`;
-                    }
-                  };
+        {/* Stats Cards */}
+        <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+          <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-primary mb-4">
+            <Users className="h-5 w-5" />
+          </div>
+          <div className="text-3xl font-bold text-primary mb-1">{stats.totalCustomers}</div>
+          <div className="text-sm text-primary/60 font-medium">Totalt antal kunder</div>
+        </div>
 
-                  return (
-                    <div
-                      key={reminder.id}
-                      className={`flex items-start gap-3 p-3 sm:p-4 rounded border ${
-                        index !== upcomingReminders.length - 1 ? "mb-2" : ""
-                      } ${
-                        reminder.isOverdue
-                          ? "bg-red-500/10 border-red-500/30"
-                          : reminder.daysUntil <= 1
-                          ? "bg-yellow-500/10 border-yellow-500/30"
-                          : "bg-muted/30 border-border/50"
-                      }`}
-                    >
-                      <div className={cn(
-                        "h-8 w-8 sm:h-10 sm:w-10 rounded flex items-center justify-center flex-shrink-0",
-                        reminder.isOverdue
-                          ? "bg-red-500/20"
-                          : reminder.daysUntil <= 1
-                          ? "bg-yellow-500/20"
-                          : "bg-accent/10"
-                      )}>
-                        {reminder.isOverdue ? (
-                          <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-400" />
-                        ) : (
-                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                          <p className="font-medium text-sm sm:text-base text-primary break-words">
-                            {reminder.title}
-                          </p>
-                          <Badge
-                            className={cn(
-                              "text-xs flex-shrink-0 w-fit",
-                              reminder.isOverdue
-                                ? "bg-red-500/20 text-red-400 border-red-500/30"
-                                : reminder.daysUntil <= 1
-                                ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                                : "bg-accent/20 text-accent border-accent/30"
-                            )}
-                          >
-                            {getDaysText()}
-                          </Badge>
-                        </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-2">
-                          <p className="text-xs text-secondary/80">
-                            {new Date(reminder.due_date).toLocaleDateString("sv-SE", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </p>
-                          {reminder.customerName && (
-                            <>
-                              <span className="text-xs text-secondary/60 hidden sm:inline">•</span>
-                              <p className="text-xs text-secondary/80">Kund: {reminder.customerName}</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {upcomingReminders.length >= 10 && (
-                <div className="mt-4 pt-4 border-t border-border/30">
-                  <Button
-                    variant="outline"
-                    className="w-full min-h-[44px]"
-                    onClick={() => navigate("/paminnelser")}
-                  >
-                    Visa alla påminnelser
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+          <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-primary mb-4">
+            <FileText className="h-5 w-5" />
+          </div>
+          <div className="text-3xl font-bold text-primary mb-1">{stats.activeQuotes}</div>
+          <div className="text-sm text-primary/60 font-medium">Aktiva offerter</div>
+        </div>
 
-        {/* Recent Activities */}
-        <Card className="border-border/50 bg-card/50 mt-6 sm:mt-8">
-          <CardHeader className="border-b border-border/30 pb-4">
-            <CardTitle className="text-base sm:text-lg font-semibold text-primary">Senaste aktiviteter</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
+        <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+          <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-primary mb-4">
+            <TrendingUp className="h-5 w-5" />
+          </div>
+          <div className="text-3xl font-bold text-primary mb-1">{stats.wonDeals}</div>
+          <div className="text-sm text-primary/60 font-medium">Vunna affärer</div>
+        </div>
+
+        {/* Activity Feed - Tall */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-xl font-bold text-primary">Senaste Aktivitet</h3>
+            <Button variant="ghost" size="sm" className="text-primary/40 hover:text-primary">
+              Visa alla <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="space-y-6">
             {activities.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-secondary/80">Inga aktiviteter ännu</p>
-              </div>
+              <div className="text-center py-8 text-primary/40">Inga aktiviteter ännu</div>
             ) : (
-              <div className="space-y-4">
-                {activities.map((activity, index) => (
-                  <div
-                    key={activity.id}
-                    className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 ${
-                      index !== activities.length - 1 ? "pb-4 border-b border-border/30" : ""
-                    }`}
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium text-sm sm:text-base text-primary">{activity.description}</p>
-                      <p className="text-xs sm:text-sm text-secondary/80 mt-1">
-                        {new Date(activity.date).toLocaleDateString("sv-SE", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}{" "}
-                        kl. {new Date(activity.date).toLocaleTimeString("sv-SE", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+              activities.map((activity) => (
+                <div key={activity.id} className="flex gap-4 group">
+                  <div className="mt-1 h-2 w-2 rounded-full bg-accent flex-shrink-0 group-hover:scale-125 transition-transform" />
+                  <div>
+                    <p className="text-primary font-medium">{activity.description}</p>
+                    <p className="text-sm text-primary/40 mt-1">
+                      {new Date(activity.date).toLocaleDateString("sv-SE", {
+                        month: "short",
+                        day: "numeric",
+                      })} • {new Date(activity.date).toLocaleTimeString("sv-SE", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Upcoming Reminders - Wide */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+              <Bell className="h-5 w-5 text-accent" />
+              Kommande
+            </h3>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/paminnelser")} className="text-primary/40 hover:text-primary">
+              Hantera <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {upcomingReminders.length === 0 ? (
+              <div className="text-center py-8 text-primary/40">Inga kommande påminnelser</div>
+            ) : (
+              upcomingReminders.slice(0, 3).map((reminder) => (
+                <div key={reminder.id} className="flex items-center justify-between p-4 rounded-2xl bg-black/5 hover:bg-black/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "h-10 w-10 rounded-xl flex items-center justify-center",
+                      reminder.isOverdue ? "bg-red-500/10 text-red-500" : "bg-white text-primary"
+                    )}>
+                      <Calendar className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-primary">{reminder.title}</div>
+                      <div className="text-xs text-primary/60">
+                        {new Date(reminder.due_date).toLocaleDateString("sv-SE", { month: 'short', day: 'numeric' })}
+                        {reminder.customerName && ` • ${reminder.customerName}`}
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                  <Badge className={cn(
+                    "border-0",
+                    reminder.isOverdue ? "bg-red-500/10 text-red-500" : "bg-white text-primary"
+                  )}>
+                    {reminder.daysUntil === 0 ? "Idag" : `${reminder.daysUntil} dagar`}
+                  </Badge>
+                </div>
+              ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };

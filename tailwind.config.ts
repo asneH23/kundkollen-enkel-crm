@@ -63,10 +63,10 @@ export default {
         glow: "0 0 20px rgba(0, 229, 153, 0.15)", // Mint glow
       },
       borderRadius: {
-        lg: "1rem", // 16px - softer corners for cards
-        md: "0.75rem", // 12px
-        sm: "0.5rem", // 8px
-        input: "0.75rem", // Rounded inputs
+        lg: "1.5rem", // 24px - very round cards
+        md: "1rem", // 16px
+        sm: "0.75rem", // 12px
+        input: "1rem", // Rounded inputs
         full: "9999px", // Pill shapes
       },
       keyframes: {
