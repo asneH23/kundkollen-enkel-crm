@@ -57,29 +57,29 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
   const StatusIcon = statusIcons[quote.status as keyof typeof statusIcons];
 
   return (
-    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-6 border border-border hover:border-accent/30 hover:shadow-lg">
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex items-center gap-4">
+    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-4 sm:p-6 border border-border hover:border-accent/30 hover:shadow-lg">
+      <div className="flex justify-between items-start mb-4 sm:mb-6">
+        <div className="flex items-center gap-3 sm:gap-4">
           <div className={cn(
-            "h-12 w-12 rounded-2xl flex items-center justify-center transition-colors duration-300",
+            "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center transition-colors duration-300 flex-shrink-0",
             quote.status === 'accepted' ? "bg-accent/10 text-accent" : "bg-black/5 text-primary/60 group-hover:text-primary"
           )}>
-            <FileText className="h-6 w-6" />
+            <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300">
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300 truncate pr-2">
               {quote.title}
             </h3>
-            <div className="flex items-center gap-2 text-sm text-primary/60 mt-1">
-              <User className="h-3 w-3" />
-              {quote.customer_name || "Okänd kund"}
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-primary/60 mt-1 truncate">
+              <User className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">{quote.customer_name || "Okänd kund"}</span>
             </div>
           </div>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary flex-shrink-0 -mr-2 sm:mr-0">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -103,24 +103,24 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
         </DropdownMenu>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-black/5 rounded-2xl p-3">
-          <div className="text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Värde</div>
-          <div className="text-lg font-bold text-primary flex items-center gap-1">
-            {quote.amount?.toLocaleString()} <span className="text-sm font-normal text-primary/60">kr</span>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="bg-black/5 rounded-2xl p-2.5 sm:p-3">
+          <div className="text-[10px] sm:text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Värde</div>
+          <div className="text-base sm:text-lg font-bold text-primary flex items-center gap-1 flex-wrap">
+            {quote.amount?.toLocaleString()} <span className="text-xs sm:text-sm font-normal text-primary/60">kr</span>
           </div>
         </div>
-        <div className="bg-black/5 rounded-2xl p-3">
-          <div className="text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Datum</div>
-          <div className="text-lg font-bold text-primary">
+        <div className="bg-black/5 rounded-2xl p-2.5 sm:p-3">
+          <div className="text-[10px] sm:text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Datum</div>
+          <div className="text-base sm:text-lg font-bold text-primary truncate">
             {format(new Date(quote.created_at), "d MMM", { locale: sv })}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between pt-2 gap-2">
         <div className={cn(
-          "px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border flex items-center gap-2",
+          "px-2.5 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wide border flex items-center gap-1.5 sm:gap-2 flex-shrink-0",
           statusColors[quote.status as keyof typeof statusColors]
         )}>
           <StatusIcon className="h-3 w-3" />
@@ -131,7 +131,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
           variant="ghost"
           size="sm"
           onClick={onClick}
-          className="text-primary/60 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
+          className="text-primary/60 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn text-xs sm:text-sm"
         >
           Öppna <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>
         </Button>
