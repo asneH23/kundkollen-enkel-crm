@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import OnboardingGuide from "./OnboardingGuide";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,9 @@ const Layout = ({ children }: LayoutProps) => {
       <div className="lg:hidden fixed top-0 left-0 z-50">
         <Sidebar mobile />
       </div>
+
+      {/* Onboarding Guide */}
+      <OnboardingGuide />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import HelpModal from "@/components/HelpModal";
 import {
   LayoutDashboard,
   Users,
@@ -11,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  HelpCircle
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -92,6 +94,19 @@ const Sidebar = ({ mobile }: SidebarProps) => {
           );
         })}
       </nav>
+
+      {/* Help Button */}
+      <div className="px-4 pb-2">
+        <HelpModal>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-primary/70 hover:text-accent hover:bg-accent/10 rounded-xl"
+          >
+            <HelpCircle className="mr-2 h-4 w-4" />
+            Hjälp & Support
+          </Button>
+        </HelpModal>
+      </div>
 
       {/* User Profile */}
       <div className="p-4 mt-auto">

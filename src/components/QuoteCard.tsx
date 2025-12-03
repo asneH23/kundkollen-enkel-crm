@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,7 @@ import { cn } from "@/lib/utils";
 interface QuoteCardProps {
   quote: any;
   onEdit: (quote: any) => void;
-  onDelete: (id: string) => void;
+  onDelete: (quote: any) => void;
   onStatusChange: (id: string, status: string) => void;
   onClick: () => void;
 }
@@ -57,29 +58,52 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
   const StatusIcon = statusIcons[quote.status as keyof typeof statusIcons];
 
   return (
-    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-4 sm:p-6 border border-border hover:border-accent/30 hover:shadow-lg">
-      <div className="flex justify-between items-start mb-4 sm:mb-6">
-        <div className="flex items-center gap-3 sm:gap-4">
+    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-4 sm:p-6 border border-border hover:border-accent/30 hover:shadow-lg select-none">
+      <div className="flex justify-between items-start mb-4 sm:mb-6 gap-3">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
           <div className={cn(
             "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center transition-colors duration-300 flex-shrink-0",
             quote.status === 'accepted' ? "bg-accent/10 text-accent" : "bg-black/5 text-primary/60 group-hover:text-primary"
           )}>
             <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <div className="min-w-0">
-            <h3 className="text-base sm:text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300 truncate pr-2">
-              {quote.title}
-            </h3>
+          <div className="min-w-0 flex-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <h3 className="text-base sm:text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300 truncate cursor-help select-text">
+                    {quote.title}
+                  </h3>
+                </TooltipTrigger>
+                <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
+                  <p className="text-sm">{quote.title}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <div className="flex items-center gap-2 text-xs sm:text-sm text-primary/60 mt-1 truncate">
               <User className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate">{quote.customer_name || "Okänd kund"}</span>
+              {quote.customer_name && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="truncate cursor-help select-text">{quote.customer_name}</span>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
+                      <p className="text-sm">{quote.customer_name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              {!quote.customer_name && (
+                <span className="truncate">Okänd kund</span>
+              )}
             </div>
           </div>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary flex-shrink-0 -mr-2 sm:mr-0">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary flex-shrink-0">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -96,7 +120,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
             <DropdownMenuItem onClick={() => onStatusChange(quote.id, "rejected")} className="rounded-lg cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
               <XCircle className="mr-2 h-4 w-4" /> Markera som förlorad
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onDelete(quote.id)} className="text-red-600 focus:text-red-700 focus:bg-red-50 rounded-lg cursor-pointer">
+            <DropdownMenuItem onClick={() => onDelete(quote)} className="text-red-600 focus:text-red-700 focus:bg-red-50 rounded-lg cursor-pointer">
               <Trash2 className="mr-2 h-4 w-4" /> Ta bort
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -131,7 +155,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
           variant="ghost"
           size="sm"
           onClick={onClick}
-          className="text-primary/60 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn text-xs sm:text-sm"
+          className="text-primary/60 hover:text-accent hover:bg-accent/10 px-3 py-1.5 font-medium group/btn text-xs sm:text-sm rounded-lg transition-all duration-300"
         >
           Öppna <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>
         </Button>

@@ -121,10 +121,10 @@ const Auth = () => {
       <div className="w-full max-w-md">
         {/* Back button */}
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={() => navigate("/")}
-          className="mb-6 text-secondary hover:text-accent flex items-center gap-2"
+          className="mb-6 text-primary border-border hover:border-accent hover:text-accent hover:bg-accent/5 flex items-center gap-2 font-medium"
         >
           <ArrowLeft className="h-4 w-4" />
           Tillbaka till startsidan

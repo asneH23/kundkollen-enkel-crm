@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface CustomerCardProps {
@@ -26,27 +27,52 @@ interface CustomerCardProps {
 
 const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
   return (
-    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-6 border border-border hover:border-accent/30 hover:shadow-lg h-full flex flex-col">
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex items-center gap-4">
-          <div className="h-14 w-14 rounded-2xl bg-black/5 flex items-center justify-center text-primary/60 group-hover:text-primary group-hover:bg-accent/10 group-hover:text-accent transition-all duration-300">
+    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-6 border border-border hover:border-accent/30 hover:shadow-lg h-full flex flex-col select-none">
+      <div className="flex justify-between items-start mb-6 gap-3">
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          <div className="h-14 w-14 rounded-2xl bg-black/5 flex items-center justify-center text-primary/60 group-hover:text-primary group-hover:bg-accent/10 group-hover:text-accent transition-all duration-300 flex-shrink-0">
             <Building2 className="h-7 w-7" />
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300">
-              {customer.company_name}
-            </h3>
+          <div className="min-w-0 flex-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <h3 className="text-xl font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300 truncate cursor-help select-text">
+                    {customer.company_name}
+                  </h3>
+                </TooltipTrigger>
+                <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
+                  <p className="text-sm">{customer.company_name}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <div className="flex items-center gap-2 text-sm text-primary/60 mt-1">
-              <span className="bg-black/5 px-2 py-0.5 rounded-md text-xs font-medium uppercase tracking-wide">
-                {customer.contact_person || "Ingen kontaktperson"}
-              </span>
+              {customer.contact_person && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="bg-black/5 px-2 py-0.5 rounded-md text-xs font-medium uppercase tracking-wide truncate max-w-full cursor-help select-text">
+                        {customer.contact_person}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
+                      <p className="text-sm">{customer.contact_person}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              {!customer.contact_person && (
+                <span className="bg-black/5 px-2 py-0.5 rounded-md text-xs font-medium uppercase tracking-wide">
+                  Ingen kontaktperson
+                </span>
+              )}
             </div>
           </div>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary flex-shrink-0">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -94,7 +120,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onEdit(customer)}
-          className="text-primary/60 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
+          className="text-primary/60 hover:text-accent hover:bg-accent/10 px-3 py-1.5 font-medium group/btn rounded-lg transition-all duration-300"
         >
           Hantera <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>
         </Button>

@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import QuoteCard from "@/components/QuoteCard";
 import { useSearchParams } from "react-router-dom";
-import { FileText, Plus, Search, Users, Calendar, Pencil, Mail, Send } from "lucide-react";
+import { FileText, Plus, Search, Users, Calendar, Pencil, Mail, Send, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -63,6 +64,8 @@ const Quotes = () => {
   const [customerEmail, setCustomerEmail] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [userProfile, setUserProfile] = useState<{ company_name: string | null; phone: string | null; email: string } | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [quoteToDelete, setQuoteToDelete] = useState<Quote | null>(null);
   const [formData, setFormData] = useState<QuoteFormData>({
     title: "",
     amount: "",
@@ -274,11 +277,16 @@ const Quotes = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Är du säker på att du vill ta bort denna offert?")) return;
+  const handleDeleteClick = (quote: Quote) => {
+    setQuoteToDelete(quote);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!quoteToDelete || !user) return;
 
     try {
-      const { error } = await supabase.from("quotes").delete().eq("id", id);
+      const { error } = await supabase.from("quotes").delete().eq("id", quoteToDelete.id);
 
       if (error) throw error;
 
@@ -287,6 +295,8 @@ const Quotes = () => {
         description: "Offerten har tagits bort",
       });
 
+      setDeleteDialogOpen(false);
+      setQuoteToDelete(null);
       fetchQuotes();
     } catch (error: any) {
       toast({
@@ -752,7 +762,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                         className="h-11 border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/10 hover:border-red-500/30"
                         onClick={() => {
                           setDetailOpen(false);
-                          handleDelete(selectedQuote.id);
+                          handleDeleteClick(selectedQuote);
                         }}
                       >
                         Ta bort
@@ -953,7 +963,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                   customer_name: getCustomerName(quote.customer_id)
                 }}
                 onEdit={() => handleOpenDialog(quote)}
-                onDelete={() => handleDelete(quote.id)}
+                onDelete={() => handleDeleteClick(quote)}
                 onStatusChange={async (id, status) => {
                   try {
                     const { error } = await supabase
@@ -982,6 +992,41 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
           </div>
         )
       }
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white border border-black/10 text-primary sm:max-w-[500px] rounded-3xl">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+              </div>
+              <AlertDialogTitle className="text-2xl font-bold">
+                Ta bort offert?
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-primary/70 pt-2">
+              <p>
+                Är du säker på att du vill ta bort <strong>{quoteToDelete?.title}</strong>?
+              </p>
+              <p className="mt-3 text-sm">
+                Denna åtgärd kan inte ångras.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-3 pt-4">
+            <AlertDialogCancel className="h-11 border-black/10 text-primary hover:bg-black/5 hover:text-accent">
+              Avbryt
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-500 hover:bg-red-600 text-white h-11"
+            >
+              Ta bort ändå
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div >
   );
 };

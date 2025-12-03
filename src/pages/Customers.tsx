@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import CustomerCard from "@/components/CustomerCard";
-import { Plus, Search, Users } from "lucide-react";
+import { Plus, Search, Users, AlertTriangle, FileText, Bell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Customer {
@@ -34,6 +35,11 @@ const Customers = () => {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null);
+  const [relatedQuotes, setRelatedQuotes] = useState(0);
+  const [relatedReminders, setRelatedReminders] = useState(0);
+  const [checkingRelations, setCheckingRelations] = useState(false);
   const [formData, setFormData] = useState<CustomerFormData>({
     companyName: "",
     contactPerson: "",
@@ -172,19 +178,54 @@ const Customers = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Är du säker på att du vill ta bort denna kund?")) return;
+  const handleDeleteClick = async (customer: Customer) => {
+    if (!user) return;
+    
+    setCustomerToDelete(customer);
+    setCheckingRelations(true);
+    setDeleteDialogOpen(true);
 
     try {
-      const { error } = await supabase.from("customers").delete().eq("id", id);
+      // Check for related quotes and reminders
+      const [quotesRes, remindersRes] = await Promise.all([
+        supabase
+          .from("quotes")
+          .select("id", { count: "exact", head: true })
+          .eq("customer_id", customer.id),
+        supabase
+          .from("reminders")
+          .select("id", { count: "exact", head: true })
+          .eq("customer_id", customer.id)
+      ]);
+
+      setRelatedQuotes(quotesRes.count || 0);
+      setRelatedReminders(remindersRes.count || 0);
+    } catch (error) {
+      console.error("Error checking relations:", error);
+    } finally {
+      setCheckingRelations(false);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!customerToDelete || !user) return;
+
+    try {
+      const { error } = await supabase.from("customers").delete().eq("id", customerToDelete.id);
 
       if (error) throw error;
 
       toast({
         title: "Borttagen",
-        description: "Kunden har tagits bort",
+        description: relatedQuotes > 0 || relatedReminders > 0 
+          ? "Kunden har tagits bort. Offerter och påminnelser behålls men är inte längre kopplade till kunden."
+          : "Kunden har tagits bort",
       });
 
+      setDeleteDialogOpen(false);
+      setCustomerToDelete(null);
+      setRelatedQuotes(0);
+      setRelatedReminders(0);
       fetchCustomers();
     } catch (error: any) {
       toast({
@@ -314,21 +355,16 @@ const Customers = () => {
       {/* Stats Section - Black Hero Card */}
       <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
-              <Users className="h-8 w-8" />
-            </div>
-            <div>
-              <div className="text-5xl font-bold text-white tracking-tight mb-1">
-                {customers.length}
-              </div>
-              <p className="text-white/60 text-lg">Totalt antal kunder</p>
-            </div>
+        <div className="relative z-10 flex items-center gap-6">
+          <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
+            <Users className="h-8 w-8" />
           </div>
-          <Badge className="bg-accent/20 text-accent hover:bg-accent/30 border-accent/30 text-sm px-4 py-2">
-            Aktiva Kunder
-          </Badge>
+          <div>
+            <div className="text-5xl font-bold text-white tracking-tight mb-1">
+              {customers.length}
+            </div>
+            <p className="text-white/60 text-lg">Totalt antal kunder</p>
+          </div>
         </div>
       </div>
 
@@ -373,11 +409,82 @@ const Customers = () => {
               key={customer.id}
               customer={customer}
               onEdit={() => handleOpenDialog(customer)}
-              onDelete={() => handleDelete(customer.id)}
+              onDelete={() => handleDeleteClick(customer)}
             />
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={(open) => {
+        setDeleteDialogOpen(open);
+        if (!open) {
+          setCustomerToDelete(null);
+          setRelatedQuotes(0);
+          setRelatedReminders(0);
+        }
+      }}>
+        <AlertDialogContent className="bg-white border border-black/10 text-primary sm:max-w-[500px] rounded-3xl">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+              </div>
+              <AlertDialogTitle className="text-2xl font-bold">
+                Ta bort kund?
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-primary/70 pt-2 space-y-3">
+              {checkingRelations ? (
+                <p>Kontrollerar kopplingar...</p>
+              ) : (
+                <>
+                  <p>
+                    Är du säker på att du vill ta bort <strong>{customerToDelete?.company_name}</strong>?
+                  </p>
+                  {(relatedQuotes > 0 || relatedReminders > 0) && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 space-y-2">
+                      <p className="font-semibold text-yellow-900 text-sm flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Denna kund är kopplad till:
+                      </p>
+                      <div className="space-y-1 text-sm text-yellow-800">
+                        {relatedQuotes > 0 && (
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            <span>{relatedQuotes} {relatedQuotes === 1 ? 'offert' : 'offerter'}</span>
+                          </div>
+                        )}
+                        {relatedReminders > 0 && (
+                          <div className="flex items-center gap-2">
+                            <Bell className="h-4 w-4" />
+                            <span>{relatedReminders} {relatedReminders === 1 ? 'påminnelse' : 'påminnelser'}</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs text-yellow-700 mt-2">
+                        Offerter och påminnelser behålls men kommer inte längre vara kopplade till kunden.
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-3 pt-4">
+            <AlertDialogCancel className="h-11 border-black/10 text-primary hover:bg-black/5 hover:text-accent">
+              Avbryt
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={checkingRelations}
+              className="bg-red-500 hover:bg-red-600 text-white h-11"
+            >
+              Ta bort ändå
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

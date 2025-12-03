@@ -15,6 +15,7 @@ import Quotes from "./pages/Quotes";
 import Reminders from "./pages/Reminders";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +75,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/faq"
+              element={
+                <ProtectedRoute>
+                  <FAQ />
                 </ProtectedRoute>
               }
             />

@@ -10,7 +10,8 @@ import ActivityFeed from "@/components/ActivityFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, FileText, Bell, TrendingUp, ArrowRight, Plus, Users, Sparkles } from "lucide-react";
+import { Building2, FileText, Bell, TrendingUp, ArrowRight, Plus, Users, Sparkles, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -387,7 +388,22 @@ const Dashboard = () => {
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-lg font-medium text-primary/70 mb-1">Månadsmål</h3>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-lg font-medium text-primary/70">Månadsmål</h3>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-primary/40 hover:text-accent cursor-help transition-colors" />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
+                        <p className="text-sm">
+                          Sätt ett månadsvis försäljningsmål för att följa hur din verksamhet går. 
+                          Du kan ändra målet när som helst genom att klicka på kortet.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <div className="text-4xl font-bold text-primary tracking-tight">
                   {salesGoal ? `${Math.round((stats.totalValue / salesGoal) * 100)}%` : "0%"}
                 </div>
