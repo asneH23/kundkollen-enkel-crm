@@ -52,7 +52,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
     <div className="h-full glass-panel flex flex-col relative overflow-hidden bg-card border border-white/50 shadow-xl">
       {/* Logo/Brand */}
       <div className="p-8 pb-8">
-        <Link to="/" className="flex items-center gap-4 group">
+        <Link to="/" className="flex items-center gap-4 group no-underline outline-none border-none">
           <div className="h-12 w-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
             <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
           </div>
