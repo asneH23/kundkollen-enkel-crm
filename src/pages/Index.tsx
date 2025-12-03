@@ -37,7 +37,7 @@ const Index = () => {
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
-              <img src="/logo.jpg" alt="Kundkollen Logo" className="h-full w-full object-cover" />
+              <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
             </div>
             <span className="text-2xl font-bold text-primary tracking-tight">Kundkollen</span>
           </div>
