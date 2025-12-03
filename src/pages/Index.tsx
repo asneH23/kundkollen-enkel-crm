@@ -128,7 +128,7 @@ const Index = () => {
                     <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4 text-accent">
                       <BarChart3 className="h-6 w-6" />
                     </div>
-                    <div className="text-2xl font-bold text-primary">125 000 kr</div>
+                    <div className="text-2xl font-bold text-primary">275 000 kr</div>
                     <div className="text-sm text-primary/40">Försäljning i år</div>
                   </div>
                   <div className="bg-[#F5F5F5] p-6 rounded-3xl">
