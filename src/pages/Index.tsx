@@ -36,10 +36,9 @@ const Index = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#E8E8E8]/80 backdrop-blur-md border-b border-black/5">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-black flex items-center justify-center shadow-lg overflow-hidden">
-              <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
+            <div className="h-10 w-auto">
+              <img src="/logo.png" alt="Kundkollen" className="h-full w-auto object-contain" />
             </div>
-            <span className="text-2xl font-bold text-primary tracking-tight">Kundkollen</span>
           </div>
           <div className="flex items-center gap-4">
             {user ? (

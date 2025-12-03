@@ -53,12 +53,8 @@ const Sidebar = ({ mobile }: SidebarProps) => {
       {/* Logo/Brand */}
       <div className="p-8 pb-8">
         <Link to="/" className="flex items-center gap-4 group">
-          <div className="h-12 w-12 rounded-2xl bg-black flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
-            <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
-          </div>
-          <div>
-            <span className="text-2xl font-bold text-primary tracking-tight block leading-none">Kundkollen</span>
-            <span className="text-xs text-primary/70 font-medium tracking-wider uppercase mt-1 block">CRM System</span>
+          <div className="h-12 w-auto transition-transform duration-300 hover:scale-105">
+            <img src="/logo.png" alt="Kundkollen" className="h-full w-auto object-contain" />
           </div>
         </Link>
       </div>
