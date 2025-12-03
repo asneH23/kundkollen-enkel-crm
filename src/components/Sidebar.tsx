@@ -54,7 +54,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
       <div className="p-8 pb-8">
         <Link to="/" className="flex items-center gap-4 group">
           <div className="h-12 w-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
-            <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
+            <img src="/logo.jpg" alt="Kundkollen Logo" className="h-full w-full object-cover" />
           </div>
           <div>
             <span className="text-2xl font-bold text-primary tracking-tight block leading-none">Kundkollen</span>
