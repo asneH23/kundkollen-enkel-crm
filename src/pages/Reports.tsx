@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Users, FileText, Bell, Calendar, AlertCircle, ArrowRight, CheckCircle } from "lucide-react";
+import { BarChart3, TrendingUp, Users, FileText, Bell, Calendar, AlertCircle, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -241,58 +241,65 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* Hero Card - Total Försäljning */}
-      <div className="bg-black rounded-3xl p-8 border border-white/10 shadow-xl mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-accent/20 flex items-center justify-center text-accent border border-accent/30">
-              <BarChart3 className="h-7 w-7" />
-            </div>
-            <div>
-              <div className="text-sm font-medium text-white/60 mb-1">Total Försäljning</div>
-              <div className="text-4xl font-bold text-white tracking-tight">
-                {stats.totalValue.toLocaleString('sv-SE')}
-                <span className="text-xl text-accent font-normal ml-2">kr</span>
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        {/* Hero Card - Total Försäljning (Black with Green Accent) */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-4">
+          <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-8">
+                <div className="h-14 w-14 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
+                  <TrendingUp className="h-7 w-7" />
+                </div>
+                <Badge className="bg-accent/20 text-accent hover:bg-accent/30 border-accent/30 text-sm px-3 py-1">
+                  Total Försäljning
+                </Badge>
+              </div>
+              <div className="mt-4">
+                <div className="text-6xl font-bold text-white tracking-tight mb-2">
+                  {stats.totalValue.toLocaleString('sv-SE')}
+                  <span className="text-2xl text-white/60 font-normal ml-3">kr</span>
+                </div>
+                <p className="text-white/60 text-lg">Totalt värde av accepterade offerter</p>
               </div>
             </div>
           </div>
         </div>
-        <p className="text-white/60">Totalt värde av accepterade offerter</p>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-
-        {/* Stats Cards */}
-        <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
-          <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-primary mb-4">
-            <Users className="h-5 w-5" />
+        {/* Stats Cards Grid */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {/* Customers */}
+          <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
+            <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
+              <Users className="h-6 w-6" />
+            </div>
+            <div className="text-4xl font-bold text-primary mb-2">{stats.totalCustomers}</div>
+            <div className="text-sm text-primary/60 font-medium">Totalt antal kunder</div>
           </div>
-          <div className="text-3xl font-bold text-primary mb-1">{stats.totalCustomers}</div>
-          <div className="text-sm text-primary/60 font-medium">Totalt antal kunder</div>
+
+          {/* Active Quotes */}
+          <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
+            <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
+              <FileText className="h-6 w-6" />
+            </div>
+            <div className="text-4xl font-bold text-primary mb-2">{stats.activeQuotes}</div>
+            <div className="text-sm text-primary/60 font-medium">Aktiva offerter</div>
+          </div>
+
+          {/* Won Deals */}
+          <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
+            <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
+              <TrendingUp className="h-6 w-6" />
+            </div>
+            <div className="text-4xl font-bold text-primary mb-2">{stats.wonDeals}</div>
+            <div className="text-sm text-primary/60 font-medium">Vunna affärer</div>
+          </div>
         </div>
 
-        <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
-          <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-primary mb-4">
-            <FileText className="h-5 w-5" />
-          </div>
-          <div className="text-3xl font-bold text-primary mb-1">{stats.activeQuotes}</div>
-          <div className="text-sm text-primary/60 font-medium">Aktiva offerter</div>
-        </div>
-
-        <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
-          <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-primary mb-4">
-            <CheckCircle className="h-5 w-5" />
-          </div>
-          <div className="text-3xl font-bold text-primary mb-1">{stats.wonDeals}</div>
-          <div className="text-sm text-primary/60 font-medium">Vunna affärer</div>
-        </div>
-      </div>
-
-      {/* Activity and Reminders Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Activity Feed - Tall */}
-        <div className="bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold text-primary">Senaste Aktivitet</h3>
             <Button variant="ghost" size="sm" className="text-primary/60 hover:text-primary">
@@ -325,8 +332,8 @@ const Reports = () => {
           </div>
         </div>
 
-        {/* Upcoming Reminders */}
-        <div className="bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+        {/* Upcoming Reminders - Wide */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-primary flex items-center gap-2">
               <Bell className="h-5 w-5 text-accent" />

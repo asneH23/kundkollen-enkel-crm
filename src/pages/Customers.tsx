@@ -8,7 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import CustomerCard from "@/components/CustomerCard";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface Customer {
   id: string;
@@ -308,6 +309,27 @@ const Customers = () => {
             </form>
           </DialogContent>
         </Dialog>
+      </div>
+
+      {/* Stats Section - Black Hero Card */}
+      <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
+              <Users className="h-8 w-8" />
+            </div>
+            <div>
+              <div className="text-5xl font-bold text-white tracking-tight mb-1">
+                {customers.length}
+              </div>
+              <p className="text-white/60 text-lg">Totalt antal kunder</p>
+            </div>
+          </div>
+          <Badge className="bg-accent/20 text-accent hover:bg-accent/30 border-accent/30 text-sm px-4 py-2">
+            Aktiva Kunder
+          </Badge>
+        </div>
       </div>
 
       {/* Search */}

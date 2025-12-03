@@ -866,6 +866,37 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
         </Dialog>
       </div>
 
+      {/* Stats Section - Black Hero Card */}
+      <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
+        <div className="relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
+                <FileText className="h-8 w-8" />
+              </div>
+              <div>
+                <div className="text-5xl font-bold text-white tracking-tight mb-1">
+                  {quotes.filter(q => q.status === 'accepted').reduce((sum, q) => sum + (q.amount || 0), 0).toLocaleString('sv-SE')}
+                  <span className="text-2xl text-white/60 font-normal ml-3">kr</span>
+                </div>
+                <p className="text-white/60 text-lg">Totalt värde av accepterade offerter</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                <div className="text-2xl font-bold text-white">{quotes.length}</div>
+                <div className="text-white/60 text-sm">Totalt</div>
+              </div>
+              <div className="bg-accent/20 rounded-2xl p-4 border border-accent/30">
+                <div className="text-2xl font-bold text-accent">{quotes.filter(q => q.status === 'accepted').length}</div>
+                <div className="text-accent text-sm">Vunna</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-black/5">
         <div className="relative flex-1 max-w-md">

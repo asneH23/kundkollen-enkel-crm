@@ -385,6 +385,40 @@ const Reminders = () => {
         </Dialog>
       </div>
 
+      {/* Stats Section - Black Hero Card */}
+      <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
+        <div className="relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
+                <Bell className="h-8 w-8" />
+              </div>
+              <div>
+                <div className="text-5xl font-bold text-white tracking-tight mb-1">
+                  {reminders.filter(r => !r.completed && new Date(r.due_date) >= new Date()).length}
+                </div>
+                <p className="text-white/60 text-lg">Kommande påminnelser</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="bg-red-500/20 rounded-2xl p-4 border border-red-500/30">
+                <div className="text-2xl font-bold text-red-400">
+                  {reminders.filter(r => !r.completed && new Date(r.due_date) < new Date()).length}
+                </div>
+                <div className="text-red-400 text-sm">Försenade</div>
+              </div>
+              <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                <div className="text-2xl font-bold text-white">
+                  {reminders.filter(r => r.completed).length}
+                </div>
+                <div className="text-white/60 text-sm">Klara</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Email Notification Info */}
       <div className="glass-card rounded-xl p-4 border-accent/20">
         <div className="flex items-start gap-3">
