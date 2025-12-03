@@ -19,34 +19,34 @@ export default {
       },
       colors: {
         background: {
-          DEFAULT: "#F8F7F4", // Warm light beige
+          DEFAULT: "#FAFAFA", // Crisp light gray/white
           section: "#FFFFFF",
-          elevated: "#FEFEFE",
+          elevated: "#FFFFFF",
         },
         card: {
-          DEFAULT: "rgba(255, 255, 255, 0.85)", // Light glass effect
-          foreground: "#1F2937"
+          DEFAULT: "#FFFFFF",
+          foreground: "#111827"
         },
         primary: {
-          DEFAULT: "#1F2937", // Dark gray for text
+          DEFAULT: "#111827", // Almost black for high contrast text
           muted: "#6B7280",
         },
         secondary: {
           DEFAULT: "#F3F4F6",
-          foreground: "#1F2937",
+          foreground: "#111827",
         },
         accent: {
-          DEFAULT: "#2D6F4A", // Forest green - earthy and professional
-          hover: "#236039",
-          foreground: "#FFFFFF",
+          DEFAULT: "#CCFF00", // The Neon Lime from Framer
+          hover: "#B3E600",
+          foreground: "#000000", // Black text on neon background for readability
         },
-        border: "rgba(0, 0, 0, 0.08)", // Subtle dark border
-        input: "rgba(0, 0, 0, 0.03)",
+        border: "#E5E7EB", // Very subtle light gray border
+        input: "#F3F4F6", // Light gray input background
         muted: {
           DEFAULT: "#F3F4F6",
           foreground: "#6B7280"
         },
-        success: { DEFAULT: "#2D6F4A", foreground: "#FFFFFF" },
+        success: { DEFAULT: "#CCFF00", foreground: "#000000" }, // Using accent for success too as it fits the vibe
         warning: { DEFAULT: "#F59E0B", foreground: "#FFFFFF" },
         danger: { DEFAULT: "#EF4444", foreground: "#450A0A" },
       },
@@ -63,9 +63,11 @@ export default {
         glow: "0 0 20px rgba(0, 229, 153, 0.15)", // Mint glow
       },
       borderRadius: {
-        lg: "12px",
-        md: "8px",
-        sm: "6px",
+        lg: "1rem", // 16px - softer corners for cards
+        md: "0.75rem", // 12px
+        sm: "0.5rem", // 8px
+        input: "0.75rem", // Rounded inputs
+        full: "9999px", // Pill shapes
       },
       keyframes: {
         "accordion-down": {

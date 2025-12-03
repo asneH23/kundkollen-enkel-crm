@@ -9,20 +9,18 @@
   html {
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 16px;
-    background-color: #F8F7F4;
-    color: #1F2937;
+    background-color: #FAFAFA;
+    color: #111827;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-background text-primary min-h-screen selection:bg-accent/20 selection:text-accent;
+    @apply bg-background text-primary min-h-screen selection:bg-accent/50 selection:text-black;
+    /* Subtle mesh gradient feel */
     background-image:
-      radial-gradient(circle at 50% 0%, rgba(45, 111, 74, 0.04) 0%, transparent 50%),
-      radial-gradient(circle at 100% 0%, rgba(0, 0, 0, 0.02) 0%, transparent 30%),
-      radial-gradient(circle, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 20px 20px;
-    background-position: 0 0, 0 0, 0 0;
+      radial-gradient(circle at 0% 0%, rgba(204, 255, 0, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(204, 255, 0, 0.03) 0%, transparent 50%);
   }
 
   h1,
@@ -45,60 +43,40 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary/10 rounded-full hover:bg-primary/20 transition-colors;
+    @apply bg-gray-200 rounded-full hover:bg-gray-300 transition-colors;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-2xl;
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.08),
-      0 2px 8px rgba(0, 0, 0, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    @apply bg-white border border-gray-100 shadow-xl rounded-2xl;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
   }
 
   .glass-card {
-    @apply bg-white/90 backdrop-blur-md border border-black/[0.08] transition-all duration-300;
-    box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.06),
-      0 1px 4px rgba(0, 0, 0, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    @apply bg-white border border-gray-100 shadow-sm rounded-2xl transition-all duration-300;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
   }
 
   .glass-card:hover {
-    @apply border-accent/30;
-    box-shadow:
-      0 8px 24px rgba(45, 111, 74, 0.12),
-      0 4px 12px rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    transform: translateY(-2px);
+    @apply border-gray-200 shadow-md transform -translate-y-1;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
   }
 
   .premium-input {
-    @apply bg-white/80 border border-black/[0.12] text-primary placeholder:text-primary/40 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200 hover:bg-white/90 hover:border-black/20;
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      inset 0 1px 2px rgba(0, 0, 0, 0.02);
+    @apply bg-gray-50 border border-gray-200 text-primary placeholder:text-gray-400 focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-accent/20 transition-all duration-200 hover:bg-gray-100 rounded-xl;
   }
 
   .premium-input:focus {
-    box-shadow:
-      0 0 0 3px rgba(45, 111, 74, 0.1),
-      0 2px 8px rgba(45, 111, 74, 0.08);
+    outline: none;
   }
 
   .premium-button {
-    @apply bg-accent text-white font-medium px-6 py-2.5 rounded-lg hover:bg-accent-hover active:scale-95 transition-all duration-200;
-    box-shadow:
-      0 2px 8px rgba(45, 111, 74, 0.2),
-      0 1px 3px rgba(0, 0, 0, 0.1);
+    @apply bg-accent text-black font-bold px-8 py-3 rounded-full hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md;
   }
 
   .premium-button:hover {
-    box-shadow:
-      0 4px 16px rgba(45, 111, 74, 0.3),
-      0 2px 8px rgba(0, 0, 0, 0.15);
+    /* No extra shadow needed for this flat style, just color change */
   }
 
   .page-container {
@@ -106,10 +84,8 @@
   }
 
   .shadow-glow {
-    box-shadow:
-      0 0 20px rgba(45, 111, 74, 0.2),
-      0 0 40px rgba(45, 111, 74, 0.1),
-      0 4px 16px rgba(0, 0, 0, 0.08);
+    /* Subtle lime glow */
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
   }
 
   .animate-enter {
