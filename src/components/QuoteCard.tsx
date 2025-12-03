@@ -29,9 +29,10 @@ interface QuoteCardProps {
   onEdit: (quote: any) => void;
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: string) => void;
+  onClick: () => void;
 }
 
-const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) => {
+const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCardProps) => {
   const statusColors = {
     draft: "bg-gray-100 text-gray-700 border-gray-200",
     sent: "bg-blue-50 text-blue-700 border-blue-200",
@@ -106,7 +107,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) 
         <div className="bg-black/5 rounded-2xl p-3">
           <div className="text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Värde</div>
           <div className="text-lg font-bold text-primary flex items-center gap-1">
-            {quote.total_amount?.toLocaleString()} <span className="text-sm font-normal text-primary/60">kr</span>
+            {quote.amount?.toLocaleString()} <span className="text-sm font-normal text-primary/60">kr</span>
           </div>
         </div>
         <div className="bg-black/5 rounded-2xl p-3">
@@ -129,7 +130,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange }: QuoteCardProps) 
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onEdit(quote)}
+          onClick={onClick}
           className="text-primary/60 hover:text-accent hover:bg-transparent p-0 h-auto font-medium group/btn"
         >
           Öppna <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>

@@ -349,10 +349,7 @@ const Customers = () => {
           {filteredCustomers.map((customer) => (
             <CustomerCard
               key={customer.id}
-              companyName={customer.company_name}
-              contactPerson={customer.contact_person}
-              email={customer.email}
-              phone={customer.phone}
+              customer={customer}
               onEdit={() => handleOpenDialog(customer)}
               onDelete={() => handleDelete(customer.id)}
             />

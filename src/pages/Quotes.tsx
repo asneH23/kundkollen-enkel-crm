@@ -917,13 +917,34 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
             {filteredQuotes.map((quote) => (
               <QuoteCard
                 key={quote.id}
-                title={quote.title}
-                customerName={getCustomerName(quote.customer_id)}
-                amount={quote.amount}
-                status={quote.status}
-                createdAt={quote.created_at}
+                quote={{
+                  ...quote,
+                  customer_name: getCustomerName(quote.customer_id)
+                }}
                 onEdit={() => handleOpenDialog(quote)}
                 onDelete={() => handleDelete(quote.id)}
+                onStatusChange={async (id, status) => {
+                  try {
+                    const { error } = await supabase
+                      .from("quotes")
+                      .update({ status })
+                      .eq("id", id);
+
+                    if (error) throw error;
+
+                    fetchQuotes();
+                    toast({
+                      title: "Status uppdaterad",
+                      description: `Offerten har markerats som ${status === 'sent' ? 'skickad' : status === 'accepted' ? 'accepterad' : status === 'rejected' ? 'avvisad' : 'utkast'}`,
+                    });
+                  } catch (error: any) {
+                    toast({
+                      title: "Fel",
+                      description: "Kunde inte uppdatera status",
+                      variant: "destructive",
+                    });
+                  }
+                }}
                 onClick={() => handleOpenDetail(quote)}
               />
             ))}

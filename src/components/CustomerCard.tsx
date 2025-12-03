@@ -34,11 +34,11 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
           </div>
           <div>
             <h3 className="text-xl font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300">
-              {customer.name}
+              {customer.company_name}
             </h3>
             <div className="flex items-center gap-2 text-sm text-primary/60 mt-1">
               <span className="bg-black/5 px-2 py-0.5 rounded-md text-xs font-medium uppercase tracking-wide">
-                {customer.org_number || "Inget org.nr"}
+                {customer.contact_person || "Ingen kontaktperson"}
               </span>
             </div>
           </div>
@@ -86,16 +86,7 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
           </a>
         )}
 
-        {customer.address && (
-          <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-black/5 transition-colors group/item">
-            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/60 group-hover/item:text-primary transition-colors">
-              <MapPin className="h-4 w-4" />
-            </div>
-            <span className="text-sm font-medium text-primary/80 truncate">
-              {customer.address}, {customer.city}
-            </span>
-          </div>
-        )}
+
       </div>
 
       <div className="mt-6 pt-4 border-t border-border flex justify-end">
