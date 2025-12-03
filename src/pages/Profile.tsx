@@ -205,9 +205,6 @@ const Profile = () => {
                       placeholder="Förnamn Efternamn"
                       className="mt-2"
                     />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Visas i hälsningen på Dashboard
-                    </p>
                   </div>
 
                   <div>
