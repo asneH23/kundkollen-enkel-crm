@@ -12,7 +12,8 @@ import {
   Send,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  Download
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -24,6 +25,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import QuotePDF from './pdf/QuotePDF';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface QuoteCardProps {
   quote: any;
@@ -31,9 +36,40 @@ interface QuoteCardProps {
   onDelete: (quote: any) => void;
   onStatusChange: (id: string, status: string) => void;
   onClick: () => void;
+  companyInfo?: {
+    name: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    orgNumber?: string;
+  };
 }
 
-const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCardProps) => {
+const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyInfo }: QuoteCardProps) => {
+  const [customer, setCustomer] = useState<any>(null);
+  const [loadingCustomer, setLoadingCustomer] = useState(true);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      if (!quote.customer_id) {
+        setLoadingCustomer(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', quote.customer_id)
+        .single();
+
+      if (!error && data) {
+        setCustomer(data);
+      }
+      setLoadingCustomer(false);
+    };
+
+    fetchCustomer();
+  }, [quote.customer_id]);
   const statusColors = {
     draft: "bg-gray-100 text-gray-700 border-gray-200",
     sent: "bg-blue-50 text-blue-700 border-blue-200",
@@ -120,6 +156,32 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
             <DropdownMenuItem onClick={() => onStatusChange(quote.id, "rejected")} className="rounded-lg cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
               <XCircle className="mr-2 h-4 w-4" /> Markera som nekad
             </DropdownMenuItem>
+            {customer && !loadingCustomer && (
+              <PDFDownloadLink
+                document={
+                  <QuotePDF
+                    quote={quote}
+                    customer={{
+                      name: customer.name,
+                      email: customer.email,
+                      phone: customer.phone,
+                      company: customer.company,
+                      address: customer.address,
+                    }}
+                    companyInfo={companyInfo}
+                  />
+                }
+                fileName={`offert-${quote.id.slice(0, 8)}.pdf`}
+                className="w-full"
+              >
+                {({ loading }) => (
+                  <DropdownMenuItem className="rounded-lg cursor-pointer text-accent focus:text-accent focus:bg-accent/10">
+                    <Download className="mr-2 h-4 w-4" />
+                    {loading ? 'Förbereder PDF...' : 'Ladda ner PDF'}
+                  </DropdownMenuItem>
+                )}
+              </PDFDownloadLink>
+            )}
             <DropdownMenuItem onClick={() => onDelete(quote)} className="text-red-600 focus:text-red-700 focus:bg-red-50 rounded-lg cursor-pointer">
               <Trash2 className="mr-2 h-4 w-4" /> Ta bort
             </DropdownMenuItem>
