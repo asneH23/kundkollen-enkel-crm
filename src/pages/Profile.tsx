@@ -167,16 +167,11 @@ const Profile = () => {
 
       if (error) {
         console.error("Error updating profile in database:", error);
-        // Only ignore column errors (for optional columns), throw other errors
-        if (!error.message.includes("column") && !error.message.includes("does not exist")) {
-          throw error;
-        }
-        // If column error, data is saved to localStorage as fallback
-        // But we should still show a warning
+        // Show the actual error to help with debugging
         toast({
-          title: "Sparad lokalt",
-          description: "Data sparades lokalt. Vissa fält kanske inte syns i andra webbläsare.",
-          variant: "default",
+          title: "Kunde inte spara till databasen",
+          description: error.message || "Okänt fel. Data sparades endast lokalt.",
+          variant: "destructive",
         });
         return;
       }

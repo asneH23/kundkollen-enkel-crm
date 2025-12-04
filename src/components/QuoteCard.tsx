@@ -162,10 +162,10 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
                   <QuotePDF
                     quote={quote}
                     customer={{
-                      name: customer.name,
+                      name: customer.company_name || customer.name || 'Okänd kund',
                       email: customer.email,
                       phone: customer.phone,
-                      company: customer.company,
+                      company: customer.company_name,
                       address: customer.address,
                     }}
                     companyInfo={companyInfo}
