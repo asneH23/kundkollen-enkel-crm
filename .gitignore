@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Sensitive documentation (contains API keys)
+CRON_JOB_SETUP.sql
+LOVABLE_*.md
+EMAIL_SETUP_NEW.md
+BETA_STATUS.md
+DOKUMENT_OVERSIKT.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
