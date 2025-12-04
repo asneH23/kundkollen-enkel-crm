@@ -293,7 +293,7 @@ const Profile = () => {
                       className="mt-2"
                     />
                     <p className="text-sm text-accent/90 mt-2 font-medium bg-accent/10 p-3 rounded-lg border border-accent/20">
-                      ⚠️ Denna e-post visas på dina PDF-offerter och är den adress kunder kontaktar dig på. Använd din företags-email, inte din personliga.
+                      Denna e-post visas på dina PDF-offerter och är den adress kunder kontaktar dig på. Använd din företags-email, inte din personliga.
                     </p>
                   </div>
 
