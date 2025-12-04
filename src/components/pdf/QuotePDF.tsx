@@ -269,14 +269,16 @@ const QuotePDF = ({ quote, customer, companyInfo }: QuotePDFProps) => {
                 {/* Customer Information */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Kund</Text>
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Namn:</Text>
-                        <Text style={styles.value}>{customer.name}</Text>
-                    </View>
                     {customer.company && (
                         <View style={styles.row}>
                             <Text style={styles.label}>Företag:</Text>
                             <Text style={styles.value}>{customer.company}</Text>
+                        </View>
+                    )}
+                    {!customer.company && customer.name && (
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Namn:</Text>
+                            <Text style={styles.value}>{customer.name}</Text>
                         </View>
                     )}
                     {customer.email && (
