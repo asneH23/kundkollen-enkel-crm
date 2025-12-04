@@ -292,12 +292,12 @@ const Customers = () => {
             <form onSubmit={handleSubmit} className="space-y-6 mt-4">
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="companyName" className="text-primary">Företagsnamn *</Label>
+                  <Label htmlFor="companyName" className="text-primary">Namn / Företag *</Label>
                   <Input
                     id="companyName"
                     value={formData.companyName}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    placeholder="Anderssons Bygg AB"
+                    placeholder="Anders Andersson eller Anderssons Bygg AB"
                     required
                     className="premium-input"
                   />
@@ -305,7 +305,7 @@ const Customers = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="contactPerson" className="text-primary">Kontaktperson</Label>
+                    <Label htmlFor="contactPerson" className="text-primary">Kontaktperson (valfritt)</Label>
                     <Input
                       id="contactPerson"
                       value={formData.contactPerson}
@@ -390,7 +390,7 @@ const Customers = () => {
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60 pointer-events-none" />
           <Input
-            placeholder="Sök på företagsnamn, kontaktperson eller e-post"
+            placeholder="Sök på namn, företag eller e-post"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="premium-input pl-10 h-11 text-base"

@@ -996,6 +996,11 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                 onEdit={() => handleOpenDialog(quote)}
                 onDelete={() => handleDeleteClick(quote)}
                 onStatusChange={async (id, status) => {
+                  if (status === "sent") {
+                    handleOpenSendQuote(quote);
+                    return;
+                  }
+
                   try {
                     const { error } = await supabase
                       .from("quotes")
@@ -1007,7 +1012,7 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                     fetchQuotes();
                     toast({
                       title: "Status uppdaterad",
-                      description: `Offerten har markerats som ${status === 'sent' ? 'skickad' : status === 'accepted' ? 'accepterad' : status === 'rejected' ? 'avvisad' : 'utkast'}`,
+                      description: `Offerten har markerats som ${status === 'accepted' ? 'accepterad' : status === 'rejected' ? 'avvisad' : 'utkast'}`,
                     });
                   } catch (error: any) {
                     toast({
