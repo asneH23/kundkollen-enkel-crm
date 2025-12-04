@@ -256,10 +256,10 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section >
+      </section>
 
       {/* Footer */}
-      < footer className="bg-[#F5F5F5] pt-0 pb-12" >
+      <footer className="bg-[#F5F5F5] pt-0 pb-12">
         <div className="container mx-auto px-6 border-t border-black/5 pt-12">
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Brand */}
@@ -312,8 +312,8 @@ const Index = () => {
             </p>
           </div>
         </div>
-      </footer >
-    </div >
+      </footer>
+    </div>
   );
 };
 
