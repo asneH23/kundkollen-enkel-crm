@@ -105,13 +105,8 @@ const Dashboard = () => {
   const fetchDisplayName = async () => {
     if (!user) return;
 
-    // Check localStorage first for immediate update (faster)
-    const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
-    if (storedName) {
-      setDisplayName(storedName);
-    }
-
     try {
+      // Always prioritize database first - it's the source of truth across devices
       const { data, error } = await supabase
         .from("profiles")
         .select("display_name")
@@ -120,25 +115,39 @@ const Dashboard = () => {
 
       if (error && error.code === "42703") {
         console.log("display_name column not yet created in database");
+        // If column doesn't exist, check localStorage as fallback
+        const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+        if (storedName) {
+          setDisplayName(storedName);
+        }
         return;
       }
 
       if (error && error.code !== "PGRST116") throw error;
 
-      // Update from database if it exists (overrides localStorage if different)
+      // Update from database if it exists (this is the source of truth)
       if (data && 'display_name' in data && data.display_name) {
-        setDisplayName(data.display_name as string);
-        // Sync to localStorage
-        localStorage.setItem(`profile_display_name_${user.id}`, data.display_name);
-      } else if (!storedName) {
-        // Only check localStorage if database has no value and we haven't set it yet
-        const localName = localStorage.getItem(`profile_display_name_${user.id}`);
-        if (localName) {
-          setDisplayName(localName);
+        const dbName = data.display_name as string;
+        setDisplayName(dbName);
+        // Sync to localStorage for faster access next time
+        localStorage.setItem(`profile_display_name_${user.id}`, dbName);
+      } else {
+        // Database has no value, clear any localStorage value to avoid stale data
+        const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+        if (storedName) {
+          // Use localStorage as temporary fallback, but prefer empty if it seems stale
+          setDisplayName(storedName);
+        } else {
+          setDisplayName("");
         }
       }
     } catch (error) {
       console.error("Error fetching display name:", error);
+      // On error, try localStorage as last resort
+      const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+      if (storedName) {
+        setDisplayName(storedName);
+      }
     }
   };
 

@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -26,6 +27,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,10 +51,13 @@ const Auth = () => {
           localStorage.removeItem("remembered_email");
         }
 
-        toast({
-          title: "Välkommen tillbaka!",
-          description: "Du är nu inloggad.",
-        });
+        // Only show toast on desktop - on mobile it's in the way with the topbar
+        if (!isMobile) {
+          toast({
+            title: "Välkommen tillbaka!",
+            description: "Du är nu inloggad.",
+          });
+        }
         navigate("/dashboard");
       } else {
         // Validation for signup

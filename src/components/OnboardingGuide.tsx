@@ -3,11 +3,12 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, ArrowLeft, Users, FileText, Bell, BarChart3, CheckCircle2, User } from "lucide-react";
+import { ArrowRight, ArrowLeft, Users, FileText, Bell, BarChart3, CheckCircle2, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface OnboardingStep {
   id: string;
@@ -102,9 +103,11 @@ const OnboardingGuide = () => {
   const [savingName, setSavingName] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Check if user has completed onboarding
+    // On mobile, don't show onboarding automatically if already completed
     if (!hasCompletedOnboarding()) {
       setOpen(true);
     }
@@ -126,14 +129,7 @@ const OnboardingGuide = () => {
     if (user && open) {
       const loadDisplayName = async () => {
         try {
-          // Try localStorage first
-          const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
-          if (storedName) {
-            setDisplayName(storedName);
-            return;
-          }
-
-          // Try database
+          // Always prioritize database first (source of truth across devices)
           const { data, error } = await supabase
             .from("profiles")
             .select("display_name")
@@ -143,10 +139,22 @@ const OnboardingGuide = () => {
           if (!error && data && (data as any).display_name) {
             setDisplayName((data as any).display_name);
             localStorage.setItem(`profile_display_name_${user.id}`, (data as any).display_name);
+            return;
+          }
+
+          // Fallback to localStorage if database has no value
+          const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+          if (storedName) {
+            setDisplayName(storedName);
           }
         } catch (error) {
           // Ignore errors, user can still enter name
           console.log("Could not load display name:", error);
+          // Try localStorage as last resort
+          const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+          if (storedName) {
+            setDisplayName(storedName);
+          }
         }
       };
 
@@ -184,13 +192,7 @@ const OnboardingGuide = () => {
     setSavingName(true);
     
     try {
-      // Save to localStorage as fallback
-      localStorage.setItem(`profile_display_name_${user.id}`, name);
-      
-      // Trigger custom event to notify other components
-      window.dispatchEvent(new CustomEvent('displayNameUpdated'));
-      
-      // Try to save to database
+      // Try to save to database first (source of truth)
       const updateData: any = {
         display_name: name,
       };
@@ -201,13 +203,31 @@ const OnboardingGuide = () => {
         .eq("id", user.id);
       
       if (error) {
-        // If column doesn't exist, that's okay - we'll use localStorage
-        if (!error.message.includes("column") && !error.message.includes("does not exist")) {
+        // If column doesn't exist, try to add it via insert
+        if (error.message.includes("column") || error.message.includes("does not exist")) {
+          // Column might not exist, try insert/upsert instead
+          try {
+            await supabase
+              .from("profiles")
+              .upsert({ id: user.id, display_name: name }, { onConflict: "id" });
+          } catch (upsertError) {
+            console.error("Error upserting display name:", upsertError);
+          }
+        } else {
           console.error("Error saving display name:", error);
         }
       }
+      
+      // Save to localStorage as fallback/cache
+      localStorage.setItem(`profile_display_name_${user.id}`, name);
+      
+      // Trigger custom event to notify other components
+      window.dispatchEvent(new CustomEvent('displayNameUpdated'));
     } catch (error) {
       console.error("Error saving display name:", error);
+      // Still save to localStorage as fallback
+      localStorage.setItem(`profile_display_name_${user.id}`, name);
+      window.dispatchEvent(new CustomEvent('displayNameUpdated'));
     } finally {
       setSavingName(false);
     }
@@ -238,11 +258,35 @@ const OnboardingGuide = () => {
   const progress = ((currentStep + 1) / onboardingSteps.length) * 100;
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      // Allow closing on mobile if user wants to skip
+      if (!isOpen && isMobile) {
+        handleSkip();
+      }
+    }}>
       <DialogContent 
-        className="bg-white border border-black/10 text-primary sm:max-w-[600px] rounded-3xl p-0 overflow-hidden [&>button]:hidden"
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
+        className={cn(
+          "bg-white border border-black/10 text-primary rounded-3xl p-0 overflow-hidden",
+          isMobile ? "sm:max-w-[90vw] max-h-[90vh] p-4" : "sm:max-w-[600px]",
+          "[&>button]:hidden"
+        )}
+        onInteractOutside={(e) => {
+          // Allow closing on mobile by clicking outside
+          if (isMobile) {
+            e.preventDefault();
+            handleSkip();
+          } else {
+            e.preventDefault();
+          }
+        }}
+        onEscapeKeyDown={(e) => {
+          // Allow closing with ESC on mobile
+          if (isMobile) {
+            handleSkip();
+          } else {
+            e.preventDefault();
+          }
+        }}
       >
         {/* Progress Bar */}
         <div className="h-1.5 bg-black/5 w-full">
@@ -252,33 +296,56 @@ const OnboardingGuide = () => {
           />
         </div>
 
-        <div className="p-8 relative">
+        <div className={cn("relative", isMobile ? "p-4" : "p-8")}>
+          {/* Close button on mobile */}
+          {isMobile && (
+            <button
+              onClick={handleSkip}
+              className="absolute top-2 right-2 p-2 rounded-lg hover:bg-black/5 transition-colors z-10"
+              aria-label="Stäng"
+            >
+              <X className="h-5 w-5 text-primary/60" />
+            </button>
+          )}
+
           {/* Icon and Title */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20 flex-shrink-0">
-              <Icon className="h-8 w-8" />
+          <div className={cn("flex items-center gap-4 mb-6", isMobile && "gap-3 mb-4")}>
+            <div className={cn(
+              "rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20 flex-shrink-0",
+              isMobile ? "h-12 w-12" : "h-16 w-16"
+            )}>
+              <Icon className={cn(isMobile ? "h-6 w-6" : "h-8 w-8")} />
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-primary mb-1">
+              <h2 className={cn(
+                "font-bold text-primary mb-1",
+                isMobile ? "text-xl" : "text-2xl"
+              )}>
                 {step.id === "welcome" && displayName 
                   ? `Välkommen till Kundkollen, ${displayName}!`
                   : step.title}
               </h2>
-              <p className="text-sm text-primary/60">
+              <p className={cn("text-primary/60", isMobile ? "text-xs" : "text-sm")}>
                 Steg {currentStep + 1} av {onboardingSteps.length}
               </p>
             </div>
           </div>
 
           {/* Description */}
-          <p className="text-primary/70 text-lg leading-relaxed mb-8 min-h-[80px]">
+          <p className={cn(
+            "text-primary/70 leading-relaxed",
+            isMobile ? "text-base mb-6 min-h-[60px]" : "text-lg mb-8 min-h-[80px]"
+          )}>
             {step.description}
           </p>
 
           {/* Name Input for first step */}
           {step.id === "name" && (
-            <div className="mb-8">
-              <Label htmlFor="displayName" className="text-base font-medium text-primary mb-2 block">
+            <div className={cn(isMobile ? "mb-6" : "mb-8")}>
+              <Label htmlFor="displayName" className={cn(
+                "font-medium text-primary mb-2 block",
+                isMobile ? "text-sm" : "text-base"
+              )}>
                 Ditt namn
               </Label>
               <Input
@@ -287,8 +354,11 @@ const OnboardingGuide = () => {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="T.ex. Erik"
-                className="premium-input text-lg h-12"
-                autoFocus
+                className={cn(
+                  "premium-input",
+                  isMobile ? "text-base h-11" : "text-lg h-12"
+                )}
+                autoFocus={!isMobile}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && displayName.trim()) {
                     handleNext();
@@ -299,22 +369,26 @@ const OnboardingGuide = () => {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between gap-4">
+          <div className={cn(
+            "flex items-center justify-between gap-4",
+            isMobile && "gap-2"
+          )}>
             <Button
               variant="ghost"
               onClick={handlePrevious}
               disabled={isFirstStep}
               className={cn(
-                "px-4 py-2 rounded-xl",
+                "rounded-xl",
+                isMobile ? "px-3 py-2 text-sm" : "px-4 py-2",
                 isFirstStep && "opacity-50 cursor-not-allowed"
               )}
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Föregående
+              <ArrowLeft className={cn("h-4 w-4", isMobile ? "mr-1" : "mr-2")} />
+              <span className={cn(isMobile && "hidden sm:inline")}>Föregående</span>
             </Button>
 
             <div className="flex gap-2">
-              {!isFirstStep && step.id !== "name" && (
+              {!isFirstStep && step.id !== "name" && !isMobile && (
                 <Button
                   variant="ghost"
                   onClick={handleSkip}
@@ -326,10 +400,15 @@ const OnboardingGuide = () => {
               <Button
                 onClick={handleNext}
                 disabled={savingName}
-                className="px-6 py-2 premium-button rounded-xl"
+                className={cn(
+                  "premium-button rounded-xl",
+                  isMobile ? "px-4 py-2 text-sm" : "px-6 py-2"
+                )}
               >
                 {savingName ? "Sparar..." : isLastStep ? "Kom igång!" : "Nästa"}
-                {!isLastStep && !savingName && <ArrowRight className="ml-2 h-4 w-4" />}
+                {!isLastStep && !savingName && (
+                  <ArrowRight className={cn("h-4 w-4", isMobile ? "ml-1" : "ml-2")} />
+                )}
               </Button>
             </div>
           </div>
