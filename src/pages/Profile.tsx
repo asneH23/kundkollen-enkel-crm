@@ -149,9 +149,9 @@ const Profile = () => {
       }
 
       // Update all fields in database - this ensures data persists across browsers
+      // Note: display_name is stored in localStorage only (not in database schema)
       const updateData: any = {
         company_name: companyName.trim() || null,
-        display_name: displayName.trim() || null,
         business_email: businessEmail.trim() || null,
         phone: phone.trim() || null,
         address: address.trim() || null,
