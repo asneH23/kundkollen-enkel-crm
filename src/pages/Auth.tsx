@@ -106,7 +106,7 @@ const Auth = () => {
           title: "Konto skapat!",
           description: "Ett verifieringsemail har skickats till din email.",
         });
-        
+
         // Redirect immediately to email verification page
         navigate("/verifiera-email");
       }
@@ -134,139 +134,150 @@ const Auth = () => {
           <ArrowLeft className="h-4 w-4" />
           Tillbaka till startsidan
         </Button>
-        
+
         <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">
-            {isLogin ? "Logga in" : "Skapa konto"}
-          </CardTitle>
-          <CardDescription className="text-center">
-            {isLogin
-              ? "Välkommen tillbaka till Kundkollen"
-              : "Kom igång med Kundkollen"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAuth} className="space-y-4">
-            {!isLogin && (
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">
+              {isLogin ? "Logga in" : "Skapa konto"}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {isLogin
+                ? "Välkommen tillbaka till Kundkollen"
+                : "Kom igång med Kundkollen"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAuth} className="space-y-4">
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="company">Företagsnamn</Label>
+                  <Input
+                    id="company"
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Ditt företagsnamn"
+                    required={!isLogin}
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="company">Företagsnamn</Label>
+                <Label htmlFor="email">E-post</Label>
                 <Input
-                  id="company"
-                  type="text"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="Ditt företagsnamn"
-                  required={!isLogin}
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="din@email.se"
+                  required
                 />
               </div>
-            )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">E-post</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="din@email.se"
-                required
-              />
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Lösenord</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minst 6 tecken"
-                required
-                minLength={6}
-              />
-            </div>
-
-            {isLogin && (
-              <div className="flex items-center space-x-3 py-2 px-1 rounded hover:bg-muted/30 transition-colors">
-                <Checkbox
-                  id="rememberMe"
-                  checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked === true)}
-                  className="h-5 w-5 border-2 border-border data-[state=checked]:bg-accent data-[state=checked]:border-accent data-[state=checked]:text-background"
-                />
-                <Label 
-                  htmlFor="rememberMe" 
-                  className={`text-sm cursor-pointer font-semibold transition-colors flex-1 ${
-                    rememberMe ? "text-primary" : "text-secondary"
-                  }`}
-                >
-                  Håll mig inloggad
-                </Label>
-              </div>
-            )}
-
-            {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+                <Label htmlFor="password">Lösenord</Label>
                 <Input
-                  id="confirmPassword"
+                  id="password"
                   type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Upprepa lösenordet"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Minst 6 tecken"
                   required
                   minLength={6}
                 />
               </div>
-            )}
 
-            {!isLogin && (
-              <div className="flex items-start space-x-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="gdpr"
-                  checked={acceptGdpr}
-                  onChange={(e) => setAcceptGdpr(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
-                  required
-                />
-                <Label htmlFor="gdpr" className="text-sm leading-relaxed cursor-pointer">
-                  Jag accepterar att mina personuppgifter behandlas enligt{" "}
-                  <a 
-                    href="https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary underline hover:no-underline"
-                  >
-                    GDPR
-                  </a>
-                  . Uppgifterna används endast för att ge dig tillgång till tjänsten och kommer inte delas med tredje part.
-                </Label>
-              </div>
-            )}
+              {isLogin && (
+                <>
+                  <div className="flex items-center justify-end -mt-1">
+                    <button
+                      type="button"
+                      onClick={() => navigate("/glomt-losenord")}
+                      className="text-sm text-primary/70 hover:text-accent underline transition-colors"
+                    >
+                      Glömt lösenord?
+                    </button>
+                  </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading
-                ? "Laddar..."
-                : isLogin
-                ? "Logga in"
-                : "Skapa konto"}
-            </Button>
+                  <div className="flex items-center space-x-3 py-2 px-1 rounded hover:bg-muted/30 transition-colors">
+                    <Checkbox
+                      id="rememberMe"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                      className="h-5 w-5 border-2 border-border data-[state=checked]:bg-accent data-[state=checked]:border-accent data-[state=checked]:text-background"
+                    />
+                    <Label
+                      htmlFor="rememberMe"
+                      className={`text-sm cursor-pointer font-semibold transition-colors flex-1 ${rememberMe ? "text-primary" : "text-secondary"
+                        }`}
+                    >
+                      Håll mig inloggad
+                    </Label>
+                  </div>
+                </>
+              )}
 
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              {isLogin
-                ? "Inget konto? Skapa ett här"
-                : "Har redan konto? Logga in"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Upprepa lösenordet"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              )}
+
+              {!isLogin && (
+                <div className="flex items-start space-x-2 pt-2">
+                  <input
+                    type="checkbox"
+                    id="gdpr"
+                    checked={acceptGdpr}
+                    onChange={(e) => setAcceptGdpr(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-gray-300"
+                    required
+                  />
+                  <Label htmlFor="gdpr" className="text-sm leading-relaxed cursor-pointer">
+                    Jag accepterar att mina personuppgifter behandlas enligt{" "}
+                    <a
+                      href="https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:no-underline"
+                    >
+                      GDPR
+                    </a>
+                    . Uppgifterna används endast för att ge dig tillgång till tjänsten och kommer inte delas med tredje part.
+                  </Label>
+                </div>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading
+                  ? "Laddar..."
+                  : isLogin
+                    ? "Logga in"
+                    : "Skapa konto"}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full"
+                onClick={() => setIsLogin(!isLogin)}
+              >
+                {isLogin
+                  ? "Inget konto? Skapa ett här"
+                  : "Har redan konto? Logga in"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
