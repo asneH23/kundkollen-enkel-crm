@@ -34,35 +34,38 @@ const Index = () => {
     <div className="min-h-screen bg-[#E8E8E8] font-sans selection:bg-accent/30">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#E8E8E8]/80 backdrop-blur-md border-b border-black/5">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group cursor-pointer no-underline outline-none border-none">
-            <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden group-hover:scale-105 transition-transform duration-300">
+        <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group cursor-pointer no-underline outline-none border-none">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden group-hover:scale-105 transition-transform duration-300">
               <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
             </div>
-            <span className="text-2xl font-bold text-primary tracking-tight group-hover:text-accent transition-colors">Kundkollen</span>
+            <span className="text-lg sm:text-2xl font-bold text-primary tracking-tight group-hover:text-accent transition-colors">Kundkollen</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {user ? (
               <Button
                 onClick={() => navigate("/dashboard")}
-                className="premium-button rounded-full px-6"
+                className="premium-button rounded-full px-4 sm:px-6 text-sm sm:text-base"
               >
-                Gå till Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                <span className="hidden sm:inline">Gå till Dashboard</span>
+                <span className="sm:hidden">Dashboard</span>
+                <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             ) : (
               <>
                 <Button
                   variant="ghost"
                   onClick={() => navigate("/auth")}
-                  className="text-primary/60 hover:text-primary hover:bg-black/5 rounded-full px-6"
+                  className="text-primary/60 hover:text-primary hover:bg-black/5 rounded-full px-3 sm:px-6 text-sm sm:text-base"
                 >
                   Logga in
                 </Button>
                 <Button
                   onClick={() => navigate("/auth")}
-                  className="premium-button rounded-full px-6"
+                  className="premium-button rounded-full px-4 sm:px-6 text-sm sm:text-base"
                 >
-                  Kom igång gratis
+                  <span className="hidden sm:inline">Kom igång gratis</span>
+                  <span className="sm:hidden">Kom igång</span>
                 </Button>
               </>
             )}
@@ -71,25 +74,25 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-40 pb-20 px-6">
+      <section className="pt-24 sm:pt-32 lg:pt-40 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <h1 className="text-6xl md:text-7xl font-bold text-primary tracking-tight leading-[1.1]">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            <div className="space-y-6 sm:space-y-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-primary tracking-tight leading-[1.1]">
                 CRM för dig som vill <span className="text-accent">växa smartare.</span>
               </h1>
 
-              <p className="text-xl text-primary/60 leading-relaxed max-w-lg">
+              <p className="text-base sm:text-lg lg:text-xl text-primary/60 leading-relaxed max-w-lg">
                 Sluta krångla med kalkylblad och kalendrar. Kundkollen hjälper dig att organisera kunder, offerter, påminnelser och försäljning i ett verktyg som faktiskt är kul att använda.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
                 <Button
                   onClick={() => navigate("/auth")}
                   size="lg"
-                  className="premium-button h-14 px-8 rounded-full text-lg"
+                  className="premium-button h-12 sm:h-14 px-6 sm:px-8 rounded-full text-base sm:text-lg w-full sm:w-auto"
                 >
-                  Skapa konto gratis <ArrowRight className="ml-2 h-5 w-5" />
+                  Skapa konto gratis <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
                 <Button
                   variant="outline"
@@ -97,27 +100,27 @@ const Index = () => {
                   onClick={() => {
                     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="h-14 px-8 rounded-full text-lg border-2 border-black/10 hover:bg-white hover:border-black/20 bg-transparent"
+                  className="h-12 sm:h-14 px-6 sm:px-8 rounded-full text-base sm:text-lg border-2 border-black/10 hover:bg-white hover:border-black/20 bg-transparent w-full sm:w-auto"
                 >
                   Läs mer
                 </Button>
               </div>
 
-              <div className="flex items-center gap-8 pt-8 text-sm text-primary/60 font-medium">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8 pt-4 sm:pt-8 text-xs sm:text-sm text-primary/60 font-medium">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-accent" /> Inget kreditkort
+                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /> Inget kreditkort
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-accent" /> Kom igång på 1 min
+                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /> Kom igång på 1 min
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-accent" /> Svensk support
+                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /> Svensk support
                 </div>
               </div>
             </div>
 
             {/* Hero Visual */}
-            <div className="relative">
+            <div className="relative hidden lg:block">
               <div className="absolute -inset-4 bg-gradient-to-r from-accent/20 to-purple-500/20 rounded-[3rem] blur-3xl opacity-50" />
               <div className="relative bg-white rounded-[2.5rem] p-8 shadow-2xl border border-black/5 rotate-2 hover:rotate-0 transition-transform duration-700">
                 <div className="grid grid-cols-2 gap-6">
@@ -181,7 +184,7 @@ const Index = () => {
                   Vad är CRM egentligen?
                 </h2>
                 <p className="text-lg text-primary/70 leading-relaxed mb-6">
-                  CRM står för "Customer Relationship Management" – låt oss förklara det enklare: 
+                  CRM står för "Customer Relationship Management" – låt oss förklara det enklare:
                   det är ett verktyg som hjälper dig hålla koll på dina kunder och ditt arbete.
                 </p>
                 <div className="space-y-4">
@@ -199,7 +202,7 @@ const Index = () => {
                     <div>
                       <p className="font-semibold text-primary mb-1">Få fler jobb och glöm inget</p>
                       <p className="text-primary/70 text-sm">
-                        Skapa offerter snabbt, följ upp kunder i tid och se vilka jobb som väntar. 
+                        Skapa offerter snabbt, följ upp kunder i tid och se vilka jobb som väntar.
                         Allt som hjälper dig växa din verksamhet.
                       </p>
                     </div>
@@ -223,21 +226,21 @@ const Index = () => {
       {/* Features Section */}
       <section id="features" className="py-24 bg-white">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-primary mb-4">Allt du behöver. Inget du inte behöver.</h2>
-            <p className="text-xl text-primary/60 max-w-2xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">Allt du behöver. Inget du inte behöver.</h2>
+            <p className="text-base sm:text-lg lg:text-xl text-primary/60 max-w-2xl mx-auto">
               Vi har skalat bort allt onödigt. Kvar finns verktygen som faktiskt gör skillnad för din verksamhet.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="group p-8 rounded-2xl bg-[#F5F5F5] hover:bg-black hover:text-white transition-all duration-300 border border-transparent hover:border-accent/20">
-                <div className="h-14 w-14 rounded-xl bg-white flex items-center justify-center mb-6 shadow-sm group-hover:bg-white/10 group-hover:text-white transition-colors">
-                  <feature.icon className="h-7 w-7 text-primary group-hover:text-white" />
+              <div key={index} className="group p-6 sm:p-8 rounded-2xl bg-[#F5F5F5] hover:bg-black hover:text-white transition-all duration-300 border border-transparent hover:border-accent/20">
+                <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white flex items-center justify-center mb-4 sm:mb-6 shadow-sm group-hover:bg-white/10 group-hover:text-white transition-colors">
+                  <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary group-hover:text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-primary group-hover:text-white">{feature.title}</h3>
-                <p className="text-primary/60 group-hover:text-white/60 leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary group-hover:text-white">{feature.title}</h3>
+                <p className="text-sm sm:text-base text-primary/60 group-hover:text-white/60 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -273,8 +276,8 @@ const Index = () => {
                   </Link>
                 </li>
                 <li>
-                  <a 
-                    href="#features" 
+                  <a
+                    href="#features"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
