@@ -11,6 +11,8 @@ import Auth from "./pages/Auth";
 import EmailVerification from "./pages/EmailVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Customers from "./pages/Customers";
@@ -36,6 +38,8 @@ const App = () => (
               <Route path="/verifiera-email" element={<EmailVerification />} />
               <Route path="/glomt-losenord" element={<ForgotPassword />} />
               <Route path="/aterstall-losenord" element={<ResetPassword />} />
+              <Route path="/integritet" element={<Privacy />} />
+              <Route path="/villkor" element={<Terms />} />
               <Route
                 path="/dashboard"
                 element={

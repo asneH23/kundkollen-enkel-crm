@@ -243,16 +243,25 @@ const Auth = () => {
                     required
                   />
                   <Label htmlFor="gdpr" className="text-sm leading-relaxed cursor-pointer">
-                    Jag accepterar att mina personuppgifter behandlas enligt{" "}
+                    Jag accepterar{" "}
                     <a
-                      href="https://www.imy.se/verksamhet/dataskydd/det-har-galler-enligt-gdpr/"
+                      href="/integritet"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary underline hover:no-underline"
+                      className="text-accent underline hover:no-underline font-semibold"
                     >
-                      GDPR
+                      integritetspolicyn
                     </a>
-                    . Uppgifterna används endast för att ge dig tillgång till tjänsten och kommer inte delas med tredje part.
+                    {" "}och{" "}
+                    <a
+                      href="/villkor"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent underline hover:no-underline font-semibold"
+                    >
+                      användarvillkoren
+                    </a>
+                    .
                   </Label>
                 </div>
               )}

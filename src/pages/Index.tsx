@@ -343,6 +343,16 @@ const Index = () => {
                     Logga in
                   </Link>
                 </li>
+                <li>
+                  <Link to="/integritet" className="text-sm text-primary/60 hover:text-accent transition-colors">
+                    Integritetspolicy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/villkor" className="text-sm text-primary/60 hover:text-accent transition-colors">
+                    Användarvillkor
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
