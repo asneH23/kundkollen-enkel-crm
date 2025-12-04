@@ -176,138 +176,149 @@ const Index = () => {
 
       {/* What is CRM Section */}
       <section className="py-16 sm:py-20 lg:py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
-          <div className="bg-[#F5F5F5] rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 border border-black/5">
-            <div className="flex items-start gap-3 sm:gap-4 mb-6">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 flex-shrink-0">
-                <HelpCircle className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
-              </div>
-              <div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">
-                  Vad är CRM egentligen?
-                </h2>
-                <p className="text-base sm:text-lg lg:text-xl text-primary/70 leading-relaxed mb-4 sm:mb-6">
-                  CRM står för "Customer Relationship Management" – låt oss förklara det enklare:
-                  det är ett verktyg som hjälper dig hålla koll på dina kunder och ditt arbete.
-                </p>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-primary mb-1">Istället för kalkylblad, kalendrar och anteckningar</p>
-                      <p className="text-primary/70 text-sm">
-                        Alla dina kunder, offerter och påminnelser på ett ställe. Inga försvunna papper, glömda uppföljningar eller separata kalendrar att hålla koll på.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-primary mb-1">Få fler jobb och glöm inget</p>
-                      <p className="text-primary/70 text-sm">
-                        Skapa offerter snabbt, följ upp kunder i tid och se vilka jobb som väntar.
-                        Allt som hjälper dig växa din verksamhet.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-primary mb-1">Enkelt och snabbt</p>
-                      <p className="text-primary/70 text-sm">
-                        Inga komplicerade system. Om du kan använda en mobiltelefon kan du använda Kundkollen.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+          {/* Header */}
+          <div className="text-center mb-10 sm:mb-12">
+            <div className="inline-flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-accent/10 border border-accent/20 mb-4 sm:mb-6">
+              <HelpCircle className="h-7 w-7 sm:h-8 sm:w-8 text-accent" />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-24 bg-white">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">Allt du behöver. Inget du inte behöver.</h2>
-            <p className="text-base sm:text-lg lg:text-xl text-primary/60 max-w-2xl mx-auto">
-              Vi har skalat bort allt onödigt. Kvar finns verktygen som faktiskt gör skillnad för din verksamhet.
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-4 sm:mb-6">
+              Vad är CRM egentligen?
+            </h2>
+            <p className="text-lg sm:text-xl lg:text-2xl text-primary/70 leading-relaxed max-w-3xl mx-auto">
+              CRM står för "Customer Relationship Management" – låt oss förklara det enklare:
+              det är ett verktyg som hjälper dig hålla koll på dina kunder och ditt arbete.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="group p-6 sm:p-8 rounded-2xl bg-[#F5F5F5] hover:bg-black hover:text-white transition-all duration-300 border border-transparent hover:border-accent/20">
-                <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white flex items-center justify-center mb-4 sm:mb-6 shadow-sm group-hover:bg-white/10 group-hover:text-white transition-colors">
-                  <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary group-hover:text-white" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary group-hover:text-white">{feature.title}</h3>
-                <p className="text-sm sm:text-base text-primary/60 group-hover:text-white/60 leading-relaxed">
-                  {feature.description}
-                </p>
+          {/* Benefits Grid */}
+          <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-black/5 hover:border-accent/20 transition-all duration-300 hover:shadow-lg">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20">
+                <CheckCircle className="h-6 w-6 text-accent" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-[#F5F5F5] pt-0 pb-12">
-        <div className="container mx-auto px-6 border-t border-black/5 pt-12">
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            {/* Brand */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
-                  <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
-                </div>
-                <span className="text-xl font-bold text-primary">Kundkollen</span>
-              </div>
-              <p className="text-sm text-primary/60 leading-relaxed">
-                Enkelt CRM för hantverkare som vill växa smartare.
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">
+                Allt på ett ställe
+              </h3>
+              <p className="text-sm sm:text-base text-primary/70 leading-relaxed">
+                Istället för kalkylblad, kalendrar och anteckningar. Alla dina kunder, offerter och påminnelser samlade.
               </p>
             </div>
 
-            {/* Links */}
-            <div>
-              <h4 className="font-semibold text-primary mb-4">Produkt</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
-                    Kom igång
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="#features"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="text-sm text-primary/60 hover:text-accent transition-colors"
-                  >
-                    Funktioner
-                  </a>
-                </li>
-                <li>
-                  <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
-                    Logga in
-                  </Link>
-                </li>
-              </ul>
+            <div className="bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-black/5 hover:border-accent/20 transition-all duration-300 hover:shadow-lg">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20">
+                <CheckCircle className="h-6 w-6 text-accent" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">
+                Få fler jobb
+              </h3>
+              <p className="text-sm sm:text-base text-primary/70 leading-relaxed">
+                Skapa offerter snabbt, följ upp kunder i tid och se vilka jobb som väntar. Glöm aldrig en uppföljning.
+              </p>
+            </div>
+
+            <div className="bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-black/5 hover:border-accent/20 transition-all duration-300 hover:shadow-lg">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20">
+                <CheckCircle className="h-6 w-6 text-accent" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">
+                Enkelt och snabbt
+              </h3>
+              <p className="text-sm sm:text-base text-primary/70 leading-relaxed">
+                Inga komplicerade system. Om du kan använda en mobiltelefon kan du använda Kundkollen.
+              </p>
             </div>
           </div>
+        </div>
+    </div>
+              </div >
+            </div >
+          </div >
+        </div >
+      </section >
 
-          {/* Bottom Bar */}
-          <div className="border-t border-black/5 pt-8">
-            <p className="text-sm text-primary/60 text-center">
-              © 2025 Kundkollen. Alla rättigheter förbehållna.
+  {/* Features Section */ }
+  < section id = "features" className = "py-24 bg-white" >
+    <div className="container mx-auto px-6 max-w-6xl">
+      <div className="text-center mb-12 sm:mb-16">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">Allt du behöver. Inget du inte behöver.</h2>
+        <p className="text-base sm:text-lg lg:text-xl text-primary/60 max-w-2xl mx-auto">
+          Vi har skalat bort allt onödigt. Kvar finns verktygen som faktiskt gör skillnad för din verksamhet.
+        </p>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+        {features.map((feature, index) => (
+          <div key={index} className="group p-6 sm:p-8 rounded-2xl bg-[#F5F5F5] hover:bg-black hover:text-white transition-all duration-300 border border-transparent hover:border-accent/20">
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white flex items-center justify-center mb-4 sm:mb-6 shadow-sm group-hover:bg-white/10 group-hover:text-white transition-colors">
+              <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary group-hover:text-white" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary group-hover:text-white">{feature.title}</h3>
+            <p className="text-sm sm:text-base text-primary/60 group-hover:text-white/60 leading-relaxed">
+              {feature.description}
             </p>
           </div>
-        </div>
-      </footer>
+        ))}
+      </div>
     </div>
+      </section >
+
+  {/* Footer */ }
+  < footer className = "bg-[#F5F5F5] pt-0 pb-12" >
+    <div className="container mx-auto px-6 border-t border-black/5 pt-12">
+      <div className="grid md:grid-cols-2 gap-8 mb-8">
+        {/* Brand */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+              <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
+            </div>
+            <span className="text-xl font-bold text-primary">Kundkollen</span>
+          </div>
+          <p className="text-sm text-primary/60 leading-relaxed">
+            Enkelt CRM för hantverkare som vill växa smartare.
+          </p>
+        </div>
+
+        {/* Links */}
+        <div>
+          <h4 className="font-semibold text-primary mb-4">Produkt</h4>
+          <ul className="space-y-2">
+            <li>
+              <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
+                Kom igång
+              </Link>
+            </li>
+            <li>
+              <a
+                href="#features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="text-sm text-primary/60 hover:text-accent transition-colors"
+              >
+                Funktioner
+              </a>
+            </li>
+            <li>
+              <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
+                Logga in
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="border-t border-black/5 pt-8">
+        <p className="text-sm text-primary/60 text-center">
+          © 2025 Kundkollen. Alla rättigheter förbehållna.
+        </p>
+      </div>
+    </div>
+      </footer >
+    </div >
   );
 };
 
