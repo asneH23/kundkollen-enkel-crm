@@ -34,3 +34,6 @@ DOKUMENT_OVERSIKT.md
 *.njsproj
 *.sln
 *.sw?
+
+# Supabase temp files
+supabase/.temp/

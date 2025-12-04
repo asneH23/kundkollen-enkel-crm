@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, BarChart3, Users, FileText, Shield, Zap, HelpCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, BarChart3, Users, FileText, Shield, Zap, HelpCircle, Smartphone, Monitor } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
@@ -193,38 +193,38 @@ const Index = () => {
 
           {/* Benefits Grid */}
           <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
-            <div className="bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-black/5 hover:border-accent/20 transition-all duration-300 hover:shadow-lg">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20">
-                <CheckCircle className="h-6 w-6 text-accent" />
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
+                <CheckCircle className="h-6 w-6 text-accent group-hover:text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 group-hover:text-white">
                 Allt på ett ställe
               </h3>
-              <p className="text-sm sm:text-base text-primary/70 leading-relaxed">
+              <p className="text-sm sm:text-base text-primary/70 group-hover:text-white/60 leading-relaxed">
                 Istället för kalkylblad, kalendrar och anteckningar. Alla dina kunder, offerter och påminnelser samlade.
               </p>
             </div>
 
-            <div className="bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-black/5 hover:border-accent/20 transition-all duration-300 hover:shadow-lg">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20">
-                <CheckCircle className="h-6 w-6 text-accent" />
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
+                <CheckCircle className="h-6 w-6 text-accent group-hover:text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 group-hover:text-white">
                 Få fler jobb
               </h3>
-              <p className="text-sm sm:text-base text-primary/70 leading-relaxed">
+              <p className="text-sm sm:text-base text-primary/70 group-hover:text-white/60 leading-relaxed">
                 Skapa offerter snabbt, följ upp kunder i tid och se vilka jobb som väntar. Glöm aldrig en uppföljning.
               </p>
             </div>
 
-            <div className="bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-black/5 hover:border-accent/20 transition-all duration-300 hover:shadow-lg">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20">
-                <CheckCircle className="h-6 w-6 text-accent" />
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
+                <CheckCircle className="h-6 w-6 text-accent group-hover:text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 group-hover:text-white">
                 Enkelt och snabbt
               </h3>
-              <p className="text-sm sm:text-base text-primary/70 leading-relaxed">
+              <p className="text-sm sm:text-base text-primary/70 group-hover:text-white/60 leading-relaxed">
                 Inga komplicerade system. Om du kan använda en mobiltelefon kan du använda Kundkollen.
               </p>
             </div>
@@ -254,6 +254,48 @@ const Index = () => {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Cross-Platform Section */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-[#F5F5F5]">
+        <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">
+              Fungerar lika bra på mobil som på dator
+            </h2>
+            <p className="text-base sm:text-lg lg:text-xl text-primary/70 max-w-2xl mx-auto">
+              Använd Kundkollen var du än är. Uppdatera kunder och offerter direkt från bygget, eller planera din dag hemifrån på datorn.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
+            {/* Mobile */}
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
+              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
+                <Smartphone className="h-7 w-7 text-accent group-hover:text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-primary mb-3 group-hover:text-white">
+                På mobilen
+              </h3>
+              <p className="text-primary/70 group-hover:text-white/60 leading-relaxed">
+                Uppdatera kunder, lägg till offerter och hantera påminnelser direkt från bygget eller ute i fält.
+              </p>
+            </div>
+
+            {/* Desktop */}
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
+              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
+                <Monitor className="h-7 w-7 text-accent group-hover:text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-primary mb-3 group-hover:text-white">
+                På datorn
+              </h3>
+              <p className="text-primary/70 group-hover:text-white/60 leading-relaxed">
+                Planera din dag, analysera försäljning och skapa detaljerade offerter med större skärm och tangentbord.
+              </p>
+            </div>
           </div>
         </div>
       </section>

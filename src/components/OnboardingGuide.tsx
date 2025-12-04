@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Users, FileText, Bell, BarChart3, CheckCircle2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowRight, ArrowLeft, Users, FileText, Bell, BarChart3, CheckCircle2, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface OnboardingStep {
   id: string;
@@ -14,6 +19,12 @@ interface OnboardingStep {
 }
 
 const onboardingSteps: OnboardingStep[] = [
+  {
+    id: "name",
+    title: "Vad ska vi kalla dig?",
+    description: "Vi vill känna dig bättre. Vad vill du att vi ska kalla dig?",
+    icon: User
+  },
   {
     id: "welcome",
     title: "Välkommen till Kundkollen!",
@@ -87,6 +98,10 @@ export const triggerOnboarding = (): void => {
 const OnboardingGuide = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [open, setOpen] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check if user has completed onboarding
@@ -106,11 +121,95 @@ const OnboardingGuide = () => {
     };
   }, []);
 
-  const handleNext = () => {
+  // Load existing display name if user has one
+  useEffect(() => {
+    if (user && open) {
+      const loadDisplayName = async () => {
+        try {
+          // Try localStorage first
+          const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+          if (storedName) {
+            setDisplayName(storedName);
+            return;
+          }
+
+          // Try database
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("display_name")
+            .eq("id", user.id)
+            .single();
+
+          if (!error && data && (data as any).display_name) {
+            setDisplayName((data as any).display_name);
+            localStorage.setItem(`profile_display_name_${user.id}`, (data as any).display_name);
+          }
+        } catch (error) {
+          // Ignore errors, user can still enter name
+          console.log("Could not load display name:", error);
+        }
+      };
+
+      loadDisplayName();
+    }
+  }, [user, open]);
+
+  const handleNext = async () => {
+    const currentStepData = onboardingSteps[currentStep];
+    
+    // If we're on the name step, save the name first
+    if (currentStepData.id === "name") {
+      if (!displayName.trim()) {
+        toast({
+          title: "Namn krävs",
+          description: "Vänligen ange ditt namn för att fortsätta.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      await saveDisplayName(displayName.trim());
+    }
+    
     if (currentStep < onboardingSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleComplete();
+    }
+  };
+
+  const saveDisplayName = async (name: string) => {
+    if (!user || !name) return;
+    
+    setSavingName(true);
+    
+    try {
+      // Save to localStorage as fallback
+      localStorage.setItem(`profile_display_name_${user.id}`, name);
+      
+      // Trigger custom event to notify other components
+      window.dispatchEvent(new CustomEvent('displayNameUpdated'));
+      
+      // Try to save to database
+      const updateData: any = {
+        display_name: name,
+      };
+      
+      const { error } = await supabase
+        .from("profiles")
+        .update(updateData)
+        .eq("id", user.id);
+      
+      if (error) {
+        // If column doesn't exist, that's okay - we'll use localStorage
+        if (!error.message.includes("column") && !error.message.includes("does not exist")) {
+          console.error("Error saving display name:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error saving display name:", error);
+    } finally {
+      setSavingName(false);
     }
   };
 
@@ -160,7 +259,11 @@ const OnboardingGuide = () => {
               <Icon className="h-8 w-8" />
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-primary mb-1">{step.title}</h2>
+              <h2 className="text-2xl font-bold text-primary mb-1">
+                {step.id === "welcome" && displayName 
+                  ? `Välkommen till Kundkollen, ${displayName}!`
+                  : step.title}
+              </h2>
               <p className="text-sm text-primary/60">
                 Steg {currentStep + 1} av {onboardingSteps.length}
               </p>
@@ -171,6 +274,29 @@ const OnboardingGuide = () => {
           <p className="text-primary/70 text-lg leading-relaxed mb-8 min-h-[80px]">
             {step.description}
           </p>
+
+          {/* Name Input for first step */}
+          {step.id === "name" && (
+            <div className="mb-8">
+              <Label htmlFor="displayName" className="text-base font-medium text-primary mb-2 block">
+                Ditt namn
+              </Label>
+              <Input
+                id="displayName"
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="T.ex. Erik"
+                className="premium-input text-lg h-12"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && displayName.trim()) {
+                    handleNext();
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between gap-4">
@@ -188,7 +314,7 @@ const OnboardingGuide = () => {
             </Button>
 
             <div className="flex gap-2">
-              {!isFirstStep && (
+              {!isFirstStep && step.id !== "name" && (
                 <Button
                   variant="ghost"
                   onClick={handleSkip}
@@ -199,10 +325,11 @@ const OnboardingGuide = () => {
               )}
               <Button
                 onClick={handleNext}
+                disabled={savingName}
                 className="px-6 py-2 premium-button rounded-xl"
               >
-                {isLastStep ? "Kom igång!" : "Nästa"}
-                {!isLastStep && <ArrowRight className="ml-2 h-4 w-4" />}
+                {savingName ? "Sparar..." : isLastStep ? "Kom igång!" : "Nästa"}
+                {!isLastStep && !savingName && <ArrowRight className="ml-2 h-4 w-4" />}
               </Button>
             </div>
           </div>

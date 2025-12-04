@@ -53,13 +53,19 @@ const Profile = () => {
       if (error) throw error;
 
       if (data) {
-        setCompanyName(data.company_name || "");
-        // Try database first, then localStorage for display_name
+        // Always prioritize database values (they persist across browsers)
+        // Only use localStorage as fallback if database value is empty
+        setCompanyName(data.company_name || localStorage.getItem(`profile_company_name_${user.id}`) || "");
         setDisplayName((data as any).display_name || localStorage.getItem(`profile_display_name_${user.id}`) || "");
-        // Load additional fields if they exist in the database
         setPhone((data as any).phone || localStorage.getItem(`profile_phone_${user.id}`) || "");
         setAddress((data as any).address || localStorage.getItem(`profile_address_${user.id}`) || "");
         setCreatedAt(data.created_at || null);
+      } else {
+        // If no data in database, try loading from localStorage as temporary fallback
+        setCompanyName(localStorage.getItem(`profile_company_name_${user.id}`) || "");
+        setDisplayName(localStorage.getItem(`profile_display_name_${user.id}`) || "");
+        setPhone(localStorage.getItem(`profile_phone_${user.id}`) || "");
+        setAddress(localStorage.getItem(`profile_address_${user.id}`) || "");
       }
     } catch (error: any) {
       toast({
@@ -104,46 +110,78 @@ const Profile = () => {
     setSaving(true);
 
     try {
-      // Save display_name to localStorage as fallback
-      if (displayName) {
-        localStorage.setItem(`profile_display_name_${user.id}`, displayName);
+      // Save all fields to localStorage as fallback
+      if (companyName.trim()) {
+        localStorage.setItem(`profile_company_name_${user.id}`, companyName.trim());
+      } else {
+        localStorage.removeItem(`profile_company_name_${user.id}`);
+      }
+
+      if (displayName.trim()) {
+        localStorage.setItem(`profile_display_name_${user.id}`, displayName.trim());
+        // Trigger custom event to notify other components
+        window.dispatchEvent(new CustomEvent('displayNameUpdated'));
       } else {
         localStorage.removeItem(`profile_display_name_${user.id}`);
+        // Trigger event even when removing
+        window.dispatchEvent(new CustomEvent('displayNameUpdated'));
       }
 
-      // Try to update with all fields (some might not exist in DB yet)
+      if (phone.trim()) {
+        localStorage.setItem(`profile_phone_${user.id}`, phone.trim());
+      } else {
+        localStorage.removeItem(`profile_phone_${user.id}`);
+      }
+
+      if (address.trim()) {
+        localStorage.setItem(`profile_address_${user.id}`, address.trim());
+      } else {
+        localStorage.removeItem(`profile_address_${user.id}`);
+      }
+
+      // Update all fields in database - this ensures data persists across browsers
       const updateData: any = {
-        company_name: companyName || null,
-        display_name: displayName || null,
+        company_name: companyName.trim() || null,
+        display_name: displayName.trim() || null,
+        phone: phone.trim() || null,
+        address: address.trim() || null,
       };
 
-      // Only include these if the columns exist in the database
-      // They will be saved to localStorage as fallback
-      if (phone) {
-        updateData.phone = phone;
-        localStorage.setItem(`profile_phone_${user.id}`, phone);
-      }
-      if (address) {
-        updateData.address = address;
-        localStorage.setItem(`profile_address_${user.id}`, address);
-      }
-
-      const { error } = await supabase
+      // Save to Supabase database (primary storage - works across browsers)
+      const { data: updatedData, error } = await supabase
         .from("profiles")
         .update(updateData)
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select()
+        .single();
 
       if (error) {
-        // If columns don't exist, that's okay - we'll use localStorage
+        console.error("Error updating profile in database:", error);
+        // Only ignore column errors (for optional columns), throw other errors
         if (!error.message.includes("column") && !error.message.includes("does not exist")) {
           throw error;
         }
+        // If column error, data is saved to localStorage as fallback
+        // But we should still show a warning
+        toast({
+          title: "Sparad lokalt",
+          description: "Data sparades lokalt. Vissa fält kanske inte syns i andra webbläsare.",
+          variant: "default",
+        });
+        return;
       }
-
-      toast({
-        title: "Sparad",
-        description: "Profilen har uppdaterats",
-      });
+      
+      if (updatedData) {
+        // Database update successful - data is now saved to your account
+        console.log("Profile updated successfully in database:", updatedData);
+        // Data is now in database and will persist across all browsers and devices
+        toast({
+          title: "Sparad",
+          description: "Profilen har uppdaterats och sparas i ditt konto",
+        });
+      } else {
+        throw new Error("Uppdateringen lyckades inte");
+      }
     } catch (error: any) {
       toast({
         title: "Fel",

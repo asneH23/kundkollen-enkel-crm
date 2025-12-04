@@ -144,10 +144,10 @@ const Sidebar = ({ mobile }: SidebarProps) => {
           variant="ghost"
           size="icon"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="glass-panel h-12 w-12 min-h-[48px] min-w-[48px] text-primary hover:bg-black/5 m-4"
+          className="h-10 w-10 min-h-[40px] min-w-[40px] text-primary/80 hover:text-primary hover:bg-white/60 backdrop-blur-sm bg-white/40 border border-black/5 shadow-sm rounded-2xl m-3 transition-all duration-200"
           aria-label="Toggle menu"
         >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
         <div
           className={cn(

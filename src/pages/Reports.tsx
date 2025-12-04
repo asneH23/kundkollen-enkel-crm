@@ -234,7 +234,7 @@ const Reports = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4 lg:mt-0">
         <div>
           <h1 className="text-4xl font-bold text-primary tracking-tight mb-2">Rapporter</h1>
           <p className="text-lg text-primary/60">Överblick över din verksamhet</p>
@@ -294,17 +294,14 @@ const Reports = () => {
               <TrendingUp className="h-6 w-6" />
             </div>
             <div className="text-4xl font-bold text-primary mb-2">{stats.wonDeals}</div>
-            <div className="text-sm text-primary/60 font-medium">Accepterade affärer</div>
+            <div className="text-sm text-primary/60 font-medium">Accepterade offerter</div>
           </div>
         </div>
 
         {/* Activity Feed - Tall */}
         <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-primary">Senaste Aktivitet</h3>
-            <Button variant="ghost" size="sm" className="text-primary/60 hover:text-primary">
-              Visa alla <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+          <div className="mb-8">
+            <h3 className="text-xl font-bold text-primary">Senaste Aktiviteter</h3>
           </div>
 
           <div className="space-y-6">

@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import StatWidget from "@/components/StatWidget";
-import ActivityFeed from "@/components/ActivityFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, FileText, Bell, TrendingUp, ArrowRight, Plus, Users, Sparkles, HelpCircle } from "lucide-react";
+import { FileText, Bell, TrendingUp, Users, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [stats, setStats] = useState({
     customers: 0,
     quotes: 0,
@@ -63,8 +63,53 @@ const Dashboard = () => {
     }
   }, [user]);
 
+  // Listen for storage changes and focus events to update display name immediately
+  useEffect(() => {
+    if (!user) return;
+
+    const checkAndUpdateName = () => {
+      const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+      if (storedName && storedName !== displayName) {
+        setDisplayName(storedName);
+      }
+    };
+
+    // Check on window focus (when user comes back to tab)
+    const handleFocus = () => {
+      checkAndUpdateName();
+    };
+
+    // Listen for custom event when name is saved
+    const handleNameSaved = () => {
+      checkAndUpdateName();
+    };
+
+    // Listen for storage events (cross-tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === `profile_display_name_${user.id}` && e.newValue) {
+        setDisplayName(e.newValue);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('displayNameUpdated', handleNameSaved);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('displayNameUpdated', handleNameSaved);
+    };
+  }, [user, displayName]);
+
   const fetchDisplayName = async () => {
     if (!user) return;
+
+    // Check localStorage first for immediate update (faster)
+    const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
+    if (storedName) {
+      setDisplayName(storedName);
+    }
 
     try {
       const { data, error } = await supabase
@@ -75,23 +120,21 @@ const Dashboard = () => {
 
       if (error && error.code === "42703") {
         console.log("display_name column not yet created in database");
-        // Try localStorage fallback
-        const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
-        if (storedName) {
-          setDisplayName(storedName);
-        }
         return;
       }
 
       if (error && error.code !== "PGRST116") throw error;
 
+      // Update from database if it exists (overrides localStorage if different)
       if (data && 'display_name' in data && data.display_name) {
         setDisplayName(data.display_name as string);
-      } else {
-        // Try localStorage fallback if database has no value
-        const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
-        if (storedName) {
-          setDisplayName(storedName);
+        // Sync to localStorage
+        localStorage.setItem(`profile_display_name_${user.id}`, data.display_name);
+      } else if (!storedName) {
+        // Only check localStorage if database has no value and we haven't set it yet
+        const localName = localStorage.getItem(`profile_display_name_${user.id}`);
+        if (localName) {
+          setDisplayName(localName);
         }
       }
     } catch (error) {
@@ -305,7 +348,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-8 animate-enter pb-8">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-4 lg:mt-0">
         <div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight mb-2">
             {getGreeting()}{displayName && <>, <span className="text-accent">{displayName}</span></>}
@@ -313,15 +356,6 @@ const Dashboard = () => {
           <p className="text-primary/70 text-lg">
             Här är din översikt för idag.
           </p>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            onClick={() => navigate("/offerter")}
-            className="premium-button shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <Plus className="mr-2 h-5 w-5" />
-            Ny Offert
-          </Button>
         </div>
       </div>
 
@@ -339,23 +373,13 @@ const Dashboard = () => {
             iconClassName="text-accent"
           />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-2">
           <StatWidget
             title="Aktiva Kunder"
             value={stats.customers}
             icon={Users}
             description="Totalt antal kunder"
             onClick={() => navigate("/kunder")}
-          />
-        </div>
-        <div className="lg:col-span-1">
-          <StatWidget
-            title="Accepterade Offerter"
-            value={stats.wonQuotes}
-            icon={Sparkles}
-            description="Accepterade offerter"
-            className="bg-accent text-white"
-            iconClassName="text-white"
           />
         </div>
 
@@ -380,63 +404,89 @@ const Dashboard = () => {
         </div>
 
         {/* Sales Goal Card - Spans 2 columns */}
-        <div className="lg:col-span-2 glass-card p-8 relative overflow-hidden group cursor-pointer" onClick={() => setGoalDialogOpen(true)}>
+        <div className="lg:col-span-2 bg-accent text-white p-8 relative overflow-hidden group cursor-pointer rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300" onClick={() => setGoalDialogOpen(true)}>
 
 
           <div className="relative z-10">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-lg font-medium text-primary/70">Månadsmål</h3>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-primary/40 hover:text-accent cursor-help transition-colors" />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
-                        <p className="text-sm">
-                          Sätt ett månadsvis försäljningsmål för att följa hur din verksamhet går.
-                          Du kan ändra målet när som helst genom att klicka på kortet.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <div className="text-4xl font-bold text-primary tracking-tight">
-                  {salesGoal ? `${Math.round((stats.totalValue / salesGoal) * 100)}%` : "0%"}
-                </div>
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-lg font-medium text-white/90">Månadsmål</h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-white/70 hover:text-white cursor-help transition-colors hidden lg:block" />
+                    </TooltipTrigger>
+                    <TooltipContent 
+                      className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg"
+                    >
+                      <p className="text-sm">
+                        Sätt ett månadsvis försäljningsmål för att följa hur din verksamhet går.
+                        Du kan ändra målet när som helst genom att klicka på kortet.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-              <div className="bg-black/5 p-3 rounded-xl">
-                <TrendingUp className="h-5 w-5 text-primary" />
+              <p className="text-xs text-white/80 lg:hidden mb-2">
+                Klicka för att sätta eller ändra ditt månadsvis försäljningsmål.
+              </p>
+              <div className="text-4xl font-bold text-white tracking-tight">
+                {salesGoal ? `${Math.round((stats.totalValue / salesGoal) * 100)}%` : "0%"}
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm font-medium">
-                <span className="text-primary/70">{stats.totalValue.toLocaleString()} kr</span>
-                <span className="text-primary">{salesGoal?.toLocaleString() || "0"} kr</span>
+                <span className="text-white/90">{stats.totalValue.toLocaleString()} kr</span>
+                <span className="text-white">{salesGoal?.toLocaleString() || "0"} kr</span>
               </div>
-              <div className="h-4 bg-black/5 rounded-full overflow-hidden">
+              <div className="h-4 bg-white/20 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-accent shadow-[0_0_10px_rgba(22,163,74,0.5)] transition-all duration-1000 ease-out rounded-full"
+                  className="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all duration-1000 ease-out rounded-full"
                   style={{ width: `${salesGoal ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0}%` }}
                 />
               </div>
-              <p className="text-xs text-primary/70 mt-2">Klicka för att ändra mål</p>
+              <p className="text-xs text-white/80 mt-2">Klicka för att ändra mål</p>
             </div>
           </div>
         </div>
 
         {/* Activity Feed - Row 3 (Full Width) */}
         <div className="lg:col-span-4">
-          <div className="glass-panel p-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
+            <div className="mb-8">
               <h3 className="text-xl font-bold text-primary">Senaste Händelser</h3>
-              <Button variant="ghost" size="sm" className="text-primary/70 hover:text-primary">
-                Visa alla <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
             </div>
-            <ActivityFeed activities={activities} />
+
+            <div className="space-y-6">
+              {activities.length === 0 ? (
+                <div className="text-center py-8 text-primary/60">Inga aktiviteter ännu</div>
+              ) : (
+                activities.map((activity) => {
+                  const activityDescription = activity.title && activity.description 
+                    ? `${activity.title}: ${activity.description}`
+                    : activity.description || activity.title || "";
+                  
+                  return (
+                    <div key={activity.id} className="flex gap-4 group">
+                      <div className="mt-1 h-2 w-2 rounded-full bg-accent flex-shrink-0 group-hover:scale-125 transition-transform" />
+                      <div>
+                        <p className="text-primary font-medium">{activityDescription}</p>
+                        <p className="text-sm text-primary/60 mt-1">
+                          {new Date(activity.timestamp).toLocaleDateString("sv-SE", {
+                            month: "short",
+                            day: "numeric",
+                          })} • {new Date(activity.timestamp).toLocaleTimeString("sv-SE", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </div>

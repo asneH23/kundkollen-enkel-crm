@@ -278,7 +278,7 @@ const Reminders = () => {
   return (
     <div className="space-y-8 animate-enter">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 mt-4 lg:mt-0">
         <div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2 tracking-tight">Påminnelser</h1>
           <p className="text-primary/70 text-lg">Håll koll på alla viktiga uppföljningar.</p>
