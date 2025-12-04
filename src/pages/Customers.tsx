@@ -18,6 +18,7 @@ interface Customer {
   contact_person: string | null;
   email: string | null;
   phone: string | null;
+  address: string | null;
 }
 
 interface CustomerFormData {
@@ -25,6 +26,7 @@ interface CustomerFormData {
   contactPerson: string;
   email: string;
   phone: string;
+  address: string;
 }
 
 const Customers = () => {
@@ -45,6 +47,7 @@ const Customers = () => {
     contactPerson: "",
     email: "",
     phone: "",
+    address: "",
   });
 
   const formatPhone = (value: string) => {
@@ -80,7 +83,7 @@ const Customers = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setCustomers(data || []);
+      setCustomers((data as any) || []);
     } catch (error: any) {
       toast({
         title: "Fel",
@@ -98,6 +101,7 @@ const Customers = () => {
       contactPerson: "",
       email: "",
       phone: "",
+      address: "",
     });
     setEditingCustomer(null);
   };
@@ -110,6 +114,7 @@ const Customers = () => {
         contactPerson: customer.contact_person || "",
         email: customer.email || "",
         phone: formatPhone(customer.phone || ""),
+        address: customer.address || "",
       });
     } else {
       resetForm();
@@ -139,6 +144,7 @@ const Customers = () => {
         contact_person: formData.contactPerson.trim() || null,
         email: formData.email.trim() || null,
         phone: normalizePhoneForSave(formData.phone || ""),
+        address: formData.address.trim() || null,
       };
 
       if (editingCustomer) {
@@ -329,6 +335,17 @@ const Customers = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="erik@anderssonsbygg.se"
+                    className="premium-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="address" className="text-primary">Adress</Label>
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    placeholder="Storgatan 1, 123 45 Stockholm"
                     className="premium-input"
                   />
                 </div>

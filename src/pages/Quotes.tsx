@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { pdf } from "@react-pdf/renderer";
+import QuotePDF from "@/components/pdf/QuotePDF";
 import QuoteCard from "@/components/QuoteCard";
 import { useSearchParams } from "react-router-dom";
 import { FileText, Plus, Search, Users, Calendar, Pencil, Mail, Send, AlertTriangle } from "lucide-react";
@@ -30,6 +32,8 @@ interface Customer {
   id: string;
   company_name: string;
   email?: string | null;
+  phone?: string | null;
+  address?: string | null;
 }
 
 interface QuoteFormData {
@@ -103,12 +107,12 @@ const Quotes = () => {
     try {
       const { data, error } = await supabase
         .from("customers")
-        .select("id, company_name, email")
+        .select("id, company_name, email, phone, address")
         .eq("user_id", user.id)
         .order("company_name");
 
       if (error) throw error;
-      setCustomers(data || []);
+      setCustomers((data as any) || []);
     } catch (error: any) {
       toast({
         title: "Fel",
@@ -136,13 +140,12 @@ const Quotes = () => {
 
       if (error) throw error;
 
-      // Fallback to localStorage for fields not in database
-      const phone = (data as any)?.phone || localStorage.getItem(`profile_phone_${user.id}`);
-      const businessEmail = (data as any)?.business_email || localStorage.getItem(`profile_business_email_${user.id}`);
-      const address = (data as any)?.address || localStorage.getItem(`profile_address_${user.id}`);
+      const profileData = data as any;
+      const phone = profileData?.phone || localStorage.getItem(`profile_phone_${user.id}`);
+      const businessEmail = profileData?.business_email || localStorage.getItem(`profile_business_email_${user.id}`);
 
       setUserProfile({
-        company_name: data?.company_name || null,
+        company_name: profileData?.company_name || null,
         phone: phone || null,
         email: businessEmail || user.email || "",
       });
@@ -379,81 +382,102 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
     setSendingQuote(true);
 
     try {
-      // Create professional email content
       const subject = `Offert: ${selectedQuote.title}`;
-      const description = selectedQuote.description || "";
-      const customerName = selectedQuote.customer_id ? getCustomerName(selectedQuote.customer_id) : "";
 
-      // Professional email body with better formatting
-      const offertDate = new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
-      const validUntil = new Date(selectedQuote.created_at);
-      validUntil.setDate(validUntil.getDate() + 30);
-      const validUntilDate = validUntil.toLocaleDateString("sv-SE", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
+      // Get customer details
+      const customer = customers.find(c => c.id === selectedQuote.customer_id);
 
-      const emailBody = `${emailMessage}
+      // Generate PDF blob
+      const blob = await pdf(
+        <QuotePDF
+          quote={selectedQuote}
+          customer={{
+            name: customer?.company_name || 'Okänd kund',
+            email: customer?.email,
+            phone: customer?.phone,
+            company: customer?.company_name,
+            address: customer?.address,
+          }}
+          companyInfo={userProfile ? {
+            name: userProfile.company_name || 'Kundkollen',
+            email: userProfile.email,
+            phone: userProfile.phone || undefined,
+          } : undefined}
+        />
+      ).toBlob();
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-OFFERTDETALJER
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // Convert blob to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
 
-Projekt: ${selectedQuote.title}
-${selectedQuote.amount ? `Totalt belopp: ${selectedQuote.amount.toLocaleString("sv-SE")} kr` : "Belopp: Enligt överenskommelse"}
-${description ? `\nBeskrivning:\n${description}` : ""}
-${customerName ? `Kund: ${customerName}` : ""}
-Offertdatum: ${offertDate}
-Giltig till: ${validUntilDate}
+      reader.onloadend = async () => {
+        try {
+          const base64data = reader.result as string;
+          const pdfBase64 = base64data.split(',')[1];
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          // Create HTML body
+          const htmlBody = `
+            <div style="font-family: sans-serif; color: #333; line-height: 1.6;">
+              <p>${emailMessage.replace(/\n/g, '<br>')}</p>
+              <hr style="border: 0; border-top: 1px solid #eee; margin: 24px 0;" />
+              <p style="color: #666; font-size: 14px;">
+                Offerten bifogas som PDF i detta mail.<br>
+                Giltig till: ${new Date(new Date(selectedQuote.created_at).setDate(new Date(selectedQuote.created_at).getDate() + 30)).toLocaleDateString("sv-SE")}
+              </p>
+            </div>
+          `;
 
-KONTAKTINFORMATION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          // Call Edge Function
+          const { error } = await supabase.functions.invoke('send-quote-email', {
+            body: {
+              to: [customerEmail.trim()],
+              subject: subject,
+              html: htmlBody,
+              pdfBase64: pdfBase64,
+              filename: `offert-${selectedQuote.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+              replyTo: userProfile?.email,
+              fromName: userProfile?.company_name || "Kundkollen Användare"
+            }
+          });
 
-${userProfile?.company_name ? `${userProfile.company_name}\n` : ""}${userProfile?.phone ? `Telefon: ${userProfile.phone}\n` : ""}Email: ${userProfile?.email || ""}
+          if (error) throw error;
 
-${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.company_name}` : "\nMed vänliga hälsningar"}`;
+          // Update quote status
+          if (selectedQuote.status !== "sent") {
+            await supabase
+              .from("quotes")
+              .update({ status: "sent" })
+              .eq("id", selectedQuote.id);
 
-      // Use mailto link (works immediately, no backend needed)
-      const mailtoLink = `mailto:${customerEmail.trim()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-      window.location.href = mailtoLink;
+            fetchQuotes();
+          }
 
-      // Update quote status to "sent" if not already
-      if (selectedQuote.status !== "sent") {
-        const { error } = await supabase
-          .from("quotes")
-          .update({ status: "sent" })
-          .eq("id", selectedQuote.id);
+          toast({
+            title: "Offert skickad!",
+            description: "E-post med PDF har skickats till kunden.",
+          });
 
-        if (error) {
-          console.error("Error updating quote status:", error);
-        } else {
-          // Refresh quotes
-          fetchQuotes();
+          setSendQuoteOpen(false);
+          setCustomerEmail("");
+          setEmailMessage("");
+        } catch (error: any) {
+          console.error("Error sending email:", error);
+          toast({
+            title: "Kunde inte skicka email",
+            description: error.message || "Ett fel uppstod vid utskick",
+            variant: "destructive",
+          });
+        } finally {
+          setSendingQuote(false);
         }
-      }
-
-      toast({
-        title: "Offert skickad!",
-        description: "Din email-klient öppnas för att skicka offerten.",
-      });
-
-      setSendQuoteOpen(false);
-      setCustomerEmail("");
-      setEmailMessage("");
+      };
     } catch (error: any) {
+      console.error("Error preparing email:", error);
       toast({
         title: "Fel",
-        description: error.message || "Kunde inte skicka offert",
+        description: error.message || "Kunde inte förbereda utskick",
         variant: "destructive",
       });
-    } finally {
       setSendingQuote(false);
     }
   };
