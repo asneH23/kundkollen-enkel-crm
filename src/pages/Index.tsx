@@ -74,25 +74,25 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-24 sm:pt-32 lg:pt-40 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6">
+      <section className="pt-20 sm:pt-32 lg:pt-40 pb-16 sm:pb-20 lg:pb-24 px-4 sm:px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-            <div className="space-y-6 sm:space-y-8">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-primary tracking-tight leading-[1.1]">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="space-y-8 sm:space-y-10">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-primary tracking-tight leading-[1.15]">
                 CRM för dig som vill <span className="text-accent">växa smartare.</span>
               </h1>
 
-              <p className="text-base sm:text-lg lg:text-xl text-primary/60 leading-relaxed max-w-lg">
+              <p className="text-lg sm:text-xl lg:text-2xl text-primary/70 leading-relaxed">
                 Sluta krångla med kalkylblad och kalendrar. Kundkollen hjälper dig att organisera kunder, offerter, påminnelser och försäljning i ett verktyg som faktiskt är kul att använda.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
+              <div className="flex flex-col gap-4 pt-4">
                 <Button
                   onClick={() => navigate("/auth")}
                   size="lg"
-                  className="premium-button h-12 sm:h-14 px-6 sm:px-8 rounded-full text-base sm:text-lg w-full sm:w-auto"
+                  className="premium-button h-14 sm:h-16 px-8 rounded-full text-lg sm:text-xl font-semibold w-full sm:w-auto shadow-lg hover:shadow-xl"
                 >
-                  Skapa konto gratis <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  Skapa konto gratis <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button
                   variant="outline"
@@ -100,21 +100,24 @@ const Index = () => {
                   onClick={() => {
                     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="h-12 sm:h-14 px-6 sm:px-8 rounded-full text-base sm:text-lg border-2 border-black/10 hover:bg-white hover:border-black/20 bg-transparent w-full sm:w-auto"
+                  className="h-14 sm:h-16 px-8 rounded-full text-lg sm:text-xl font-semibold border-2 border-black/10 hover:bg-white hover:border-black/20 bg-transparent w-full sm:w-auto"
                 >
                   Läs mer
                 </Button>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8 pt-4 sm:pt-8 text-xs sm:text-sm text-primary/60 font-medium">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /> Inget kreditkort
+              <div className="flex flex-col gap-4 pt-6 sm:pt-8">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                  <span className="text-base sm:text-lg text-primary/70 font-medium">Inget kreditkort krävs</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /> Kom igång på 1 min
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                  <span className="text-base sm:text-lg text-primary/70 font-medium">Kom igång på 1 minut</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" /> Svensk support
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                  <span className="text-base sm:text-lg text-primary/70 font-medium">Svensk support</span>
                 </div>
               </div>
             </div>
@@ -172,18 +175,18 @@ const Index = () => {
       </section>
 
       {/* What is CRM Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6 max-w-4xl">
-          <div className="bg-[#F5F5F5] rounded-3xl p-8 md:p-12 border border-black/5">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 flex-shrink-0">
-                <HelpCircle className="h-6 w-6 text-accent" />
+      <section className="py-16 sm:py-20 lg:py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
+          <div className="bg-[#F5F5F5] rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 border border-black/5">
+            <div className="flex items-start gap-3 sm:gap-4 mb-6">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 flex-shrink-0">
+                <HelpCircle className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
               </div>
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">
                   Vad är CRM egentligen?
                 </h2>
-                <p className="text-lg text-primary/70 leading-relaxed mb-6">
+                <p className="text-base sm:text-lg lg:text-xl text-primary/70 leading-relaxed mb-4 sm:mb-6">
                   CRM står för "Customer Relationship Management" – låt oss förklara det enklare:
                   det är ett verktyg som hjälper dig hålla koll på dina kunder och ditt arbete.
                 </p>
