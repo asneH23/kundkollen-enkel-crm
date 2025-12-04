@@ -230,93 +230,88 @@ const Index = () => {
             </div>
           </div>
         </div>
-    </div>
-              </div >
-            </div >
-          </div >
-        </div >
-      </section >
+      </section>
 
-  {/* Features Section */ }
-  < section id = "features" className = "py-24 bg-white" >
-    <div className="container mx-auto px-6 max-w-6xl">
-      <div className="text-center mb-12 sm:mb-16">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">Allt du behöver. Inget du inte behöver.</h2>
-        <p className="text-base sm:text-lg lg:text-xl text-primary/60 max-w-2xl mx-auto">
-          Vi har skalat bort allt onödigt. Kvar finns verktygen som faktiskt gör skillnad för din verksamhet.
-        </p>
-      </div>
-
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-        {features.map((feature, index) => (
-          <div key={index} className="group p-6 sm:p-8 rounded-2xl bg-[#F5F5F5] hover:bg-black hover:text-white transition-all duration-300 border border-transparent hover:border-accent/20">
-            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white flex items-center justify-center mb-4 sm:mb-6 shadow-sm group-hover:bg-white/10 group-hover:text-white transition-colors">
-              <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary group-hover:text-white" />
-            </div>
-            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary group-hover:text-white">{feature.title}</h3>
-            <p className="text-sm sm:text-base text-primary/60 group-hover:text-white/60 leading-relaxed">
-              {feature.description}
+      {/* Features Section */}
+      <section id="features" className="py-24 bg-white">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">Allt du behöver. Inget du inte behöver.</h2>
+            <p className="text-base sm:text-lg lg:text-xl text-primary/60 max-w-2xl mx-auto">
+              Vi har skalat bort allt onödigt. Kvar finns verktygen som faktiskt gör skillnad för din verksamhet.
             </p>
           </div>
-        ))}
-      </div>
-    </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="group p-6 sm:p-8 rounded-2xl bg-[#F5F5F5] hover:bg-black hover:text-white transition-all duration-300 border border-transparent hover:border-accent/20">
+                <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white flex items-center justify-center mb-4 sm:mb-6 shadow-sm group-hover:bg-white/10 group-hover:text-white transition-colors">
+                  <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary group-hover:text-white" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary group-hover:text-white">{feature.title}</h3>
+                <p className="text-sm sm:text-base text-primary/60 group-hover:text-white/60 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section >
 
-  {/* Footer */ }
-  < footer className = "bg-[#F5F5F5] pt-0 pb-12" >
-    <div className="container mx-auto px-6 border-t border-black/5 pt-12">
-      <div className="grid md:grid-cols-2 gap-8 mb-8">
-        {/* Brand */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
-              <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
+      {/* Footer */}
+      < footer className="bg-[#F5F5F5] pt-0 pb-12" >
+        <div className="container mx-auto px-6 border-t border-black/5 pt-12">
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Brand */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+                  <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
+                </div>
+                <span className="text-xl font-bold text-primary">Kundkollen</span>
+              </div>
+              <p className="text-sm text-primary/60 leading-relaxed">
+                Enkelt CRM för hantverkare som vill växa smartare.
+              </p>
             </div>
-            <span className="text-xl font-bold text-primary">Kundkollen</span>
+
+            {/* Links */}
+            <div>
+              <h4 className="font-semibold text-primary mb-4">Produkt</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
+                    Kom igång
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="#features"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="text-sm text-primary/60 hover:text-accent transition-colors"
+                  >
+                    Funktioner
+                  </a>
+                </li>
+                <li>
+                  <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
+                    Logga in
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
-          <p className="text-sm text-primary/60 leading-relaxed">
-            Enkelt CRM för hantverkare som vill växa smartare.
-          </p>
-        </div>
 
-        {/* Links */}
-        <div>
-          <h4 className="font-semibold text-primary mb-4">Produkt</h4>
-          <ul className="space-y-2">
-            <li>
-              <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
-                Kom igång
-              </Link>
-            </li>
-            <li>
-              <a
-                href="#features"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="text-sm text-primary/60 hover:text-accent transition-colors"
-              >
-                Funktioner
-              </a>
-            </li>
-            <li>
-              <Link to="/auth" className="text-sm text-primary/60 hover:text-accent transition-colors">
-                Logga in
-              </Link>
-            </li>
-          </ul>
+          {/* Bottom Bar */}
+          <div className="border-t border-black/5 pt-8">
+            <p className="text-sm text-primary/60 text-center">
+              © 2025 Kundkollen. Alla rättigheter förbehållna.
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-black/5 pt-8">
-        <p className="text-sm text-primary/60 text-center">
-          © 2025 Kundkollen. Alla rättigheter förbehållna.
-        </p>
-      </div>
-    </div>
       </footer >
     </div >
   );
