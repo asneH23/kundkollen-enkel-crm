@@ -130,24 +130,31 @@ const Quotes = () => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("company_name, email")
+        .select("company_name, business_email, phone, address")
         .eq("id", user.id)
         .single();
 
       if (error) throw error;
 
-      const phone = localStorage.getItem(`profile_phone_${user.id}`);
+      // Fallback to localStorage for fields not in database
+      const phone = (data as any)?.phone || localStorage.getItem(`profile_phone_${user.id}`);
+      const businessEmail = (data as any)?.business_email || localStorage.getItem(`profile_business_email_${user.id}`);
+      const address = (data as any)?.address || localStorage.getItem(`profile_address_${user.id}`);
+
       setUserProfile({
         company_name: data?.company_name || null,
         phone: phone || null,
-        email: data?.email || user.email || "",
+        email: businessEmail || user.email || "",
       });
     } catch (error) {
-      // Fallback to user email
+      // Fallback to user email and localStorage
+      const phone = localStorage.getItem(`profile_phone_${user.id}`);
+      const businessEmail = localStorage.getItem(`profile_business_email_${user.id}`);
+
       setUserProfile({
         company_name: null,
-        phone: null,
-        email: user.email || "",
+        phone: phone || null,
+        email: businessEmail || user.email || "",
       });
     }
   };
@@ -987,6 +994,11 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
                   }
                 }}
                 onClick={() => handleOpenDetail(quote)}
+                companyInfo={userProfile ? {
+                  name: userProfile.company_name || 'Kundkollen',
+                  email: userProfile.email,
+                  phone: userProfile.phone || undefined,
+                } : undefined}
               />
             ))}
           </div>

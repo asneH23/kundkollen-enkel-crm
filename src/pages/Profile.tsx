@@ -23,6 +23,7 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [createdAt, setCreatedAt] = useState<string | null>(null);
@@ -57,6 +58,7 @@ const Profile = () => {
         // Only use localStorage as fallback if database value is empty
         setCompanyName(data.company_name || localStorage.getItem(`profile_company_name_${user.id}`) || "");
         setDisplayName((data as any).display_name || localStorage.getItem(`profile_display_name_${user.id}`) || "");
+        setBusinessEmail((data as any).business_email || localStorage.getItem(`profile_business_email_${user.id}`) || "");
         setPhone((data as any).phone || localStorage.getItem(`profile_phone_${user.id}`) || "");
         setAddress((data as any).address || localStorage.getItem(`profile_address_${user.id}`) || "");
         setCreatedAt(data.created_at || null);
@@ -64,6 +66,7 @@ const Profile = () => {
         // If no data in database, try loading from localStorage as temporary fallback
         setCompanyName(localStorage.getItem(`profile_company_name_${user.id}`) || "");
         setDisplayName(localStorage.getItem(`profile_display_name_${user.id}`) || "");
+        setBusinessEmail(localStorage.getItem(`profile_business_email_${user.id}`) || "");
         setPhone(localStorage.getItem(`profile_phone_${user.id}`) || "");
         setAddress(localStorage.getItem(`profile_address_${user.id}`) || "");
       }
@@ -127,6 +130,12 @@ const Profile = () => {
         window.dispatchEvent(new CustomEvent('displayNameUpdated'));
       }
 
+      if (businessEmail.trim()) {
+        localStorage.setItem(`profile_business_email_${user.id}`, businessEmail.trim());
+      } else {
+        localStorage.removeItem(`profile_business_email_${user.id}`);
+      }
+
       if (phone.trim()) {
         localStorage.setItem(`profile_phone_${user.id}`, phone.trim());
       } else {
@@ -143,6 +152,7 @@ const Profile = () => {
       const updateData: any = {
         company_name: companyName.trim() || null,
         display_name: displayName.trim() || null,
+        business_email: businessEmail.trim() || null,
         phone: phone.trim() || null,
         address: address.trim() || null,
       };
@@ -170,7 +180,7 @@ const Profile = () => {
         });
         return;
       }
-      
+
       if (updatedData) {
         // Database update successful - data is now saved to your account
         console.log("Profile updated successfully in database:", updatedData);
@@ -266,6 +276,25 @@ const Profile = () => {
                       placeholder="Ditt företagsnamn"
                       className="mt-2"
                     />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="businessEmail" className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-accent" />
+                      Företagets e-post
+                      <span className="text-xs text-accent font-semibold">(Viktigt!)</span>
+                    </Label>
+                    <Input
+                      id="businessEmail"
+                      type="email"
+                      value={businessEmail}
+                      onChange={(e) => setBusinessEmail(e.target.value)}
+                      placeholder="info@dittforetag.se"
+                      className="mt-2"
+                    />
+                    <p className="text-sm text-accent/90 mt-2 font-medium bg-accent/10 p-3 rounded-lg border border-accent/20">
+                      ⚠️ Denna e-post visas på dina PDF-offerter och är den adress kunder kontaktar dig på. Använd din företags-email, inte din personliga.
+                    </p>
                   </div>
 
                   <div>
