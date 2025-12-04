@@ -343,7 +343,7 @@ const QuotePDF = ({ quote, customer, companyInfo }: QuotePDFProps) => {
                 <View style={styles.footer}>
                     <Text>
                         Denna offert är giltig i 30 dagar från utfärdandedatum.
-                        Vid frågor, kontakta oss på {companyInfo?.email || 'info@kundkollen.se'}.
+                        {companyInfo?.email && ` Vid frågor, kontakta oss på ${companyInfo.email}.`}
                     </Text>
                     <Text style={{ marginTop: 5 }}>
                         Genererad med Kundkollen - {formatDate(new Date().toISOString())}
