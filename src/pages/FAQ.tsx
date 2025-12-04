@@ -88,7 +88,7 @@ const FAQ = () => {
         },
         {
           question: "Vad visar rapporterna?",
-          answer: "Rapporterna visar översikt över dina kunder, offerter och påminnelser. Du kan se totalt antal kunder, värde på offerter, vunna offerter och mycket mer."
+          answer: "Rapporterna visar översikt över dina kunder, offerter och påminnelser. Du kan se totalt antal kunder, värde på offerter, accepterade offerter och mycket mer."
         },
         {
           question: "Kan jag exportera mina rapporter?",

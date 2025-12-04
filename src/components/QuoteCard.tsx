@@ -115,10 +115,10 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick }: QuoteCa
               <Send className="mr-2 h-4 w-4" /> Markera som skickad
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange(quote.id, "accepted")} className="rounded-lg cursor-pointer text-green-600 focus:text-green-700 focus:bg-green-50">
-              <CheckCircle className="mr-2 h-4 w-4" /> Markera som vunnen
+              <CheckCircle className="mr-2 h-4 w-4" /> Markera som accepterad
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange(quote.id, "rejected")} className="rounded-lg cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
-              <XCircle className="mr-2 h-4 w-4" /> Markera som förlorad
+              <XCircle className="mr-2 h-4 w-4" /> Markera som nekad
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onDelete(quote)} className="text-red-600 focus:text-red-700 focus:bg-red-50 rounded-lg cursor-pointer">
               <Trash2 className="mr-2 h-4 w-4" /> Ta bort

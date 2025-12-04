@@ -294,7 +294,7 @@ const Reports = () => {
               <TrendingUp className="h-6 w-6" />
             </div>
             <div className="text-4xl font-bold text-primary mb-2">{stats.wonDeals}</div>
-            <div className="text-sm text-primary/60 font-medium">Vunna affärer</div>
+            <div className="text-sm text-primary/60 font-medium">Accepterade affärer</div>
           </div>
         </div>
 

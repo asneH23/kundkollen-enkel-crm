@@ -180,7 +180,7 @@ const Customers = () => {
 
   const handleDeleteClick = async (customer: Customer) => {
     if (!user) return;
-    
+
     setCustomerToDelete(customer);
     setCheckingRelations(true);
     setDeleteDialogOpen(true);
@@ -217,7 +217,7 @@ const Customers = () => {
 
       toast({
         title: "Borttagen",
-        description: relatedQuotes > 0 || relatedReminders > 0 
+        description: relatedQuotes > 0 || relatedReminders > 0
           ? "Kunden har tagits bort. Offerter och påminnelser behålls men är inte längre kopplade till kunden."
           : "Kunden har tagits bort",
       });
@@ -260,7 +260,7 @@ const Customers = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Kunder</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2 tracking-tight">Kunder</h1>
           <p className="text-primary/70 text-lg">Bygg starkare relationer med dina kunder.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -353,17 +353,17 @@ const Customers = () => {
       </div>
 
       {/* Stats Section - Black Hero Card */}
-      <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+      <div className="bg-black rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
-        <div className="relative z-10 flex items-center gap-6">
-          <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
-            <Users className="h-8 w-8" />
+        <div className="relative z-10 flex items-center gap-4 sm:gap-6">
+          <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20 flex-shrink-0">
+            <Users className="h-7 w-7 sm:h-8 sm:w-8" />
           </div>
           <div>
-            <div className="text-5xl font-bold text-white tracking-tight mb-1">
+            <div className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-1">
               {customers.length}
             </div>
-            <p className="text-white/60 text-lg">Totalt antal kunder</p>
+            <p className="text-white/60 text-base sm:text-lg">Totalt antal kunder</p>
           </div>
         </div>
       </div>
@@ -403,7 +403,7 @@ const Customers = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredCustomers.map((customer) => (
             <CustomerCard
               key={customer.id}

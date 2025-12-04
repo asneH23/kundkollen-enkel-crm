@@ -307,7 +307,7 @@ const Dashboard = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-primary tracking-tight mb-2">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary tracking-tight mb-2">
             {getGreeting()}{displayName && <>, <span className="text-accent">{displayName}</span></>}
           </h1>
           <p className="text-primary/70 text-lg">
@@ -326,14 +326,14 @@ const Dashboard = () => {
       </div>
 
       {/* Bento Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Main Stats - Row 1 */}
         <div className="lg:col-span-2">
           <StatWidget
             title="Total Försäljning"
             value={`${stats.totalValue.toLocaleString()} kr`}
             icon={TrendingUp}
-            description="Totalt värde av vunna offerter"
+            description="Totalt värde av accepterade offerter"
             trend="up"
             className="h-full bg-primary text-white"
             iconClassName="text-accent"
@@ -350,7 +350,7 @@ const Dashboard = () => {
         </div>
         <div className="lg:col-span-1">
           <StatWidget
-            title="Vunna Offerter"
+            title="Accepterade Offerter"
             value={stats.wonQuotes}
             icon={Sparkles}
             description="Accepterade offerter"
@@ -381,9 +381,7 @@ const Dashboard = () => {
 
         {/* Sales Goal Card - Spans 2 columns */}
         <div className="lg:col-span-2 glass-card p-8 relative overflow-hidden group cursor-pointer" onClick={() => setGoalDialogOpen(true)}>
-          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-            <TrendingUp className="h-32 w-32" />
-          </div>
+
 
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
@@ -397,7 +395,7 @@ const Dashboard = () => {
                       </TooltipTrigger>
                       <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
                         <p className="text-sm">
-                          Sätt ett månadsvis försäljningsmål för att följa hur din verksamhet går. 
+                          Sätt ett månadsvis försäljningsmål för att följa hur din verksamhet går.
                           Du kan ändra målet när som helst genom att klicka på kortet.
                         </p>
                       </TooltipContent>

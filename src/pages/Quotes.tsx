@@ -496,7 +496,7 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-primary mb-2 tracking-tight">Offerter</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2 tracking-tight">Offerter</h1>
           <p className="text-primary/70 text-lg">Hantera dina affärer och skapa nya möjligheter.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -877,30 +877,30 @@ ${userProfile?.company_name ? `\nMed vänliga hälsningar,\n${userProfile.compan
       </div>
 
       {/* Stats Section - Black Hero Card */}
-      <div className="bg-black rounded-3xl p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+      <div className="bg-black rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-32 -mt-32" />
         <div className="relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
-              <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20">
-                <FileText className="h-8 w-8" />
+            <div className="flex items-center gap-4 sm:gap-6">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20 flex-shrink-0">
+                <FileText className="h-7 w-7 sm:h-8 sm:w-8" />
               </div>
               <div>
-                <div className="text-5xl font-bold text-white tracking-tight mb-1">
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-1">
                   {quotes.filter(q => q.status === 'accepted').reduce((sum, q) => sum + (q.amount || 0), 0).toLocaleString('sv-SE')}
-                  <span className="text-2xl text-white/60 font-normal ml-3">kr</span>
+                  <span className="text-xl sm:text-2xl text-white/60 font-normal ml-2 sm:ml-3">kr</span>
                 </div>
-                <p className="text-white/60 text-lg">Totalt värde av accepterade offerter</p>
+                <p className="text-white/60 text-base sm:text-lg">Totalt värde av accepterade offerter</p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
-                <div className="text-2xl font-bold text-white">{quotes.length}</div>
-                <div className="text-white/60 text-sm">Totalt</div>
+            <div className="flex gap-3 sm:gap-4">
+              <div className="bg-white/10 rounded-2xl p-3 sm:p-4 backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-bold text-white">{quotes.length}</div>
+                <div className="text-white/60 text-xs sm:text-sm">Totalt</div>
               </div>
-              <div className="bg-accent/20 rounded-2xl p-4 border border-accent/30">
-                <div className="text-2xl font-bold text-accent">{quotes.filter(q => q.status === 'accepted').length}</div>
-                <div className="text-accent text-sm">Vunna</div>
+              <div className="bg-accent/20 rounded-2xl p-3 sm:p-4 border border-accent/30">
+                <div className="text-xl sm:text-2xl font-bold text-accent">{quotes.filter(q => q.status === 'accepted').length}</div>
+                <div className="text-accent text-xs sm:text-sm">Accepterade</div>
               </div>
             </div>
           </div>

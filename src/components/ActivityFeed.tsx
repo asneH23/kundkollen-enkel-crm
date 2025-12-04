@@ -43,9 +43,8 @@ const ActivityFeed = ({ activities }: ActivityFeedProps) => {
             return (
               <div
                 key={activity.id}
-                className={`flex items-start gap-4 pb-4 ${
-                  index !== activities.length - 1 ? "border-b border-border/30" : ""
-                }`}
+                className={`flex items-start gap-4 pb-4 ${index !== activities.length - 1 ? "border-b border-border/30" : ""
+                  }`}
               >
                 <div
                   className={`h-10 w-10 rounded flex items-center justify-center flex-shrink-0 ${activity.color} border border-accent/20`}
@@ -54,7 +53,7 @@ const ActivityFeed = ({ activities }: ActivityFeedProps) => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-primary">{activity.title}</p>
-                  <p className="text-xs text-secondary/80 mt-1">{activity.description}</p>
+                  <p className="text-xs text-primary/70 mt-1">{activity.description}</p>
                   <p className="text-xs text-muted-foreground mt-2">
                     {formatDistanceToNow(new Date(activity.timestamp), {
                       addSuffix: true,
