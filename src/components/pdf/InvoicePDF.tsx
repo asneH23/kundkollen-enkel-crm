@@ -156,6 +156,10 @@ interface InvoicePDFProps {
         amount: number;
         status: string;
         description?: string;
+        rot_rut_type?: 'ROT' | 'RUT' | null;
+        rot_rut_amount?: number;
+        labor_cost?: number;
+        property_designation?: string;
     };
     customer: {
         name: string;
@@ -294,16 +298,50 @@ const InvoicePDF = ({ invoice, customer, companyInfo }: InvoicePDFProps) => {
                 {/* Price Breakdown */}
                 <View style={styles.totalSection}>
                     <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>Belopp exkl. moms:</Text>
+                        <Text style={styles.totalLabel}>Totalt belopp (exkl. moms):</Text>
                         <Text style={styles.totalValue}>{formatCurrency(amountExclVAT)}</Text>
                     </View>
                     <View style={styles.totalRow}>
                         <Text style={styles.totalLabel}>Moms (25%):</Text>
                         <Text style={styles.totalValue}>{formatCurrency(vatAmount)}</Text>
                     </View>
+                    <View style={styles.totalRow}>
+                        <Text style={styles.totalLabel}>Totalt (inkl. moms):</Text>
+                        <Text style={styles.totalValue}>{formatCurrency(invoice.amount)}</Text>
+                    </View>
+
+                    {/* ROT/RUT Specifics */}
+                    {invoice.rot_rut_type && invoice.rot_rut_amount && invoice.rot_rut_amount > 0 && (
+                        <View style={{ marginTop: 10, paddingTop: 10, borderTop: '1px dashed #E5E7EB' }}>
+                            {invoice.labor_cost && (
+                                <View style={styles.totalRow}>
+                                    <Text style={styles.totalLabel}>Varav arbetskostnad:</Text>
+                                    <Text style={styles.totalValue}>{formatCurrency(invoice.labor_cost)}</Text>
+                                </View>
+                            )}
+                            <View style={styles.totalRow}>
+                                <Text style={styles.totalLabel}>
+                                    Skattereduktion ({invoice.rot_rut_type} {invoice.rot_rut_type === 'ROT' ? '30%' : '50%'}):
+                                </Text>
+                                <Text style={{ ...styles.totalValue, color: '#10B981' }}>
+                                    -{formatCurrency(invoice.rot_rut_amount)}
+                                </Text>
+                            </View>
+                            {invoice.property_designation && (
+                                <View style={{ marginTop: 5, marginBottom: 5 }}>
+                                    <Text style={{ fontSize: 9, color: '#666666' }}>
+                                        Fastighetsbeteckning: {invoice.property_designation}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+                    )}
+
                     <View style={styles.grandTotal}>
                         <Text style={styles.grandTotalLabel}>Att betala:</Text>
-                        <Text style={styles.grandTotalValue}>{formatCurrency(invoice.amount)}</Text>
+                        <Text style={styles.grandTotalValue}>
+                            {formatCurrency(invoice.amount - (invoice.rot_rut_amount || 0))}
+                        </Text>
                     </View>
                 </View>
 

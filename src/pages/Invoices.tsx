@@ -37,6 +37,21 @@ const Invoices = () => {
     const [customerEmail, setCustomerEmail] = useState("");
     const [sendingEmail, setSendingEmail] = useState(false);
 
+    // Edit state
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+    const [editFormData, setEditFormData] = useState({
+        description: "",
+        amount: "",
+        dueDate: "",
+        status: "draft",
+        customerId: "",
+        projectId: "",
+        rotRutType: "none", // none, ROT, RUT
+        laborCost: "",
+        propertyDesignation: ""
+    });
+
     const fetchInvoices = async () => {
         if (!user) return;
 
@@ -139,6 +154,63 @@ const Invoices = () => {
             toast({
                 title: "Fel",
                 description: "Kunde inte uppdatera status",
+                variant: "destructive"
+            });
+        }
+    };
+
+
+
+    const handleEditClick = (invoice: Invoice) => {
+        setEditingInvoice(invoice);
+        setEditFormData({
+            description: invoice.description || "",
+            amount: invoice.amount.toString(),
+            dueDate: invoice.due_date ? new Date(invoice.due_date).toISOString().split('T')[0] : "",
+            status: invoice.status,
+            customerId: invoice.customer_id || "",
+            projectId: "", // TODO: Add project support later
+            rotRutType: invoice.rot_rut_type || "none",
+            laborCost: invoice.labor_cost?.toString() || "",
+            propertyDesignation: invoice.property_designation || ""
+        });
+        setEditDialogOpen(true);
+    };
+
+    const handleEditSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingInvoice) return;
+
+        try {
+            const { error } = await supabase
+                .from('invoices' as any)
+                .update({
+                    description: editFormData.description,
+                    amount: parseFloat(editFormData.amount.replace(/\s/g, '').replace(',', '.')),
+                    due_date: editFormData.dueDate,
+                    status: editFormData.status,
+                    customer_id: editFormData.customerId,
+                    rot_rut_type: editFormData.rotRutType === "none" ? null : editFormData.rotRutType,
+                    labor_cost: editFormData.laborCost ? parseFloat(editFormData.laborCost.replace(/\s/g, '').replace(',', '.')) : 0,
+                    property_designation: editFormData.propertyDesignation
+                })
+                .eq('id', editingInvoice.id);
+
+            if (error) throw error;
+
+            toast({
+                title: "Faktura uppdaterad",
+                description: "Ändringarna har sparats",
+            });
+
+            setEditDialogOpen(false);
+            setEditingInvoice(null);
+            fetchInvoices();
+        } catch (error: any) {
+            console.error("Error updating invoice:", error);
+            toast({
+                title: "Fel",
+                description: "Kunde inte spara ändringar",
                 variant: "destructive"
             });
         }
@@ -358,6 +430,7 @@ const Invoices = () => {
                             onDelete={handleDeleteClick}
                             onStatusChange={handleStatusChange}
                             companyInfo={companyInfo}
+                            onEdit={handleEditClick}
                         />
                     ))}
                 </div>
@@ -455,7 +528,148 @@ const Invoices = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+
+            {/* Edit Invoice Dialog */}
+            <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogContent className="sm:max-w-[600px] bg-white border border-black/10 text-primary rounded-3xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold">Redigera faktura #{editingInvoice?.invoice_number}</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleEditSubmit} className="space-y-4 mt-4">
+                        <div className="grid gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-customer">Kund</Label>
+                                <Select
+                                    value={editFormData.customerId}
+                                    onValueChange={(val) => setEditFormData({ ...editFormData, customerId: val })}
+                                >
+                                    <SelectTrigger className="premium-input">
+                                        <SelectValue placeholder="Välj kund" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white border-black/10">
+                                        {customers.map(c => (
+                                            <SelectItem key={c.id} value={c.id}>{c.company_name || c.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-description">Beskrivning</Label>
+                                <Input
+                                    id="edit-description"
+                                    value={editFormData.description}
+                                    onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                                    className="premium-input"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-amount">Belopp (kr)</Label>
+                                    <Input
+                                        id="edit-amount"
+                                        value={editFormData.amount}
+                                        onChange={(e) => setEditFormData({ ...editFormData, amount: e.target.value })}
+                                        className="premium-input"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-duedate">Förfallodatum</Label>
+                                    <Input
+                                        id="edit-duedate"
+                                        type="date"
+                                        value={editFormData.dueDate}
+                                        onChange={(e) => setEditFormData({ ...editFormData, dueDate: e.target.value })}
+                                        className="premium-input"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* ROT/RUT Fields */}
+                            <div className="pt-2 border-t border-dashed">
+                                <Label className="block mb-2 font-bold text-gray-700">Skattereduktion (ROT/RUT)</Label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="rot-rut-type">Typ</Label>
+                                        <Select
+                                            value={editFormData.rotRutType}
+                                            onValueChange={(val) => {
+                                                // Auto-calculate labor cost to 30% of total if setting ROT for first time
+                                                let newLabor = editFormData.laborCost;
+                                                if (val === 'ROT' && !editFormData.laborCost && editFormData.amount) {
+                                                    // Standard schablon: arbetskostnad ofta 30% av totalent vid totalentreprenad? 
+                                                    // Nej, vi sätter bara fokus. Kunden måste fylla i.
+                                                }
+                                                setEditFormData({ ...editFormData, rotRutType: val });
+                                            }}
+                                        >
+                                            <SelectTrigger className="premium-input">
+                                                <SelectValue placeholder="Ingen" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white border-black/10">
+                                                <SelectItem value="none">Ingen skattereduktion</SelectItem>
+                                                <SelectItem value="ROT">ROT-avdrag (30%)</SelectItem>
+                                                <SelectItem value="RUT">RUT-avdrag (50%)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {editFormData.rotRutType !== 'none' && (
+                                        <div className="space-y-2">
+                                            <Label htmlFor="labor-cost">Arbetskostnad (kr)</Label>
+                                            <Input
+                                                id="labor-cost"
+                                                value={editFormData.laborCost}
+                                                onChange={(e) => setEditFormData({ ...editFormData, laborCost: e.target.value })}
+                                                placeholder="Belopp för arbete"
+                                                className="premium-input"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {editFormData.rotRutType === 'ROT' && (
+                                    <div className="space-y-2 mt-4">
+                                        <Label htmlFor="property-designation">Fastighetsbeteckning</Label>
+                                        <Input
+                                            id="property-designation"
+                                            value={editFormData.propertyDesignation}
+                                            onChange={(e) => setEditFormData({ ...editFormData, propertyDesignation: e.target.value })}
+                                            placeholder="T.ex. Stockholm Bilen 3"
+                                            className="premium-input"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-status">Status</Label>
+                                <Select
+                                    value={editFormData.status}
+                                    onValueChange={(val) => setEditFormData({ ...editFormData, status: val })}
+                                >
+                                    <SelectTrigger className="premium-input">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white border-black/10">
+                                        <SelectItem value="draft">Utkast</SelectItem>
+                                        <SelectItem value="sent">Skickad</SelectItem>
+                                        <SelectItem value="paid">Betald</SelectItem>
+                                        <SelectItem value="overdue">Förfallen</SelectItem>
+                                        <SelectItem value="cancelled">Makulerad</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 pt-4 justify-end">
+                            <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)} className="border-black/10">Avbryt</Button>
+                            <Button type="submit" className="premium-button">Spara ändringar</Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </div >
     );
 };
 

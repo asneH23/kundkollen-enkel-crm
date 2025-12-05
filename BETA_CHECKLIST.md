@@ -3,25 +3,25 @@
 ## 🔴 Kritiskt (Måste fixas)
 
 ### 1. Lösenordsåterställning
-- **Status**: ❌ Saknas
+- **Status**: ✅ Klar
 - **Beskrivning**: Användare behöver kunna återställa lösenord om de glömt det
 - **Prioritet**: Hög
 - **Åtgärd**: Lägg till "Glömt lösenord?"-länk på inloggningssidan
 
 ### 2. Error Boundary
-- **Status**: ❌ Saknas  
+- **Status**: ✅ Klar
 - **Beskrivning**: Om React-appen kraschar visas tekniska fel för användaren
 - **Prioritet**: Hög
 - **Åtgärd**: Implementera Error Boundary-komponent för att visa vänliga felmeddelanden
 
 ### 3. 404-sida på svenska
-- **Status**: ⚠️ Delvis
+- **Status**: ✅ Klar
 - **Beskrivning**: 404-sidan är på engelska, bör vara på svenska
 - **Prioritet**: Medel
 - **Åtgärd**: Översätt och förbättra NotFound-sidan
 
 ### 4. Integritetspolicy & Användarvillkor
-- **Status**: ⚠️ Delvis
+- **Status**: ✅ Klar
 - **Beskrivning**: Det finns en GDPR-checkbox men ingen faktisk policy-sida
 - **Prioritet**: Extremt Hög (juridisk) PRIORITERING
 - **Åtgärd**: Skapa sidor för integritetspolicy och användarvillkor, länka från signup

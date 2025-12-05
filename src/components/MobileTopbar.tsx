@@ -10,6 +10,7 @@ import {
   User,
   HelpCircle,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -24,6 +25,7 @@ const MobileTopbar = () => {
     { path: "/dashboard", label: "Översikt", icon: LayoutDashboard },
     { path: "/kunder", label: "Kunder", icon: Users },
     { path: "/offerter", label: "Offerter", icon: FileText },
+    { path: "/fakturor", label: "Fakturor", icon: CreditCard },
     { path: "/paminnelser", label: "Påminnelser", icon: Bell },
     { path: "/rapporter", label: "Rapporter", icon: BarChart3 },
     { path: "/profil", label: "Profil", icon: User },
