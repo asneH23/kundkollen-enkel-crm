@@ -5,11 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Search, FileText, CreditCard, Filter } from "lucide-react";
+import { Plus, Search, FileText, CreditCard, Filter, Send, Mail, Loader2, Link } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import InvoiceCard, { Invoice } from "@/components/InvoiceCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { pdf } from "@react-pdf/renderer";
+import InvoicePDF from "@/components/pdf/InvoicePDF";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const Invoices = () => {
     const { user } = useAuth();
@@ -23,6 +28,13 @@ const Invoices = () => {
     const [companyInfo, setCompanyInfo] = useState<any>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [invoiceToDelete, setInvoiceToDelete] = useState<Invoice | null>(null);
+
+    // Email state
+    const [sendDialogOpen, setSendDialogOpen] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+    const [emailMessage, setEmailMessage] = useState("");
+    const [customerEmail, setCustomerEmail] = useState("");
+    const [sendingEmail, setSendingEmail] = useState(false);
 
     const fetchInvoices = async () => {
         if (!user) return;
@@ -46,7 +58,7 @@ const Invoices = () => {
 
             if (customerError) throw customerError;
 
-            setInvoices(invoicesData || []);
+            setInvoices((invoicesData as any) || []);
             setCustomers(customersData || []);
 
             // Fetch profile for company info
@@ -82,6 +94,14 @@ const Invoices = () => {
     }, [user]);
 
     const handleStatusChange = async (id: string, status: string) => {
+        if (status === "sent") {
+            const invoice = invoices.find(i => i.id === id);
+            if (invoice) {
+                handleOpenSendDialog(invoice);
+            }
+            return;
+        }
+
         try {
             const { error } = await supabase
                 .from('invoices' as any)
@@ -108,6 +128,89 @@ const Invoices = () => {
     const handleDeleteClick = (invoice: Invoice) => {
         setInvoiceToDelete(invoice);
         setDeleteDialogOpen(true);
+    };
+
+    const handleOpenSendDialog = (invoice: Invoice) => {
+        const customer = customers.find(c => c.id === invoice.customer_id);
+        const email = customer?.email || "";
+
+        setSelectedInvoice(invoice);
+        setCustomerEmail(email);
+        setEmailMessage(`Hej,\n\nHär kommer faktura #${invoice.invoice_number} från ${companyInfo?.name || 'oss'}.\n\nVänliga hälsningar,\n${companyInfo?.name || user?.email}`);
+        setSendDialogOpen(true);
+    };
+
+    const handleSendEmail = async () => {
+        if (!selectedInvoice) return;
+
+        try {
+            setSendingEmail(true);
+
+            // 1. Generate PDF
+            const customer = customers.find(c => c.id === selectedInvoice.customer_id);
+            const blob = await pdf(
+                <InvoicePDF
+                    invoice={selectedInvoice}
+                    customer={{
+                        name: customer?.company_name || customer?.name || 'Okänd kund',
+                        email: customer?.email,
+                        phone: customer?.phone,
+                        company: customer?.company_name,
+                        address: customer?.address,
+                    }}
+                    companyInfo={companyInfo}
+                />
+            ).toBlob();
+
+            // Convert blob to base64
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+
+            reader.onloadend = async () => {
+                const base64data = (reader.result as string).split(',')[1];
+
+                // 2. Send email via Edge Function
+                const { error } = await supabase.functions.invoke('send-invoice-email', {
+                    body: {
+                        to: [customerEmail],
+                        subject: `Faktura #${selectedInvoice.invoice_number} från ${companyInfo?.name || 'Kundkollen'}`,
+                        html: `<p>${emailMessage.replace(/\n/g, '<br>')}</p>`,
+                        pdfBase64: base64data,
+                        filename: `faktura-${selectedInvoice.invoice_number}.pdf`,
+                        fromName: companyInfo?.name || "Kundkollen",
+                        replyTo: companyInfo?.email || user?.email
+                    }
+                });
+
+                if (error) throw error;
+
+                // 3. Update status to 'sent'
+                const { error: updateError } = await supabase
+                    .from('invoices' as any)
+                    .update({ status: 'sent' })
+                    .eq('id', selectedInvoice.id);
+
+                if (updateError) throw updateError;
+
+                toast({
+                    title: "Faktura skickad",
+                    description: `Fakturan har skickats till ${customerEmail}`,
+                });
+
+                setSendDialogOpen(false);
+                fetchInvoices();
+            };
+
+        } catch (error: any) {
+            console.error('Email error:', error);
+            toast({
+                title: "Fel vid utskick",
+                description: "Kunde inte skicka fakturan. Försök igen.",
+                variant: "destructive"
+            });
+        } finally {
+            setSendingEmail(false);
+        }
     };
 
     const handleDeleteConfirm = async () => {
@@ -264,6 +367,75 @@ const Invoices = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Email Send Dialog */}
+            <Dialog open={sendDialogOpen} onOpenChange={setSendDialogOpen}>
+                <DialogContent className="sm:max-w-[500px] glass-panel border-black/10 text-primary">
+                    <DialogHeader>
+                        <div className="mx-auto bg-primary/5 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                            <Send className="w-6 h-6 text-primary" />
+                        </div>
+                        <DialogTitle className="text-center text-xl">Skicka faktura</DialogTitle>
+                        <DialogDescription className="text-center text-primary/60">
+                            Skicka fakturan direkt till kunden som PDF.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Mottagare</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                    id="email"
+                                    value={customerEmail}
+                                    onChange={(e) => setCustomerEmail(e.target.value)}
+                                    className="pl-9 bg-white/50 border-black/10"
+                                    placeholder="kund@foretag.se"
+                                />
+                            </div>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="message">Meddelande</Label>
+                            <Textarea
+                                id="message"
+                                value={emailMessage}
+                                onChange={(e) => setEmailMessage(e.target.value)}
+                                className="min-h-[150px] bg-white/50 border-black/10 resize-none p-4"
+                            />
+                        </div>
+
+                        <div className="rounded-lg bg-blue-50/50 border border-blue-100 p-3 flex gap-3 items-start">
+                            <div className="bg-blue-100 p-1.5 rounded-full mt-0.5">
+                                <Link className="w-3 h-3 text-blue-600" />
+                            </div>
+                            <div className="text-xs text-blue-800">
+                                <p className="font-medium mb-0.5">PDF bifogas automatiskt</p>
+                                <p className="opacity-80">Faktura #{selectedInvoice?.invoice_number} bifogas som en PDF-fil i mailet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="sm:justify-between gap-2">
+                        <div className="hidden sm:block"></div>
+                        <Button
+                            onClick={handleSendEmail}
+                            disabled={sendingEmail || !customerEmail}
+                            className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90"
+                        >
+                            {sendingEmail ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Skickar...
+                                </>
+                            ) : (
+                                <>
+                                    <Send className="mr-2 h-4 w-4" /> Skicka faktura
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
