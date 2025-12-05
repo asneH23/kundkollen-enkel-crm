@@ -71,6 +71,11 @@ const Quotes = () => {
   const [userProfile, setUserProfile] = useState<{ company_name: string | null; phone: string | null; email: string } | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState<Quote | null>(null);
+
+  // Automation state
+  const [invoiceSuccessOpen, setInvoiceSuccessOpen] = useState(false);
+  const [createdInvoice, setCreatedInvoice] = useState<{ id: string; invoice_number: number } | null>(null);
+
   const [formData, setFormData] = useState<QuoteFormData>({
     title: "",
     amount: "",
@@ -293,49 +298,57 @@ const Quotes = () => {
     setDeleteDialogOpen(true);
   };
 
+  const createInvoiceInDb = async (quote: Quote) => {
+    if (!user?.id) throw new Error("User not found");
+
+    // 1. Get next invoice number
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('last_invoice_number' as any)
+      .eq('id', user.id)
+      .single();
+
+    const nextNumber = (Number((profile as any)?.last_invoice_number) || 1000) + 1;
+
+    // 2. Create invoice
+    const { data: invoiceData, error: invoiceError } = await supabase
+      .from('invoices' as any)
+      .insert({
+        user_id: user.id,
+        customer_id: quote.customer_id,
+        quote_id: quote.id,
+        invoice_number: nextNumber,
+        amount: quote.amount,
+        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days default
+        status: 'draft',
+        description: quote.title,
+      })
+      .select('id, invoice_number')
+      .single();
+
+    if (invoiceError) throw invoiceError;
+
+    // 3. Update profile
+    await supabase
+      .from('profiles')
+      .update({ last_invoice_number: nextNumber } as any)
+      .eq('id', user.id);
+
+    return invoiceData;
+  };
+
   const handleConvertToInvoice = async (quote: Quote) => {
     try {
-      if (!user?.id) return;
+      const invoiceData = await createInvoiceInDb(quote);
 
-      // 1. Get next invoice number
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('last_invoice_number' as any)
-        .eq('id', user.id)
-        .single();
-
-      const nextNumber = (Number((profile as any)?.last_invoice_number) || 1000) + 1;
-
-      // 2. Create invoice
-      const { error: invoiceError } = await supabase
-        .from('invoices' as any)
-        .insert({
-          user_id: user.id,
-          customer_id: quote.customer_id,
-          quote_id: quote.id,
-          invoice_number: nextNumber,
-          amount: quote.amount,
-          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days default
-          status: 'draft',
-          description: quote.title,
-        });
-
-      if (invoiceError) throw invoiceError;
-
-      // 3. Update profile
-      await supabase
-        .from('profiles')
-        .update({ last_invoice_number: nextNumber } as any)
-        .eq('id', user.id);
-
-      // 4. Update quote status if needed
+      // Update quote status if needed
       if (quote.status !== 'accepted') {
         await supabase.from('quotes').update({ status: 'accepted' }).eq('id', quote.id);
       }
 
       toast({
         title: "Faktura skapad",
-        description: `Faktura #${nextNumber} har skapats från offerten.`,
+        description: `Faktura #${invoiceData.invoice_number} har skapats från offerten.`,
       });
 
       navigate('/fakturor');
@@ -1055,12 +1068,25 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                   }
 
                   try {
+                    // Update status
                     const { error } = await supabase
                       .from("quotes")
                       .update({ status })
                       .eq("id", id);
 
                     if (error) throw error;
+
+                    // If accepted -> Automate invoice creation
+                    if (status === 'accepted') {
+                      try {
+                        const invoiceData = await createInvoiceInDb(quote);
+                        setCreatedInvoice(invoiceData);
+                        setInvoiceSuccessOpen(true);
+                      } catch (err) {
+                        console.error("Could not auto-create invoice", err);
+                        toast({ title: "Kunde inte skapa faktura automatiskt", variant: "destructive" });
+                      }
+                    }
 
                     fetchQuotes();
                     toast({
@@ -1120,7 +1146,38 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialogContent>
+    </AlertDialog>
+
+      {/* Invoice Created Success Dialog */ }
+  <Dialog open={invoiceSuccessOpen} onOpenChange={setInvoiceSuccessOpen}>
+    <DialogContent className="sm:max-w-[450px] bg-white border border-black/10 text-primary rounded-3xl">
+      <DialogHeader>
+        <div className="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+          <CheckCircle className="w-8 h-8 text-green-600" />
+        </div>
+        <DialogTitle className="text-center text-2xl font-bold">Grattis till affären!</DialogTitle>
+        <DialogDescription className="text-center text-primary/70 text-lg pt-2">
+          Offerten är accepterad och <strong>Faktura #{createdInvoice?.invoice_number}</strong> har skapats automatiskt.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="flex flex-col gap-3 py-4">
+        <Button
+          onClick={() => navigate(`/fakturor?action=send&invoiceId=${createdInvoice?.id}`)}
+          className="w-full h-12 text-lg bg-primary hover:bg-primary/90 rounded-xl"
+        >
+          <Send className="w-5 h-5 mr-2" /> Skicka faktura nu
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate('/fakturor')}
+          className="w-full h-12 text-lg border-2 border-black/5 hover:bg-black/5 rounded-xl"
+        >
+          <FileText className="w-5 h-5 mr-2" /> Granska faktura
+        </Button>
+      </div>
+    </DialogContent>
+  </Dialog>
     </div >
   );
 };
