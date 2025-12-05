@@ -14,7 +14,8 @@ import {
   XCircle,
   Clock,
   Download,
-  CreditCard
+  CreditCard,
+  ChevronRight
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -72,6 +73,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
 
     fetchCustomer();
   }, [quote.customer_id]);
+
   const statusColors = {
     draft: "bg-gray-100 text-gray-700 border-gray-200",
     sent: "bg-blue-50 text-blue-700 border-blue-200",
@@ -95,74 +97,100 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
 
   const StatusIcon = statusIcons[quote.status as keyof typeof statusIcons];
 
-  return (
-    <div className="group relative bg-card hover:bg-white transition-all duration-300 rounded-3xl p-4 sm:p-6 border border-border hover:border-accent/30 hover:shadow-lg select-none">
-      <div className="flex justify-between items-start mb-4 sm:mb-6 gap-3">
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-          <div className={cn(
-            "h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center transition-colors duration-300 flex-shrink-0",
-            quote.status === 'accepted' ? "bg-accent/10 text-accent" : "bg-black/5 text-primary/60 group-hover:text-primary"
-          )}>
-            <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
+  // Helper to render the primary action button
+  const renderPrimaryAction = () => {
+    switch (quote.status) {
+      case 'draft':
+        return (
+          <Button
+            onClick={(e) => { e.stopPropagation(); onStatusChange(quote.id, "sent"); }}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 text-xs font-medium rounded-full"
+          >
+            <Send className="w-3 h-3 mr-2" />
+            Skicka
+          </Button>
+        );
+      case 'sent':
+        return (
+          <Button
+            onClick={(e) => { e.stopPropagation(); onStatusChange(quote.id, "accepted"); }}
+            className="bg-green-600 text-white hover:bg-green-700 h-9 px-4 text-xs font-medium rounded-full"
+          >
+            <CheckCircle className="w-3 h-3 mr-2" />
+            Markera accepterad
+          </Button>
+        );
+      case 'accepted':
+        return (
+          <div className="flex items-center text-green-600 text-xs font-medium bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
+            <CheckCircle className="w-3 h-3 mr-1.5" />
+            Redan fakturerad?
           </div>
-          <div className="min-w-0 flex-1">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <h3 className="text-base sm:text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors duration-300 truncate cursor-help select-text">
-                    {quote.title}
-                  </h3>
-                </TooltipTrigger>
-                <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
-                  <p className="text-sm">{quote.title}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-primary/60 mt-1 truncate">
-              <User className="h-3 w-3 flex-shrink-0" />
-              {quote.customer_name && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="truncate cursor-help select-text">{quote.customer_name}</span>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg">
-                      <p className="text-sm">{quote.customer_name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-              {!quote.customer_name && (
-                <span className="truncate">Okänd kund</span>
-              )}
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div
+      onClick={onClick}
+      className="group relative bg-card hover:bg-white transition-all duration-300 rounded-2xl p-5 border border-border hover:border-primary/20 hover:shadow-lg cursor-pointer animate-in fade-in zoom-in-95 duration-200"
+    >
+      {/* Header Section */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            "h-10 w-10 rounded-xl flex items-center justify-center transition-colors duration-300",
+            quote.status === 'accepted' ? "bg-green-100 text-green-600" : "bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white"
+          )}>
+            <FileText className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-primary group-hover:text-primary transition-colors line-clamp-1">
+              {quote.title}
+            </h3>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+              <User className="h-3 w-3" />
+              <span className="truncate max-w-[120px] sm:max-w-[200px]">
+                {quote.customer_name || "Okänd kund"}
+              </span>
             </div>
           </div>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-black/5 text-primary/60 hover:text-primary flex-shrink-0">
+            <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground hover:text-primary" onClick={(e) => e.stopPropagation()}>
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 rounded-xl bg-white border-black/10 shadow-xl p-2">
-            <DropdownMenuItem onClick={() => onEdit(quote)} className="rounded-lg cursor-pointer">
+          <DropdownMenuContent align="end" className="w-48 rounded-xl bg-white p-1">
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(quote); }}>
               <Pencil className="mr-2 h-4 w-4" /> Redigera
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onStatusChange(quote.id, "sent")} className="rounded-lg cursor-pointer">
-              <Send className="mr-2 h-4 w-4" /> Markera som skickad
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onStatusChange(quote.id, "accepted")} className="rounded-lg cursor-pointer text-green-600 focus:text-green-700 focus:bg-green-50">
-              <CheckCircle className="mr-2 h-4 w-4" /> Markera som accepterad
-            </DropdownMenuItem>
-            {onConvertToInvoice && (
-              <DropdownMenuItem onClick={() => onConvertToInvoice(quote)} className="rounded-lg cursor-pointer text-blue-600 focus:text-blue-700 focus:bg-blue-50">
-                <CreditCard className="mr-2 h-4 w-4" /> Omvandla till faktura
+
+            {/* Status Helpers in Menu */}
+            {quote.status === 'draft' && (
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStatusChange(quote.id, "sent"); }}>
+                <Send className="mr-2 h-4 w-4" /> Markera som skickad
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem onClick={() => onStatusChange(quote.id, "rejected")} className="rounded-lg cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
-              <XCircle className="mr-2 h-4 w-4" /> Markera som nekad
-            </DropdownMenuItem>
+            {quote.status === 'sent' && (
+              <>
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStatusChange(quote.id, "rejected"); }} className="text-red-600 focus:text-red-600">
+                  <XCircle className="mr-2 h-4 w-4" /> Markera som nekad
+                </DropdownMenuItem>
+              </>
+            )}
+
+            {/* Always show convert option unless already converting/accepted maybe? No, let user convert whenever */}
+            {onConvertToInvoice && (
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onConvertToInvoice(quote); }}>
+                <CreditCard className="mr-2 h-4 w-4" /> Skapa faktura
+              </DropdownMenuItem>
+            )}
+
             {customer && !loadingCustomer && (
               <PDFDownloadLink
                 document={
@@ -179,55 +207,53 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
                   />
                 }
                 fileName={`offert-${quote.id.slice(0, 8)}.pdf`}
-                className="w-full"
               >
                 {({ loading }) => (
-                  <DropdownMenuItem className="rounded-lg cursor-pointer text-accent focus:text-accent focus:bg-accent/10">
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <Download className="mr-2 h-4 w-4" />
-                    {loading ? 'Förbereder PDF...' : 'Ladda ner PDF'}
+                    {loading ? 'Laddar...' : 'Ladda ner PDF'}
                   </DropdownMenuItem>
                 )}
               </PDFDownloadLink>
             )}
-            <DropdownMenuItem onClick={() => onDelete(quote)} className="text-red-600 focus:text-red-700 focus:bg-red-50 rounded-lg cursor-pointer">
+
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(quote); }} className="text-red-600 focus:text-red-600 focus:bg-red-50">
               <Trash2 className="mr-2 h-4 w-4" /> Ta bort
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div className="bg-black/5 rounded-2xl p-2.5 sm:p-3">
-          <div className="text-[10px] sm:text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Värde</div>
-          <div className="text-base sm:text-lg font-bold text-primary flex items-center gap-1 flex-wrap">
-            {quote.amount?.toLocaleString()} <span className="text-xs sm:text-sm font-normal text-primary/60">kr</span>
+      {/* Content Grid */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="bg-muted/30 rounded-xl p-3 border border-border/50">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1">Belopp</span>
+          <div className="font-bold text-lg text-primary">
+            {quote.amount?.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">kr</span>
           </div>
         </div>
-        <div className="bg-black/5 rounded-2xl p-2.5 sm:p-3">
-          <div className="text-[10px] sm:text-xs text-primary/60 uppercase tracking-wider mb-1 font-medium">Datum</div>
-          <div className="text-base sm:text-lg font-bold text-primary truncate">
+        <div className="bg-muted/30 rounded-xl p-3 border border-border/50">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1">Datum</span>
+          <div className="font-semibold text-primary">
             {format(new Date(quote.created_at), "d MMM", { locale: sv })}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-2 gap-2">
+      {/* Footer / Actions */}
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
         <div className={cn(
-          "px-2.5 py-1.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wide border flex items-center gap-1.5 sm:gap-2 flex-shrink-0",
+          "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5",
           statusColors[quote.status as keyof typeof statusColors]
         )}>
           <StatusIcon className="h-3 w-3" />
           {statusLabels[quote.status as keyof typeof statusLabels]}
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClick}
-          className="text-primary/60 hover:text-accent hover:bg-accent/10 px-3 py-1.5 font-medium group/btn text-xs sm:text-sm rounded-lg transition-all duration-300"
-        >
-          Öppna <span className="group-hover/btn:translate-x-1 transition-transform duration-300 ml-1">→</span>
-        </Button>
+        {/* Primary Action Button */}
+        <div onClick={(e) => e.stopPropagation()}>
+          {renderPrimaryAction()}
+        </div>
       </div>
     </div>
   );
