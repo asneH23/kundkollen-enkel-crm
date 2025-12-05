@@ -161,6 +161,23 @@ const Reports = () => {
           });
         });
 
+        // Recent invoices
+        const { data: recentInvoices } = await supabase
+          .from("invoices" as any)
+          .select("invoice_number, amount, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(2);
+
+        recentInvoices?.forEach((invoice: any) => {
+          recentActivities.push({
+            id: `invoice-${invoice.created_at}`,
+            type: "invoice",
+            description: `Faktura skapad: #${invoice.invoice_number} - ${invoice.amount?.toLocaleString("sv-SE")} kr`,
+            date: invoice.created_at,
+          });
+        });
+
         // Sort activities by date
         recentActivities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setActivities(recentActivities.slice(0, 5));

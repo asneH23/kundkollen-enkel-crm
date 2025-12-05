@@ -258,6 +258,26 @@ const Dashboard = () => {
         });
       });
 
+      // Recent invoices
+      const { data: recentInvoices } = await supabase
+        .from("invoices" as any)
+        .select("invoice_number, amount, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(2);
+
+      recentInvoices?.forEach((invoice: any) => {
+        recentActivities.push({
+          id: `invoice-${invoice.created_at}`,
+          type: "invoice",
+          title: "Faktura skapad",
+          description: `Faktura #${invoice.invoice_number} - ${invoice.amount?.toLocaleString("sv-SE")} kr`,
+          timestamp: invoice.created_at,
+          icon: FileText,
+          color: "bg-purple-500/10 border border-purple-500/20 text-purple-400",
+        });
+      });
+
       // Sort by timestamp and limit to 5
       recentActivities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       setActivities(recentActivities.slice(0, 5));
@@ -425,7 +445,7 @@ const Dashboard = () => {
                     <TooltipTrigger asChild>
                       <HelpCircle className="h-4 w-4 text-white/70 hover:text-white cursor-help transition-colors hidden lg:block" />
                     </TooltipTrigger>
-                    <TooltipContent 
+                    <TooltipContent
                       className="bg-white border border-black/10 text-primary max-w-xs p-3 rounded-xl shadow-lg"
                     >
                       <p className="text-sm">
@@ -472,10 +492,10 @@ const Dashboard = () => {
                 <div className="text-center py-8 text-primary/60">Inga aktiviteter ännu</div>
               ) : (
                 activities.map((activity) => {
-                  const activityDescription = activity.title && activity.description 
+                  const activityDescription = activity.title && activity.description
                     ? `${activity.title}: ${activity.description}`
                     : activity.description || activity.title || "";
-                  
+
                   return (
                     <div key={activity.id} className="flex gap-4 group">
                       <div className="mt-1 h-2 w-2 rounded-full bg-accent flex-shrink-0 group-hover:scale-125 transition-transform" />
