@@ -66,6 +66,14 @@ const App = () => (
                 }
               />
               <Route
+                path="/fakturor"
+                element={
+                  <ProtectedRoute>
+                    <Invoices />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/paminnelser"
                 element={
                   <ProtectedRoute>
