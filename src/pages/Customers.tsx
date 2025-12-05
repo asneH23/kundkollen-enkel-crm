@@ -284,8 +284,8 @@ const Customers = () => {
             </DialogHeader>
             <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg mb-4">
               <p className="text-xs text-blue-900/70">
-                <strong>GDPR-information:</strong> Kunduppgifter sparas säkert och hanteras enligt dataskyddsförordningen (GDPR).
-                Informationen används endast för att hantera dina kundrelationer och delas inte med tredje part.
+                <strong>GDPR-information:</strong> Du ansvarar för att du har rättslig grund (t.ex. avtal eller offert) att lagra dessa uppgifter.
+                Kundkollen agerar som ditt personuppgiftsbiträde och skyddar datan.
                 Du kan när som helst radera kunduppgifter.
               </p>
             </div>
