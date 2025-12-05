@@ -43,8 +43,8 @@ const handler = async (req: Request): Promise<Response> => {
             },
         ] : [];
 
-        const fromEmail = "offert@kundkollen.se"; // Or whatever verified domain you have
-        const from = fromName ? `${fromName} <${fromEmail}>` : fromEmail;
+        const fromEmail = "onboarding@resend.dev"; // Använd denna tills domänen är verifierad
+        const from = fromName ? `${fromName} <${fromEmail}>` : "Kundkollen <" + fromEmail + ">";
 
         const emailData = {
             from: from,
