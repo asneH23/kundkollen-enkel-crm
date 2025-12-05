@@ -4,6 +4,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, Search, FileText, CreditCard, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +21,8 @@ const Invoices = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [companyInfo, setCompanyInfo] = useState<any>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [invoiceToDelete, setInvoiceToDelete] = useState<Invoice | null>(null);
 
     const fetchInvoices = async () => {
         if (!user) return;
@@ -102,14 +105,19 @@ const Invoices = () => {
         }
     };
 
-    const handleDelete = async (invoice: Invoice) => {
-        if (!confirm("Är du säker på att du vill ta bort fakturan?")) return;
+    const handleDeleteClick = (invoice: Invoice) => {
+        setInvoiceToDelete(invoice);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!invoiceToDelete) return;
 
         try {
             const { error } = await supabase
                 .from('invoices' as any)
                 .delete()
-                .eq('id', invoice.id);
+                .eq('id', invoiceToDelete.id);
 
             if (error) throw error;
 
@@ -118,6 +126,8 @@ const Invoices = () => {
                 description: "Fakturan har tagits bort",
             });
 
+            setDeleteDialogOpen(false);
+            setInvoiceToDelete(null);
             fetchInvoices();
         } catch (error) {
             toast({
@@ -223,13 +233,37 @@ const Invoices = () => {
                                 ...invoice,
                                 customer_name: getCustomerName(invoice.customer_id)
                             }}
-                            onDelete={handleDelete}
+                            onDelete={handleDeleteClick}
                             onStatusChange={handleStatusChange}
                             companyInfo={companyInfo}
                         />
                     ))}
                 </div>
             )}
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent className="bg-white border border-black/10 text-primary">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-xl font-bold text-primary">Ta bort faktura?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-primary/70">
+                            Är du säker på att du vill ta bort faktura #{invoiceToDelete?.invoice_number}?
+                            Denna åtgärd kan inte ångras.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className="border-black/10 text-primary hover:bg-black/5">
+                            Avbryt
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeleteConfirm}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            Ta bort
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };
