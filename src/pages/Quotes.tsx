@@ -11,7 +11,7 @@ import { pdf } from "@react-pdf/renderer";
 import QuotePDF from "@/components/pdf/QuotePDF";
 import QuoteCard from "@/components/QuoteCard";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { FileText, Plus, Search, Users, Calendar, Pencil, Mail, Send, AlertTriangle } from "lucide-react";
+import { FileText, Plus, Search, Users, Calendar, Pencil, Mail, Send, AlertTriangle, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -334,7 +334,7 @@ const Quotes = () => {
       .update({ last_invoice_number: nextNumber } as any)
       .eq('id', user.id);
 
-    return invoiceData;
+    return (invoiceData as any) as { id: string; invoice_number: number };
   };
 
   const handleConvertToInvoice = async (quote: Quote) => {
@@ -1146,38 +1146,37 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialogContent>
-    </AlertDialog>
+      </AlertDialog>
 
-      {/* Invoice Created Success Dialog */ }
-  <Dialog open={invoiceSuccessOpen} onOpenChange={setInvoiceSuccessOpen}>
-    <DialogContent className="sm:max-w-[450px] bg-white border border-black/10 text-primary rounded-3xl">
-      <DialogHeader>
-        <div className="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-          <CheckCircle className="w-8 h-8 text-green-600" />
-        </div>
-        <DialogTitle className="text-center text-2xl font-bold">Grattis till affären!</DialogTitle>
-        <DialogDescription className="text-center text-primary/70 text-lg pt-2">
-          Offerten är accepterad och <strong>Faktura #{createdInvoice?.invoice_number}</strong> har skapats automatiskt.
-        </DialogDescription>
-      </DialogHeader>
-      <div className="flex flex-col gap-3 py-4">
-        <Button
-          onClick={() => navigate(`/fakturor?action=send&invoiceId=${createdInvoice?.id}`)}
-          className="w-full h-12 text-lg bg-primary hover:bg-primary/90 rounded-xl"
-        >
-          <Send className="w-5 h-5 mr-2" /> Skicka faktura nu
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => navigate('/fakturor')}
-          className="w-full h-12 text-lg border-2 border-black/5 hover:bg-black/5 rounded-xl"
-        >
-          <FileText className="w-5 h-5 mr-2" /> Granska faktura
-        </Button>
-      </div>
-    </DialogContent>
-  </Dialog>
+      {/* Invoice Created Success Dialog */}
+      <Dialog open={invoiceSuccessOpen} onOpenChange={setInvoiceSuccessOpen}>
+        <DialogContent className="sm:max-w-[450px] bg-white border border-black/10 text-primary rounded-3xl">
+          <DialogHeader>
+            <div className="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <DialogTitle className="text-center text-2xl font-bold">Grattis till affären!</DialogTitle>
+            <DialogDescription className="text-center text-primary/70 text-lg pt-2">
+              Offerten är accepterad och <strong>Faktura #{createdInvoice?.invoice_number}</strong> har skapats automatiskt.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-4">
+            <Button
+              onClick={() => navigate(`/fakturor?action=send&invoiceId=${createdInvoice?.id}`)}
+              className="w-full h-12 text-lg bg-primary hover:bg-primary/90 rounded-xl"
+            >
+              <Send className="w-5 h-5 mr-2" /> Skicka faktura nu
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/fakturor')}
+              className="w-full h-12 text-lg border-2 border-black/5 hover:bg-black/5 rounded-xl"
+            >
+              <FileText className="w-5 h-5 mr-2" /> Granska faktura
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div >
   );
 };

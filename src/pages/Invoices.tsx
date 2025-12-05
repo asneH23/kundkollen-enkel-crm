@@ -20,6 +20,7 @@ const Invoices = () => {
     const { user } = useAuth();
     const { toast } = useToast();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [customers, setCustomers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -92,6 +93,24 @@ const Invoices = () => {
     useEffect(() => {
         fetchInvoices();
     }, [user]);
+
+    // Handle auto-open of send dialog from URL params (e.g. from Quotes automation)
+    useEffect(() => {
+        const action = searchParams.get('action');
+        const invoiceId = searchParams.get('invoiceId');
+
+        if (action === 'send' && invoiceId && invoices.length > 0) {
+            const invoice = invoices.find(i => i.id === invoiceId);
+            if (invoice) {
+                // Short delay to ensure everything is loaded/rendered
+                setTimeout(() => {
+                    handleOpenSendDialog(invoice);
+                    // Clear params so it doesn't reopen
+                    setSearchParams({});
+                }, 500);
+            }
+        }
+    }, [invoices, searchParams]);
 
     const handleStatusChange = async (id: string, status: string) => {
         if (status === "sent") {
