@@ -13,7 +13,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Download
+  Download,
+  CreditCard
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -43,9 +44,10 @@ interface QuoteCardProps {
     address?: string;
     orgNumber?: string;
   };
+  onConvertToInvoice?: (quote: any) => void;
 }
 
-const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyInfo }: QuoteCardProps) => {
+const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyInfo, onConvertToInvoice }: QuoteCardProps) => {
   const [customer, setCustomer] = useState<any>(null);
   const [loadingCustomer, setLoadingCustomer] = useState(true);
 
@@ -153,6 +155,11 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
             <DropdownMenuItem onClick={() => onStatusChange(quote.id, "accepted")} className="rounded-lg cursor-pointer text-green-600 focus:text-green-700 focus:bg-green-50">
               <CheckCircle className="mr-2 h-4 w-4" /> Markera som accepterad
             </DropdownMenuItem>
+            {onConvertToInvoice && (
+              <DropdownMenuItem onClick={() => onConvertToInvoice(quote)} className="rounded-lg cursor-pointer text-blue-600 focus:text-blue-700 focus:bg-blue-50">
+                <CreditCard className="mr-2 h-4 w-4" /> Omvandla till faktura
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={() => onStatusChange(quote.id, "rejected")} className="rounded-lg cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
               <XCircle className="mr-2 h-4 w-4" /> Markera som nekad
             </DropdownMenuItem>

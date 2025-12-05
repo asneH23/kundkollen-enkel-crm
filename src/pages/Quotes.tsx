@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { pdf } from "@react-pdf/renderer";
 import QuotePDF from "@/components/pdf/QuotePDF";
 import QuoteCard from "@/components/QuoteCard";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { FileText, Plus, Search, Users, Calendar, Pencil, Mail, Send, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -47,6 +47,7 @@ interface QuoteFormData {
 const Quotes = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -290,6 +291,58 @@ const Quotes = () => {
   const handleDeleteClick = (quote: Quote) => {
     setQuoteToDelete(quote);
     setDeleteDialogOpen(true);
+  };
+
+  const handleConvertToInvoice = async (quote: Quote) => {
+    try {
+      if (!user?.id) return;
+
+      // 1. Get next invoice number
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('last_invoice_number' as any)
+        .eq('id', user.id)
+        .single();
+
+      const nextNumber = (Number((profile as any)?.last_invoice_number) || 1000) + 1;
+
+      // 2. Create invoice
+      const { error: invoiceError } = await supabase
+        .from('invoices' as any)
+        .insert({
+          user_id: user.id,
+          customer_id: quote.customer_id,
+          quote_id: quote.id,
+          invoice_number: nextNumber,
+          amount: quote.amount,
+          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days default
+          status: 'draft',
+          description: quote.title,
+        });
+
+      if (invoiceError) throw invoiceError;
+
+      // 3. Update profile
+      await supabase
+        .from('profiles')
+        .update({ last_invoice_number: nextNumber } as any)
+        .eq('id', user.id);
+
+      // 4. Update quote status if needed
+      if (quote.status !== 'accepted') {
+        await supabase.from('quotes').update({ status: 'accepted' }).eq('id', quote.id);
+      }
+
+      toast({
+        title: "Faktura skapad",
+        description: `Faktura #${nextNumber} har skapats från offerten.`,
+      });
+
+      navigate('/fakturor');
+    } catch (error: any) {
+      console.error(error);
+      toast({ title: "Fel", description: "Kunde inte skapa faktura", variant: "destructive" });
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -878,7 +931,7 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        Öppna email-klient
+                        Skicka offert
                       </>
                     )}
                   </Button>
@@ -896,9 +949,8 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                 </div>
 
                 <div className="p-3 rounded bg-blue-500/10 border border-blue-500/20">
-                  <p className="text-xs text-blue-200">
-                    <strong>Obs:</strong> Din standard email-klient öppnas med offerten förfylld.
-                    Du kan redigera meddelandet innan du skickar.
+                  <p className="text-xs text-blue-900/70">
+                    <strong>Info:</strong> Offerten skickas som PDF till kunden via email. En kopia sparas i systemet.
                   </p>
                 </div>
               </div>
@@ -995,6 +1047,7 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                 }}
                 onEdit={() => handleOpenDialog(quote)}
                 onDelete={() => handleDeleteClick(quote)}
+                onConvertToInvoice={handleConvertToInvoice}
                 onStatusChange={async (id, status) => {
                   if (status === "sent") {
                     handleOpenSendQuote(quote);

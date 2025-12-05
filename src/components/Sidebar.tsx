@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Sparkles,
-  HelpCircle
+  HelpCircle,
+  CreditCard
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
     { path: "/dashboard", label: "Översikt", icon: LayoutDashboard },
     { path: "/kunder", label: "Kunder", icon: Users },
     { path: "/offerter", label: "Offerter", icon: FileText },
+    { path: "/fakturor", label: "Fakturor", icon: CreditCard },
     { path: "/paminnelser", label: "Påminnelser", icon: Bell },
     { path: "/rapporter", label: "Rapporter", icon: BarChart3 },
     { path: "/profil", label: "Profil", icon: User },

@@ -17,6 +17,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Customers from "./pages/Customers";
 import Quotes from "./pages/Quotes";
+import Invoices from "./pages/Invoices";
 import Reminders from "./pages/Reminders";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
