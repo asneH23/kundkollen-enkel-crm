@@ -91,8 +91,7 @@ const Terms = () => {
 
                             <h3 className="text-lg font-medium text-primary mt-4 mb-2">5.1 Personuppgiftsbiträdesavtal</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                I förhållande till de personuppgifter du lagrar i tjänsten (t.ex. dina kunders uppgifter) agerar du som
-                                <strong>Personuppgiftsansvarig</strong> och Kundkollen som <strong>Personuppgiftsbiträde</strong>.
+                                I förhållande till de personuppgifter du lagrar i tjänsten (t.ex. dina kunders uppgifter) agerar du som <strong>Personuppgiftsansvarig</strong> och Kundkollen som <strong>Personuppgiftsbiträde</strong>.
                                 Genom att använda tjänsten godkänner du att Kundkollen behandlar dessa personuppgifter enligt dina instruktioner
                                 för att tillhandahålla tjänsten. Vi förbinder oss att vidta lämpliga tekniska och organisatoriska åtgärder
                                 för att skydda dessa uppgifter.
