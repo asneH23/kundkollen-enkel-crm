@@ -297,6 +297,94 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Trust & Security Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-accent/10 border border-accent/20 mb-8">
+                <Shield className="h-8 w-8 text-accent" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-6">
+                Säkerhet & Trygghet
+              </h2>
+              <p className="text-lg text-primary/70 leading-relaxed mb-8">
+                Vi använder samma typ av kryptering som bankerna för att skydda din information. Din data stannar inom EU och följer GDPR.
+              </p>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                    <Shield className="h-5 w-5 text-accent" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-primary">GDPR-säkrad</div>
+                    <div className="text-sm text-primary/60">Din data ägs av dig. Ingen annan.</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                    <Monitor className="h-5 w-5 text-accent" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-primary">Svensk Support</div>
+                    <div className="text-sm text-primary/60">Hjälp direkt på svenska när du behöver det.</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-accent" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-primary">Backup varje natt</div>
+                    <div className="text-sm text-primary/60">Allt sparas automatiskt.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#F5F5F5] border border-black/5 rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-primary mb-6">Vanliga frågor</h3>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-bold text-lg text-primary mb-2 flex items-center gap-2">
+                    <HelpCircle className="h-5 w-5 text-accent" />
+                    Kostar det något?
+                  </h4>
+                  <p className="text-primary/70 leading-relaxed">
+                    Nej, just nu är Kundkollen i Beta och helt gratis. När vi lanserar på riktigt kommer det kosta en slant, men du binder dig inte till något.
+                  </p>
+                </div>
+
+                <div className="h-px bg-black/10 w-full" />
+
+                <div>
+                  <h4 className="font-bold text-lg text-primary mb-2 flex items-center gap-2">
+                    <HelpCircle className="h-5 w-5 text-accent" />
+                    Kan jag exportera mina fakturor?
+                  </h4>
+                  <p className="text-primary/70 leading-relaxed">
+                    Ja. Du kan ladda ner alla fakturor som PDF eller exportera bokföringsunderlag (SIE) till exempelvis Fortnox eller Visma.
+                  </p>
+                </div>
+
+                <div className="h-px bg-black/10 w-full" />
+
+                <div>
+                  <h4 className="font-bold text-lg text-primary mb-2 flex items-center gap-2">
+                    <HelpCircle className="h-5 w-5 text-accent" />
+                    Fungerar det på min telefon?
+                  </h4>
+                  <p className="text-primary/70 leading-relaxed">
+                    Ja, appen är byggd för mobilen först. Du kan skapa fakturor och offerter direkt ute på jobb.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-[#F5F5F5] pt-0 pb-12">
         <div className="container mx-auto px-6 border-t border-black/5 pt-12">

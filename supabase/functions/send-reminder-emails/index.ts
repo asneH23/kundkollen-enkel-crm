@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
@@ -170,7 +170,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Test mode: send a test email directly
     if (body.test_email) {
       console.log(`Test mode: sending test email to ${body.test_email}`);
-      
+
       const testEmailResponse = await resend.emails.send({
         from: "Kundkollen <onboarding@resend.dev>",
         to: [body.test_email],
@@ -301,4 +301,5 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-serve(handler);
+// Deno.serve is built-in
+Deno.serve(handler);
