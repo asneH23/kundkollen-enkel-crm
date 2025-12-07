@@ -25,6 +25,8 @@ import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
+import MobileBottomNav from "@/components/MobileBottomNav";
+
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
@@ -33,81 +35,90 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/verifiera-email" element={<EmailVerification />} />
-              <Route path="/glomt-losenord" element={<ForgotPassword />} />
-              <Route path="/aterstall-losenord" element={<ResetPassword />} />
-              <Route path="/integritet" element={<Privacy />} />
-              <Route path="/villkor" element={<Terms />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/kunder"
-                element={
-                  <ProtectedRoute>
-                    <Customers />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/offerter"
-                element={
-                  <ProtectedRoute>
-                    <Quotes />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/fakturor"
-                element={
-                  <ProtectedRoute>
-                    <Invoices />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/paminnelser"
-                element={
-                  <ProtectedRoute>
-                    <Reminders />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/rapporter"
-                element={
-                  <ProtectedRoute>
-                    <Reports />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profil"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/faq"
-                element={
-                  <ProtectedRoute>
-                    <FAQ />
-                  </ProtectedRoute>
-                }
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <div className="min-h-screen bg-background pb-20 lg:pb-0">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/verifiera-email" element={<EmailVerification />} />
+                <Route path="/glomt-losenord" element={<ForgotPassword />} />
+                <Route path="/aterstall-losenord" element={<ResetPassword />} />
+                <Route path="/integritet" element={<Privacy />} />
+                <Route path="/villkor" element={<Terms />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/kunder"
+                  element={
+                    <ProtectedRoute>
+                      <Customers />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/offerter"
+                  element={
+                    <ProtectedRoute>
+                      <Quotes />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/fakturor"
+                  element={
+                    <ProtectedRoute>
+                      <Invoices />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/paminnelser"
+                  element={
+                    <ProtectedRoute>
+                      <Reminders />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/rapporter"
+                  element={
+                    <ProtectedRoute>
+                      <Reports />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profil"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/faq"
+                  element={
+                    <ProtectedRoute>
+                      <FAQ />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

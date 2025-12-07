@@ -17,6 +17,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import MobileQuoteList from "@/components/MobileQuoteList";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogTrigger
+} from "@/components/ui/responsive-dialog";
+import confetti from "canvas-confetti";
 
 interface Quote {
   id: string;
@@ -596,19 +607,19 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2 tracking-tight">Offerter</h1>
           <p className="text-primary/70 text-lg">Hantera dina affärer och skapa nya möjligheter.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
+        <ResponsiveDialog open={open} onOpenChange={setOpen}>
+          <ResponsiveDialogTrigger asChild>
             <Button onClick={() => handleOpenDialog()} className="premium-button">
               <Plus className="mr-2 h-4 w-4" />
               Skapa offert
             </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-white border border-black/10 text-primary sm:max-w-[600px] rounded-3xl">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">
+          </ResponsiveDialogTrigger>
+          <ResponsiveDialogContent className="bg-white border border-black/10 text-primary sm:max-w-[600px] rounded-3xl">
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle className="text-2xl font-bold">
                 {editingQuote ? "Redigera offert" : "Skapa ny offert"}
-              </DialogTitle>
-            </DialogHeader>
+              </ResponsiveDialogTitle>
+            </ResponsiveDialogHeader>
             <form onSubmit={handleSubmit} className="space-y-6 mt-4">
               <div className="grid gap-4">
                 <div className="space-y-2">
@@ -703,24 +714,24 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                 </Button>
               </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </ResponsiveDialogContent>
+        </ResponsiveDialog>
 
         {/* Detail View Dialog */}
-        <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-          <DialogContent className="bg-white border border-black/10 text-primary max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl">
+        <ResponsiveDialog open={detailOpen} onOpenChange={setDetailOpen}>
+          <ResponsiveDialogContent className="bg-white border border-black/10 text-primary max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl">
             {selectedQuote && (
               <>
-                <DialogHeader>
-                  <DialogTitle className="text-3xl font-bold tracking-tight">{selectedQuote.title}</DialogTitle>
-                  <DialogDescription className="text-primary/70">
+                <ResponsiveDialogHeader>
+                  <ResponsiveDialogTitle className="text-3xl font-bold tracking-tight">{selectedQuote.title}</ResponsiveDialogTitle>
+                  <ResponsiveDialogDescription className="text-primary/70">
                     Offert skapad {new Date(selectedQuote.created_at).toLocaleDateString("sv-SE", {
                       year: "numeric",
                       month: "long",
                       day: "numeric"
                     })}
-                  </DialogDescription>
-                </DialogHeader>
+                  </ResponsiveDialogDescription>
+                </ResponsiveDialogHeader>
 
                 <div className="space-y-8 mt-6">
                   {/* Status and Amount */}
@@ -869,21 +880,21 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                 </div>
               </>
             )}
-          </DialogContent>
-        </Dialog>
+          </ResponsiveDialogContent>
+        </ResponsiveDialog>
 
         {/* Send Quote Dialog */}
-        <Dialog open={sendQuoteOpen} onOpenChange={setSendQuoteOpen}>
-          <DialogContent className="bg-white border border-black/10 text-primary max-w-lg rounded-3xl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-xl">
+        <ResponsiveDialog open={sendQuoteOpen} onOpenChange={setSendQuoteOpen}>
+          <ResponsiveDialogContent className="bg-white border border-black/10 text-primary max-w-lg rounded-3xl">
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle className="flex items-center gap-2 text-xl">
                 <Mail className="h-5 w-5 text-accent" />
                 Skicka offert till kund
-              </DialogTitle>
-              <DialogDescription className="text-primary/70">
+              </ResponsiveDialogTitle>
+              <ResponsiveDialogDescription className="text-primary/70">
                 Fyll i kundens email-adress för att skicka offerten
-              </DialogDescription>
-            </DialogHeader>
+              </ResponsiveDialogDescription>
+            </ResponsiveDialogHeader>
 
             {selectedQuote && (
               <div className="space-y-6 mt-4">
@@ -968,8 +979,8 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                 </div>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
+          </ResponsiveDialogContent>
+        </ResponsiveDialog>
       </div>
 
       {/* Stats Section - Black Hero Card */}
@@ -1004,53 +1015,68 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 pb-6 border-b border-black/5">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/60" />
-          <Input
-            placeholder="Sök på titel eller kund"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="premium-input pl-10 h-11"
-          />
+      {/* Filters */}
+      <div className="sticky top-14 z-30 -mx-4 px-4 py-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 mb-6 md:static md:bg-transparent md:border-0 md:p-0 md:m-0 md:mb-8 md:pb-6 md:border-b md:border-black/5">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/60 pointer-events-none" />
+            <Input
+              placeholder="Sök på titel eller kund"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="premium-input pl-10 h-11 text-base shadow-sm"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-48 h-11 premium-input text-base shadow-sm">
+              <SelectValue placeholder="Filtera status" />
+            </SelectTrigger>
+            <SelectContent className="glass-panel border-black/10 text-primary">
+              <SelectItem value="all" className="focus:bg-black/10 focus:text-primary">Alla statusar</SelectItem>
+              <SelectItem value="draft" className="focus:bg-black/10 focus:text-primary">Utkast</SelectItem>
+              <SelectItem value="sent" className="focus:bg-black/10 focus:text-primary">Skickad</SelectItem>
+              <SelectItem value="accepted" className="focus:bg-black/10 focus:text-primary">Accepterad</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-48 h-11 premium-input">
-            <SelectValue placeholder="Filtera status" />
-          </SelectTrigger>
-          <SelectContent className="glass-panel border-black/10 text-primary">
-            <SelectItem value="all" className="focus:bg-black/10 focus:text-primary">Alla statusar</SelectItem>
-            <SelectItem value="draft" className="focus:bg-black/10 focus:text-primary">Utkast</SelectItem>
-            <SelectItem value="sent" className="focus:bg-black/10 focus:text-primary">Skickad</SelectItem>
-            <SelectItem value="accepted" className="focus:bg-black/10 focus:text-primary">Accepterad</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {/* Quotes Grid */}
-      {
-        filteredQuotes.length === 0 ? (
-          <div className="glass-card rounded-xl p-12 text-center border-dashed border-black/10">
-            <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
-              <FileText className="h-10 w-10 text-accent" />
-            </div>
-            <h3 className="text-2xl font-bold text-primary mb-3">
-              {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar dina filter"}
-            </h3>
-            <p className="text-primary/70 mb-8 max-w-md mx-auto">
-              {quotes.length === 0
-                ? "Börja med att skapa din första offert för att komma igång med din försäljning."
-                : "Prova att ändra dina filter eller söktermer för att hitta det du letar efter."}
-            </p>
-            {quotes.length === 0 && (
-              <Button onClick={() => handleOpenDialog()} className="premium-button px-8 py-6 text-lg">
-                <Plus className="h-5 w-5 mr-2" />
-                Skapa din första offert
-              </Button>
-            )}
+      {filteredQuotes.length === 0 ? (
+        <div className="glass-card rounded-xl p-12 text-center border-dashed border-black/10">
+          <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-glow">
+            <FileText className="h-10 w-10 text-accent" />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h3 className="text-2xl font-bold text-primary mb-3">
+            {quotes.length === 0 ? "Inga offerter ännu" : "Inga offerter matchar din sökning"}
+          </h3>
+          <p className="text-primary/70 mb-8 max-w-md mx-auto">
+            {quotes.length === 0
+              ? "Skapa din första offert för att komma igång med din försäljning."
+              : "Prova att ändra din sökning eller filtrera för att hitta det du letar efter."}
+          </p>
+          {quotes.length === 0 && (
+            <Button onClick={() => handleOpenDialog()} className="premium-button px-8 py-6 text-lg">
+              <Plus className="h-5 w-5 mr-2" />
+              Skapa din första offert
+            </Button>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Mobile List View */}
+          <MobileQuoteList
+            quotes={filteredQuotes.map(quote => ({
+              ...quote,
+              customer_name: getCustomerName(quote.customer_id)
+            }))}
+            onEdit={handleOpenDialog}
+            onDelete={handleDeleteClick}
+            onView={handleOpenDetail}
+          />
+
+          {/* Desktop Grid View */}
+          <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredQuotes.map((quote) => (
               <QuoteCard
                 key={quote.id}
@@ -1082,6 +1108,11 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                         const invoiceData = await createInvoiceInDb(quote);
                         setCreatedInvoice(invoiceData);
                         setInvoiceSuccessOpen(true);
+                        confetti({
+                          particleCount: 100,
+                          spread: 70,
+                          origin: { y: 0.6 }
+                        });
                       } catch (err) {
                         console.error("Could not auto-create invoice", err);
                         toast({ title: "Kunde inte skapa faktura automatiskt", variant: "destructive" });
@@ -1110,8 +1141,8 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
               />
             ))}
           </div>
-        )
-      }
+        </>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -1149,17 +1180,17 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
       </AlertDialog>
 
       {/* Invoice Created Success Dialog */}
-      <Dialog open={invoiceSuccessOpen} onOpenChange={setInvoiceSuccessOpen}>
-        <DialogContent className="sm:max-w-[450px] bg-white border border-black/10 text-primary rounded-3xl">
-          <DialogHeader>
+      <ResponsiveDialog open={invoiceSuccessOpen} onOpenChange={setInvoiceSuccessOpen}>
+        <ResponsiveDialogContent className="sm:max-w-[450px] bg-white border border-black/10 text-primary rounded-3xl">
+          <ResponsiveDialogHeader>
             <div className="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <DialogTitle className="text-center text-2xl font-bold">Grattis till affären!</DialogTitle>
-            <DialogDescription className="text-center text-primary/70 text-lg pt-2">
+            <ResponsiveDialogTitle className="text-center text-2xl font-bold">Grattis till affären!</ResponsiveDialogTitle>
+            <ResponsiveDialogDescription className="text-center text-primary/70 text-lg pt-2">
               Offerten är accepterad och <strong>Faktura #{createdInvoice?.invoice_number}</strong> har skapats automatiskt.
-            </DialogDescription>
-          </DialogHeader>
+            </ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
           <div className="flex flex-col gap-3 py-4">
             <Button
               onClick={() => navigate(`/fakturor?action=send&invoiceId=${createdInvoice?.id}`)}
@@ -1175,8 +1206,8 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
               <FileText className="w-5 h-5 mr-2" /> Granska faktura
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
     </div >
   );
 };

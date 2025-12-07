@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        sans: ["Outfit", "Inter", "sans-serif"],
         heading: ["Space Grotesk", "sans-serif"],
       },
       colors: {
@@ -41,14 +41,23 @@ export default {
           foreground: "#FFFFFF", // White text on dark green
         },
         border: "#D4D4D4", // Visible gray borders
-        input: "#F5F5F5", // Light gray inputs
-        muted: {
-          DEFAULT: "#E8E8E8",
-          foreground: "#737373"
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
-        success: { DEFAULT: "#16A34A", foreground: "#FFFFFF" },
-        warning: { DEFAULT: "#F59E0B", foreground: "#FFFFFF" },
-        danger: { DEFAULT: "#EF4444", foreground: "#450A0A" },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       backgroundImage: {
         "hero-gradient": "radial-gradient(circle at top center, #1C1E24 0%, #0F1115 100%)",
@@ -61,13 +70,6 @@ export default {
         lg: "0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.18)",
         xl: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.18)",
         glow: "0 0 20px rgba(0, 229, 153, 0.15)", // Mint glow
-      },
-      borderRadius: {
-        lg: "1.5rem", // 24px - very round cards
-        md: "1rem", // 16px
-        sm: "0.75rem", // 12px
-        input: "1rem", // Rounded inputs
-        full: "9999px", // Pill shapes
       },
       keyframes: {
         "accordion-down": {

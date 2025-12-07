@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import MobileTopbar from "./MobileTopbar";
+import MobileHeader from "./MobileHeader";
 import OnboardingGuide from "./OnboardingGuide";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -24,7 +24,7 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
 
       {/* Mobile Topbar */}
-      <MobileTopbar />
+      <MobileHeader />
 
       {/* Main Content Area */}
       <main className="flex-1 h-full overflow-hidden flex flex-col lg:overflow-visible">

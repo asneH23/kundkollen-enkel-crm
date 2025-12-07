@@ -1,5 +1,5 @@
-/* Import Inter and Space Grotesk */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+/* Fonts imported via @fontsource in main.tsx or keep as backup */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -16,8 +16,7 @@
   }
 
   body {
-    @apply bg-background text-primary min-h-screen selection:bg-accent selection:text-black;
-    /* Clean, solid background for industrial look */
+    @apply bg-background text-primary min-h-screen selection:bg-accent selection:text-white;
     background-image: none;
   }
 
@@ -29,8 +28,11 @@
   h6 {
     @apply font-heading font-bold tracking-tight text-black;
   }
+}
 
-  /* Custom Scrollbar */
+@layer components {
+
+  /* Modern Scroller - Dark Thumb on Light Track */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -41,80 +43,29 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-black/30 rounded-full hover:bg-black/40 transition-colors;
-  }
-}
-
-@layer components {
-  .glass-panel {
-    @apply bg-card border border-transparent shadow-xl rounded-2xl;
-    /* Clean, solid shadow */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 24px 48px -12px rgba(0, 0, 0, 0.1);
+    @apply bg-black/20 rounded-full hover:bg-black/40 transition-colors;
   }
 
+  /* Glassmorphism Utilities - Restored to Light Mode */
   .glass-card {
-    @apply bg-card border border-transparent shadow-sm rounded-2xl transition-all duration-300;
-    /* Subtle shadow for cards */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.03);
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm rounded-2xl transition-all duration-300;
   }
 
   .glass-card:hover {
-    @apply transform -translate-y-1;
-    /* Stronger lift on hover */
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 20px 40px -12px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(22, 163, 74, 0.1);
+    @apply bg-white shadow-md transform -translate-y-1;
   }
 
+  /* Premium Inputs - Light Mode */
   .premium-input {
-    @apply bg-card border border-transparent text-black placeholder:text-gray-500 focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all duration-200 hover:bg-white/80 rounded-xl;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(0, 0, 0, 0.03);
+    @apply h-12 bg-white border border-gray-200 text-black placeholder:text-gray-400 rounded-xl focus:border-black focus:ring-1 focus:ring-black transition-all duration-200;
   }
 
-  .premium-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #000000;
-    @apply bg-white;
+  /* Mobile Bottom Nav Items */
+  .bottom-nav-item {
+    @apply flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-black active:text-accent transition-colors gap-1;
   }
 
-  .premium-button {
-    @apply bg-black text-white font-bold px-8 py-3 rounded-full hover:bg-gray-800 active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl;
-  }
-
-  /* Variant for accent buttons */
-  .premium-button-accent {
-    @apply bg-accent text-black font-bold px-8 py-3 rounded-full hover:bg-accent-hover active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl;
-  }
-
-  .page-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
-  }
-
-  .shadow-glow {
-    /* Dark green glow */
-    box-shadow: 0 0 30px rgba(22, 163, 74, 0.4);
-  }
-
-  .animate-enter {
-    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px) scale(0.98);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  .bottom-nav-item.active {
+    @apply text-accent;
   }
 }

@@ -15,6 +15,15 @@ import InvoicePDF from "@/components/pdf/InvoicePDF";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import MobileInvoiceList from "@/components/MobileInvoiceList";
+import {
+    ResponsiveDialog,
+    ResponsiveDialogContent,
+    ResponsiveDialogHeader,
+    ResponsiveDialogTitle,
+    ResponsiveDialogDescription,
+    ResponsiveDialogFooter
+} from "@/components/ui/responsive-dialog";
 
 const Invoices = () => {
     const { user } = useAuth();
@@ -373,28 +382,31 @@ const Invoices = () => {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40" />
-                    <Input
-                        placeholder="Sök på fakturanummer, kund eller beskrivning..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 premium-input h-11"
-                    />
+            {/* Filters */}
+            <div className="sticky top-14 z-30 -mx-4 px-4 py-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 mb-6 md:static md:bg-transparent md:border-0 md:p-0 md:m-0 md:mb-8">
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40 pointer-events-none" />
+                        <Input
+                            placeholder="Sök på fakturanummer, kund eller beskrivning..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 premium-input h-11 text-base shadow-sm"
+                        />
+                    </div>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="w-full sm:w-48 h-11 premium-input text-base shadow-sm">
+                            <SelectValue placeholder="Filtrera status" />
+                        </SelectTrigger>
+                        <SelectContent className="glass-panel border-black/10 text-primary">
+                            <SelectItem value="all">Alla statusar</SelectItem>
+                            <SelectItem value="draft">Utkast</SelectItem>
+                            <SelectItem value="sent">Skickad</SelectItem>
+                            <SelectItem value="paid">Betald</SelectItem>
+                            <SelectItem value="overdue">Förfallen</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full sm:w-48 h-11 premium-input">
-                        <SelectValue placeholder="Filtrera status" />
-                    </SelectTrigger>
-                    <SelectContent className="glass-panel border-black/10 text-primary">
-                        <SelectItem value="all">Alla statusar</SelectItem>
-                        <SelectItem value="draft">Utkast</SelectItem>
-                        <SelectItem value="sent">Skickad</SelectItem>
-                        <SelectItem value="paid">Betald</SelectItem>
-                        <SelectItem value="overdue">Förfallen</SelectItem>
-                    </SelectContent>
-                </Select>
             </div>
 
             {/* Grid */}
@@ -419,21 +431,36 @@ const Invoices = () => {
                     )}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredInvoices.map((invoice) => (
-                        <InvoiceCard
-                            key={invoice.id}
-                            invoice={{
-                                ...invoice,
-                                customer_name: getCustomerName(invoice.customer_id)
-                            }}
-                            onDelete={handleDeleteClick}
-                            onStatusChange={handleStatusChange}
-                            companyInfo={companyInfo}
-                            onEdit={handleEditClick}
-                        />
-                    ))}
-                </div>
+                <>
+                    {/* Mobile List View */}
+                    <MobileInvoiceList
+                        invoices={filteredInvoices.map(invoice => ({
+                            ...invoice,
+                            customer_name: getCustomerName(invoice.customer_id)
+                        }))}
+                        onEdit={handleEditClick}
+                        onDelete={handleDeleteClick}
+                        onStatusChange={handleStatusChange}
+                        companyInfo={companyInfo}
+                    />
+
+                    {/* Desktop Grid View */}
+                    <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredInvoices.map((invoice) => (
+                            <InvoiceCard
+                                key={invoice.id}
+                                invoice={{
+                                    ...invoice,
+                                    customer_name: getCustomerName(invoice.customer_id)
+                                }}
+                                onDelete={handleDeleteClick}
+                                onStatusChange={handleStatusChange}
+                                companyInfo={companyInfo}
+                                onEdit={handleEditClick}
+                            />
+                        ))}
+                    </div>
+                </>
             )}
 
             {/* Delete Confirmation Dialog */}
@@ -461,17 +488,17 @@ const Invoices = () => {
             </AlertDialog>
 
             {/* Email Send Dialog */}
-            <Dialog open={sendDialogOpen} onOpenChange={setSendDialogOpen}>
-                <DialogContent className="sm:max-w-[500px] glass-panel border-black/10 text-primary">
-                    <DialogHeader>
+            <ResponsiveDialog open={sendDialogOpen} onOpenChange={setSendDialogOpen}>
+                <ResponsiveDialogContent className="sm:max-w-[500px] glass-panel border-black/10 text-primary">
+                    <ResponsiveDialogHeader>
                         <div className="mx-auto bg-primary/5 w-12 h-12 rounded-full flex items-center justify-center mb-4">
                             <Send className="w-6 h-6 text-primary" />
                         </div>
-                        <DialogTitle className="text-center text-xl">Skicka faktura</DialogTitle>
-                        <DialogDescription className="text-center text-primary/60">
+                        <ResponsiveDialogTitle className="text-center text-xl">Skicka faktura</ResponsiveDialogTitle>
+                        <ResponsiveDialogDescription className="text-center text-primary/60">
                             Skicka fakturan direkt till kunden som PDF.
-                        </DialogDescription>
-                    </DialogHeader>
+                        </ResponsiveDialogDescription>
+                    </ResponsiveDialogHeader>
 
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
@@ -508,7 +535,7 @@ const Invoices = () => {
                         </div>
                     </div>
 
-                    <DialogFooter className="sm:justify-between gap-2">
+                    <ResponsiveDialogFooter className="sm:justify-between gap-2">
                         <div className="hidden sm:block"></div>
                         <Button
                             onClick={handleSendEmail}
@@ -525,16 +552,16 @@ const Invoices = () => {
                                 </>
                             )}
                         </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                    </ResponsiveDialogFooter>
+                </ResponsiveDialogContent>
+            </ResponsiveDialog>
 
             {/* Edit Invoice Dialog */}
-            <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-                <DialogContent className="sm:max-w-[600px] bg-white border border-black/10 text-primary rounded-3xl">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold">Redigera faktura #{editingInvoice?.invoice_number}</DialogTitle>
-                    </DialogHeader>
+            <ResponsiveDialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <ResponsiveDialogContent className="sm:max-w-[600px] bg-white border border-black/10 text-primary rounded-3xl">
+                    <ResponsiveDialogHeader>
+                        <ResponsiveDialogTitle className="text-2xl font-bold">Redigera faktura #{editingInvoice?.invoice_number}</ResponsiveDialogTitle>
+                    </ResponsiveDialogHeader>
                     <form onSubmit={handleEditSubmit} className="space-y-4 mt-4">
                         <div className="grid gap-4">
                             <div className="space-y-2">
@@ -667,8 +694,8 @@ const Invoices = () => {
                             <Button type="submit" className="premium-button">Spara ändringar</Button>
                         </div>
                     </form>
-                </DialogContent>
-            </Dialog>
+                </ResponsiveDialogContent>
+            </ResponsiveDialog>
         </div >
     );
 };

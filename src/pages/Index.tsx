@@ -107,10 +107,7 @@ const Index = () => {
               </div>
 
               <div className="flex flex-col gap-4 pt-6 sm:pt-8">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
-                  <span className="text-base sm:text-lg text-primary/70 font-medium">Inget kreditkort krävs</span>
-                </div>
+
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
                   <span className="text-base sm:text-lg text-primary/70 font-medium">Kom igång på 1 minut</span>
@@ -192,39 +189,39 @@ const Index = () => {
           </div>
 
           {/* Benefits Grid */}
-          <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
-            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                <CheckCircle className="h-6 w-6 text-accent group-hover:text-white" />
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent lg:hover:bg-black lg:hover:text-white lg:hover:border-accent/20 transition-all duration-300">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 lg:group-hover:bg-white/10 lg:group-hover:text-white transition-colors">
+                <CheckCircle className="h-6 w-6 text-accent lg:group-hover:text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 group-hover:text-white">
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 lg:group-hover:text-white">
                 Allt på ett ställe
               </h3>
-              <p className="text-sm sm:text-base text-primary/70 group-hover:text-white/60 leading-relaxed">
+              <p className="text-sm sm:text-base text-primary/70 lg:group-hover:text-white/60 leading-relaxed">
                 Istället för kalkylblad, kalendrar och anteckningar. Alla dina kunder, offerter och påminnelser samlade.
               </p>
             </div>
 
-            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                <CheckCircle className="h-6 w-6 text-accent group-hover:text-white" />
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent lg:hover:bg-black lg:hover:text-white lg:hover:border-accent/20 transition-all duration-300">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 lg:group-hover:bg-white/10 lg:group-hover:text-white transition-colors">
+                <CheckCircle className="h-6 w-6 text-accent lg:group-hover:text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 group-hover:text-white">
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 lg:group-hover:text-white">
                 Få fler jobb
               </h3>
-              <p className="text-sm sm:text-base text-primary/70 group-hover:text-white/60 leading-relaxed">
+              <p className="text-sm sm:text-base text-primary/70 lg:group-hover:text-white/60 leading-relaxed">
                 Skapa offerter snabbt, följ upp kunder i tid och se vilka jobb som väntar. Glöm aldrig en uppföljning.
               </p>
             </div>
 
-            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
-              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                <CheckCircle className="h-6 w-6 text-accent group-hover:text-white" />
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent lg:hover:bg-black lg:hover:text-white lg:hover:border-accent/20 transition-all duration-300">
+              <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 lg:group-hover:bg-white/10 lg:group-hover:text-white transition-colors">
+                <CheckCircle className="h-6 w-6 text-accent lg:group-hover:text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 group-hover:text-white">
+              <h3 className="text-lg sm:text-xl font-bold text-primary mb-3 lg:group-hover:text-white">
                 Enkelt och snabbt
               </h3>
-              <p className="text-sm sm:text-base text-primary/70 group-hover:text-white/60 leading-relaxed">
+              <p className="text-sm sm:text-base text-primary/70 lg:group-hover:text-white/60 leading-relaxed">
                 Inga komplicerade system. Om du kan använda en mobiltelefon kan du använda Kundkollen.
               </p>
             </div>
@@ -242,14 +239,14 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="group p-6 sm:p-8 rounded-2xl bg-[#F5F5F5] hover:bg-black hover:text-white transition-all duration-300 border border-transparent hover:border-accent/20">
-                <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white flex items-center justify-center mb-4 sm:mb-6 shadow-sm group-hover:bg-white/10 group-hover:text-white transition-colors">
-                  <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary group-hover:text-white" />
+              <div key={index} className="group p-6 sm:p-8 rounded-2xl bg-[#F5F5F5] lg:hover:bg-black lg:hover:text-white transition-all duration-300 border border-transparent lg:hover:border-accent/20">
+                <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white flex items-center justify-center mb-4 sm:mb-6 shadow-sm lg:group-hover:bg-white/10 lg:group-hover:text-white transition-colors">
+                  <feature.icon className="h-6 w-6 sm:h-7 sm:w-7 text-primary lg:group-hover:text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary group-hover:text-white">{feature.title}</h3>
-                <p className="text-sm sm:text-base text-primary/60 group-hover:text-white/60 leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-primary lg:group-hover:text-white">{feature.title}</h3>
+                <p className="text-sm sm:text-base text-primary/60 lg:group-hover:text-white/60 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -270,29 +267,29 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
             {/* Mobile */}
-            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
-              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                <Smartphone className="h-7 w-7 text-accent group-hover:text-white" />
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent lg:hover:bg-black lg:hover:text-white lg:hover:border-accent/20 transition-all duration-300">
+              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 lg:group-hover:bg-white/10 lg:group-hover:text-white transition-colors">
+                <Smartphone className="h-7 w-7 text-accent lg:group-hover:text-white" />
               </div>
-              <h3 className="text-xl font-bold text-primary mb-3 group-hover:text-white">
+              <h3 className="text-xl font-bold text-primary mb-3 lg:group-hover:text-white">
                 På mobilen
               </h3>
-              <p className="text-primary/70 group-hover:text-white/60 leading-relaxed">
+              <p className="text-primary/70 lg:group-hover:text-white/60 leading-relaxed">
                 Uppdatera kunder, lägg till offerter och hantera påminnelser direkt från bygget eller ute i fält.
               </p>
             </div>
 
             {/* Desktop */}
-            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent hover:bg-black hover:text-white hover:border-accent/20 transition-all duration-300">
-              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                <Monitor className="h-7 w-7 text-accent group-hover:text-white" />
+            <div className="group bg-[#F5F5F5] rounded-2xl p-6 sm:p-8 border border-transparent lg:hover:bg-black lg:hover:text-white lg:hover:border-accent/20 transition-all duration-300">
+              <div className="h-14 w-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 border border-accent/20 lg:group-hover:bg-white/10 lg:group-hover:text-white transition-colors">
+                <Monitor className="h-7 w-7 text-accent lg:group-hover:text-white" />
               </div>
-              <h3 className="text-xl font-bold text-primary mb-3 group-hover:text-white">
+              <h3 className="text-xl font-bold text-primary mb-3 lg:group-hover:text-white">
                 På datorn
               </h3>
-              <p className="text-primary/70 group-hover:text-white/60 leading-relaxed">
+              <p className="text-primary/70 lg:group-hover:text-white/60 leading-relaxed">
                 Planera din dag, analysera försäljning och skapa detaljerade offerter med större skärm och tangentbord.
               </p>
             </div>

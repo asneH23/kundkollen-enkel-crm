@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Users, FileText, Bell, Calendar, AlertCircle, ArrowRight } from "lucide-react";
+import { BarChart3, TrendingUp, Users, FileText, Bell, Calendar, AlertCircle, ArrowRight, Download, FileSpreadsheet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -8,6 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { generateSieContent, downloadSieFile } from "@/utils/sieGenerator";
+import { Invoice } from "@/components/InvoiceCard";
+
 
 interface Stats {
   totalCustomers: number;
@@ -46,10 +52,97 @@ const Reports = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [upcomingReminders, setUpcomingReminders] = useState<UpcomingReminder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sieDialogOpen, setSieDialogOpen] = useState(false);
+  const [exportMonth, setExportMonth] = useState<string>((new Date().getMonth() + 1).toString());
+  const [exportYear, setExportYear] = useState<string>(new Date().getFullYear().toString());
+  const [isExporting, setIsExporting] = useState(false);
+
+  // ... [Existing useEffect] ...
+
+  const handleExportSie = async () => {
+    if (!user) return;
+    setIsExporting(true);
+    try {
+      // 1. Fetch Company Info
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      const companyName = profile?.company_name || "Mitt Företag";
+      const orgNumber = profile?.org_number || "556000-0000";
+
+      // 2. Fetch Invoices for Period
+      const startDate = new Date(parseInt(exportYear), parseInt(exportMonth) - 1, 1);
+      const endDate = new Date(parseInt(exportYear), parseInt(exportMonth), 0); // Last day of month
+
+      const startStr = startDate.toISOString().split('T')[0];
+      const endStr = endDate.toISOString().split('T')[0];
+
+      const { data: invoices, error } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('issue_date', startStr)
+        .lte('issue_date', endStr);
+
+      if (error) throw error;
+
+      if (!invoices || invoices.length === 0) {
+        toast({
+          title: "Inga fakturor",
+          description: "Det finns inga fakturor för den valda perioden.",
+          variant: "destructive"
+        });
+        setIsExporting(false);
+        return;
+      }
+
+      // 3. Generate SIE
+      const sieContent = generateSieContent(
+        invoices as Invoice[],
+        { name: companyName, orgNumber: orgNumber },
+        startDate,
+        endDate
+      );
+
+      // 4. Download
+      downloadSieFile(sieContent, `bokforing_${exportYear}_${exportMonth}.se`);
+
+      toast({
+        title: "Export klar",
+        description: `SIE-filen har laddats ner.`,
+      });
+      setSieDialogOpen(false);
+    } catch (error) {
+      console.error("SIE Export Error:", error);
+      toast({
+        title: "Fel vid export",
+        description: "Kunde inte skapa SIE-filen.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+
+
+
 
   useEffect(() => {
     const fetchStats = async () => {
-      if (!user) return;
+      // Safety timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+
+      if (!user) {
+        setLoading(false);
+        clearTimeout(timeoutId);
+        return;
+      }
 
       try {
         // Fetch customers count
@@ -240,13 +333,7 @@ const Reports = () => {
     fetchStats();
   }, [user, toast]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-lg text-primary">Laddar...</div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="space-y-8">
@@ -256,6 +343,59 @@ const Reports = () => {
           <h1 className="text-4xl font-bold text-primary tracking-tight mb-2">Rapporter</h1>
           <p className="text-lg text-primary/60">Överblick över din verksamhet</p>
         </div>
+
+        <Dialog open={sieDialogOpen} onOpenChange={setSieDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-green-600 hover:bg-green-700 text-white gap-2">
+              <FileSpreadsheet className="h-4 w-4" />
+              Bokföring (SIE)
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Exportera Bokföringsunderlag</DialogTitle>
+              <DialogDescription>
+                Skapa en SIE-fil som du kan ladda upp i Fortnox, Visma eller Bokio.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Månad</Label>
+                  <Select value={exportMonth} onValueChange={setExportMonth}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                        <SelectItem key={m} value={m.toString()}>{new Date(2000, m - 1, 1).toLocaleString('sv-SE', { month: 'long' })}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>År</Label>
+                  <Select value={exportYear} onValueChange={setExportYear}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2024">2024</SelectItem>
+                      <SelectItem value="2025">2025</SelectItem>
+                      <SelectItem value="2026">2026</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setSieDialogOpen(false)}>Avbryt</Button>
+              <Button onClick={handleExportSie} disabled={isExporting} className="bg-green-600 hover:bg-green-700 text-white">
+                {isExporting ? "Genererar..." : "Ladda ner SIE-fil"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Bento Grid Layout */}
@@ -287,32 +427,44 @@ const Reports = () => {
 
         {/* Stats Cards Grid */}
         <div className="col-span-1 md:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {/* Customers */}
-          <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
-            <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
-              <Users className="h-6 w-6" />
-            </div>
-            <div className="text-4xl font-bold text-primary mb-2">{stats.totalCustomers}</div>
-            <div className="text-sm text-primary/60 font-medium">Totalt antal kunder</div>
-          </div>
+          {loading ? (
+            [1, 2, 3].map((i) => (
+              <div key={i} className="bg-card rounded-3xl p-6 border border-border shadow-sm animate-pulse">
+                <div className="h-12 w-12 rounded-2xl bg-muted/50 mb-4"></div>
+                <div className="h-8 w-24 bg-muted/50 mb-2"></div>
+                <div className="h-4 w-32 bg-muted/50"></div>
+              </div>
+            ))
+          ) : (
+            <>
+              {/* Customers */}
+              <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
+                <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
+                  <Users className="h-6 w-6" />
+                </div>
+                <div className="text-4xl font-bold text-primary mb-2">{stats.totalCustomers}</div>
+                <div className="text-sm text-primary/60 font-medium">Totalt antal kunder</div>
+              </div>
 
-          {/* Active Quotes */}
-          <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
-            <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
-              <FileText className="h-6 w-6" />
-            </div>
-            <div className="text-4xl font-bold text-primary mb-2">{stats.activeQuotes}</div>
-            <div className="text-sm text-primary/60 font-medium">Aktiva offerter</div>
-          </div>
+              {/* Active Quotes */}
+              <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
+                <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
+                  <FileText className="h-6 w-6" />
+                </div>
+                <div className="text-4xl font-bold text-primary mb-2">{stats.activeQuotes}</div>
+                <div className="text-sm text-primary/60 font-medium">Aktiva offerter</div>
+              </div>
 
-          {/* Won Deals */}
-          <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
-            <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
-              <TrendingUp className="h-6 w-6" />
-            </div>
-            <div className="text-4xl font-bold text-primary mb-2">{stats.wonDeals}</div>
-            <div className="text-sm text-primary/60 font-medium">Accepterade offerter</div>
-          </div>
+              {/* Won Deals */}
+              <div className="bg-card rounded-3xl p-6 border border-border shadow-sm hover:border-accent/30 hover:shadow-lg transition-all duration-300">
+                <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-4">
+                  <TrendingUp className="h-6 w-6" />
+                </div>
+                <div className="text-4xl font-bold text-primary mb-2">{stats.wonDeals}</div>
+                <div className="text-sm text-primary/60 font-medium">Accepterade offerter</div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Activity Feed - Tall */}

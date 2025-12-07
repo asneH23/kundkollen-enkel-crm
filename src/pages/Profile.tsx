@@ -26,6 +26,8 @@ const Profile = () => {
   const [businessEmail, setBusinessEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [orgNumber, setOrgNumber] = useState("");
+  const [contactPerson, setContactPerson] = useState("");
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [stats, setStats] = useState({
     customers: 0,
@@ -61,6 +63,8 @@ const Profile = () => {
         setBusinessEmail((data as any).business_email || localStorage.getItem(`profile_business_email_${user.id}`) || "");
         setPhone((data as any).phone || localStorage.getItem(`profile_phone_${user.id}`) || "");
         setAddress((data as any).address || localStorage.getItem(`profile_address_${user.id}`) || "");
+        setOrgNumber(data.org_number || "");
+        setContactPerson(data.contact_person || "");
         setCreatedAt(data.created_at || null);
       } else {
         // If no data in database, try loading from localStorage as temporary fallback
@@ -155,6 +159,8 @@ const Profile = () => {
         business_email: businessEmail.trim() || null,
         phone: phone.trim() || null,
         address: address.trim() || null,
+        org_number: orgNumber.trim() || null,
+        contact_person: contactPerson.trim() || null,
       };
 
       // Save to Supabase database (primary storage - works across browsers)
@@ -259,6 +265,21 @@ const Profile = () => {
                   </div>
 
                   <div>
+                    <Label htmlFor="contactPerson" className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-accent" />
+                      Kontaktperson (på dokument)
+                    </Label>
+                    <Input
+                      id="contactPerson"
+                      type="text"
+                      value={contactPerson}
+                      onChange={(e) => setContactPerson(e.target.value)}
+                      placeholder="Förnamn Efternamn"
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
                     <Label htmlFor="companyName" className="flex items-center gap-2">
                       <Building2 className="h-4 w-4 text-accent" />
                       Företagsnamn
@@ -269,6 +290,21 @@ const Profile = () => {
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       placeholder="Ditt företagsnamn"
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="orgNumber" className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-accent" />
+                      Organisationsnummer
+                    </Label>
+                    <Input
+                      id="orgNumber"
+                      type="text"
+                      value={orgNumber}
+                      onChange={(e) => setOrgNumber(e.target.value)}
+                      placeholder="556XXX-XXXX"
                       className="mt-2"
                     />
                   </div>

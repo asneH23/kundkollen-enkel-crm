@@ -11,6 +11,15 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import CustomerCard from "@/components/CustomerCard";
 import { Plus, Search, Users, AlertTriangle, FileText, Bell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import MobileCustomerList from "@/components/MobileCustomerList";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogDescription,
+  ResponsiveDialogTrigger
+} from "@/components/ui/responsive-dialog";
 
 interface Customer {
   id: string;
@@ -269,19 +278,26 @@ const Customers = () => {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2 tracking-tight">Kunder</h1>
           <p className="text-primary/70 text-lg">Bygg starkare relationer med dina kunder.</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
+
+
+        <ResponsiveDialog open={open} onOpenChange={setOpen}>
+          <ResponsiveDialogTrigger asChild>
             <Button onClick={() => handleOpenDialog()} className="premium-button">
               <Plus className="mr-2 h-4 w-4" />
               Lägg till kund
             </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-white border border-black/10 text-primary sm:max-w-[600px] rounded-3xl">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">
+          </ResponsiveDialogTrigger>
+          <ResponsiveDialogContent className="bg-white border border-black/10 text-primary sm:max-w-[600px] rounded-3xl">
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle className="text-2xl font-bold">
                 {editingCustomer ? "Redigera kund" : "Lägg till ny kund"}
-              </DialogTitle>
-            </DialogHeader>
+              </ResponsiveDialogTitle>
+              <ResponsiveDialogDescription>
+                {editingCustomer
+                  ? "Uppdatera kunduppgifterna nedan."
+                  : "Fyll i uppgifterna för den nya kunden."}
+              </ResponsiveDialogDescription>
+            </ResponsiveDialogHeader>
             <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg mb-4">
               <p className="text-xs text-blue-900/70">
                 <strong>GDPR-information:</strong> Du ansvarar för att du har rättslig grund (t.ex. avtal eller offert) att lagra dessa uppgifter.
@@ -365,8 +381,8 @@ const Customers = () => {
                 </Button>
               </div>
             </form>
-          </DialogContent>
-        </Dialog>
+          </ResponsiveDialogContent>
+        </ResponsiveDialog>
       </div>
 
       {/* Stats Section - Black Hero Card */}
@@ -386,14 +402,14 @@ const Customers = () => {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md pb-6 border-b border-black/5">
-        <div className="relative">
+      <div className="sticky top-14 z-30 -mx-4 px-4 py-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 mb-6 md:static md:bg-transparent md:border-0 md:p-0 md:m-0 md:mb-8 md:pb-6 md:border-b md:border-black/5">
+        <div className="relative max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60 pointer-events-none" />
           <Input
             placeholder="Sök på namn, företag eller e-post"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="premium-input pl-10 h-11 text-base"
+            className="premium-input pl-10 h-11 text-base shadow-sm"
           />
         </div>
       </div>
@@ -420,16 +436,26 @@ const Customers = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredCustomers.map((customer) => (
-            <CustomerCard
-              key={customer.id}
-              customer={customer}
-              onEdit={() => handleOpenDialog(customer)}
-              onDelete={() => handleDeleteClick(customer)}
-            />
-          ))}
-        </div>
+        <>
+          {/* Mobile List View */}
+          <MobileCustomerList
+            customers={filteredCustomers}
+            onEdit={handleOpenDialog}
+            onDelete={handleDeleteClick}
+          />
+
+          {/* Desktop Grid View */}
+          <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredCustomers.map((customer) => (
+              <CustomerCard
+                key={customer.id}
+                customer={customer}
+                onEdit={() => handleOpenDialog(customer)}
+                onDelete={() => handleDeleteClick(customer)}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {/* Delete Confirmation Dialog */}
