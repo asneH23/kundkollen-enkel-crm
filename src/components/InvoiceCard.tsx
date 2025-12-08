@@ -134,23 +134,13 @@ const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, compa
                 );
             case 'sent':
                 return (
-                    <div className="flex items-center gap-2">
-                        {/* Resend Button */}
-                        <Button
-                            onClick={(e) => { e.stopPropagation(); onSend?.(invoice); }}
-                            className="bg-primary/10 text-primary hover:bg-primary/20 h-9 w-9 p-0 rounded-full"
-                            title="Skicka igen"
-                        >
-                            <Send className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            onClick={(e) => { e.stopPropagation(); onStatusChange(invoice.id, "paid"); }}
-                            className="bg-green-600 text-white hover:bg-green-700 h-9 px-4 text-xs font-medium rounded-full"
-                        >
-                            <CreditCard className="w-3 h-3 mr-2" />
-                            Registrera betalning
-                        </Button>
-                    </div>
+                    <Button
+                        onClick={(e) => { e.stopPropagation(); onStatusChange(invoice.id, "paid"); }}
+                        className="bg-green-600 text-white hover:bg-green-700 h-9 px-3 xs:px-4 text-xs font-medium rounded-full whitespace-nowrap"
+                    >
+                        <CreditCard className="w-3 h-3 mr-2" />
+                        Markera som betald
+                    </Button>
                 );
             case 'overdue':
                 return (
@@ -214,7 +204,7 @@ const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, compa
                                         -{new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(invoice.rot_rut_amount)}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center mt-1 text-sm bg-gray-50 p-1.5 rounded-md">
+                                <div className="flex flex-col xs:flex-row justify-between xs:items-center mt-1 text-sm bg-gray-50 p-1.5 rounded-md gap-1 xs:gap-0">
                                     <span className="font-bold text-gray-900">Att betala:</span>
                                     <span className="font-bold text-gray-900">
                                         {new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(invoice.amount - invoice.rot_rut_amount)}

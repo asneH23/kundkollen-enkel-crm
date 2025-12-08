@@ -178,7 +178,7 @@ const Invoices = () => {
                 triggerConfetti();
                 const invoice = invoices.find(i => i.id === id);
                 if (invoice) {
-                    checkGoalReached(invoice.amount);
+                    checkGoalReached(invoice.amount, invoice.id);
                 }
             }
 
@@ -240,7 +240,7 @@ const Invoices = () => {
             setEditingInvoice(null);
             if (editFormData.status === "paid" && editingInvoice.status !== "paid") {
                 triggerConfetti();
-                checkGoalReached(parseFloat(editFormData.amount.replace(/\s/g, '').replace(',', '.')));
+                checkGoalReached(parseFloat(editFormData.amount.replace(/\s/g, '').replace(',', '.')), editingInvoice.id);
             }
 
             fetchInvoices();
@@ -394,7 +394,7 @@ const Invoices = () => {
     };
 
     // Function to check if goal is reached
-    const checkGoalReached = async (newAmount: number) => {
+    const checkGoalReached = async (newAmount: number, invoiceId?: string) => {
         if (!user) return;
 
         try {
@@ -408,30 +408,30 @@ const Invoices = () => {
             const goal = profile?.sales_goal;
             if (!goal || goal <= 0) return; // No goal set
 
-            // 2. Get total sales (excluding the one we just added to avoid double counting if DB update was instant, 
-            // but usually we want to know if WE crossed the line. 
-            // Let's fetch current total paid excluding current invoice to be safe, then add new amount)
-
-            const { data: paidInvoices } = await supabase
+            // 2. Get total sales EXCLUDING the current invoice (to avoid race conditions)
+            let query = supabase
                 .from('invoices')
                 .select('amount')
                 .eq('user_id', user.id)
                 .eq('status', 'paid');
 
-            const totalBefore = paidInvoices?.reduce((sum, inv) => sum + (inv.amount || 0), 0) || 0;
-            // Note: The invoice update happens BEFORE this call in handleStatusChange, so 'paidInvoices' 
-            // MIGHT already include the updated invoice depending on race conditions/consistency.
-            // A safer check:
+            if (invoiceId) {
+                query = query.neq('id', invoiceId);
+            }
 
-            // To be robust: Just use the total from DB. If total >= goal AND (total - newAmount) < goal, then we just crossed it!
-            const currentTotal = totalBefore;
+            const { data: paidInvoices } = await query;
 
-            if (currentTotal >= goal && (currentTotal - newAmount) < goal) {
+            const totalOthers = paidInvoices?.reduce((sum, inv) => sum + (inv.amount || 0), 0) || 0;
+
+            // 3. Calculate true total manually
+            const currentTotal = totalOthers + newAmount;
+
+            // Check if we just crossed the line (i.e., others were below, but now we are above/equal)
+            if (currentTotal >= goal && totalOthers < goal) {
                 // We just crossed the line!
                 setCurrentTotalSales(currentTotal);
                 setGoalReachedOpen(true);
-            } else if (currentTotal >= goal) {
-                // We were already above goal, maybe just show confetti (handled elsewhere)
+                triggerConfetti(); // Trigger extra confetti
             }
 
         } catch (error) {

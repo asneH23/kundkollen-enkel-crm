@@ -31,7 +31,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
   const [displayName, setDisplayName] = useState<string>("");
 
   const navItems = [
-    { path: "/dashboard", label: "Översikt", icon: LayoutDashboard },
+    { path: "/dashboard", label: "Hem", icon: LayoutDashboard },
     { path: "/kunder", label: "Kunder", icon: Users },
     { path: "/offerter", label: "Offerter", icon: FileText },
     { path: "/fakturor", label: "Fakturor", icon: CreditCard },

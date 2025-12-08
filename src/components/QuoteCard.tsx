@@ -104,7 +104,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
         return (
           <Button
             onClick={(e) => { e.stopPropagation(); onStatusChange(quote.id, "sent"); }}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 text-xs font-medium rounded-full"
+            className="bg-primary text-white hover:bg-primary/90 h-9 px-4 text-xs font-medium rounded-full"
           >
             <Send className="w-3 h-3 mr-2" />
             Skicka
@@ -146,7 +146,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
           )}>
             <FileText className="h-5 w-5" />
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <h3 className="text-base font-bold text-primary group-hover:text-primary transition-colors line-clamp-1">
               {quote.title}
             </h3>
@@ -241,9 +241,9 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
       </div>
 
       {/* Footer / Actions */}
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
+      <div className="flex flex-col xs:flex-row justify-between xs:items-center mt-2 pt-2 border-t border-border/50 gap-2 xs:gap-0">
         <div className={cn(
-          "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5",
+          "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide flex items-center justify-center xs:justify-start gap-1.5 w-full xs:w-auto",
           statusColors[quote.status as keyof typeof statusColors]
         )}>
           <StatusIcon className="h-3 w-3" />
@@ -251,7 +251,7 @@ const QuoteCard = ({ quote, onEdit, onDelete, onStatusChange, onClick, companyIn
         </div>
 
         {/* Primary Action Button */}
-        <div onClick={(e) => e.stopPropagation()}>
+        <div onClick={(e) => e.stopPropagation()} className="w-full xs:w-auto flex justify-center xs:justify-end">
           {renderPrimaryAction()}
         </div>
       </div>

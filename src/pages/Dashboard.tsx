@@ -366,7 +366,7 @@ const Dashboard = () => {
             icon={TrendingUp}
             description="Totalt värde av betalda fakturor"
             trend="up"
-            className="h-full bg-primary text-white"
+            className="h-full bg-primary text-white hover:bg-primary"
             iconClassName="text-accent"
           />
         </div>
