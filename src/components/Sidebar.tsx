@@ -112,8 +112,8 @@ const Sidebar = ({ mobile }: SidebarProps) => {
 
       {/* User Profile */}
       <div className="p-4 mt-auto">
-        <div className="glass-card p-4 rounded-2xl bg-white/50 border border-white/60">
-          <div className="flex items-center gap-3 mb-3">
+        <div className="glass-card p-4 rounded-2xl bg-white/50 border border-white/60 mb-2">
+          <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold">
               {displayName ? displayName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase()}
             </div>
@@ -124,17 +124,17 @@ const Sidebar = ({ mobile }: SidebarProps) => {
               <p className="text-xs text-primary/70 truncate">
                 {user?.email}
               </p>
-            </div>
+            </div >
           </div>
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-primary/70 hover:text-red-600 hover:bg-red-50 rounded-xl"
-            onClick={() => signOut()}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logga ut
-          </Button>
-        </div>
+        </div >
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-primary/70 hover:text-red-600 hover:bg-red-50 rounded-xl"
+          onClick={() => signOut()}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Logga ut
+        </Button>
       </div>
     </div>
   );

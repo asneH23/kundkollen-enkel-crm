@@ -63,9 +63,10 @@ interface InvoiceCardProps {
         address?: string;
         orgNumber?: string;
     };
+    onSend?: (invoice: Invoice) => void;
 }
 
-const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, companyInfo }: InvoiceCardProps) => {
+const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, companyInfo, onSend }: InvoiceCardProps) => {
     const [customer, setCustomer] = useState<any>(null);
     const [loadingCustomer, setLoadingCustomer] = useState(true);
 
@@ -133,13 +134,23 @@ const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, compa
                 );
             case 'sent':
                 return (
-                    <Button
-                        onClick={(e) => { e.stopPropagation(); onStatusChange(invoice.id, "paid"); }}
-                        className="bg-green-600 text-white hover:bg-green-700 h-9 px-4 text-xs font-medium rounded-full"
-                    >
-                        <CreditCard className="w-3 h-3 mr-2" />
-                        Registrera betalning
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        {/* Resend Button */}
+                        <Button
+                            onClick={(e) => { e.stopPropagation(); onSend?.(invoice); }}
+                            className="bg-primary/10 text-primary hover:bg-primary/20 h-9 w-9 p-0 rounded-full"
+                            title="Skicka igen"
+                        >
+                            <Send className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            onClick={(e) => { e.stopPropagation(); onStatusChange(invoice.id, "paid"); }}
+                            className="bg-green-600 text-white hover:bg-green-700 h-9 px-4 text-xs font-medium rounded-full"
+                        >
+                            <CreditCard className="w-3 h-3 mr-2" />
+                            Registrera betalning
+                        </Button>
+                    </div>
                 );
             case 'overdue':
                 return (
@@ -152,12 +163,7 @@ const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, compa
                     </Button>
                 );
             case 'paid':
-                return (
-                    <div className="flex items-center text-green-600 text-xs font-medium bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
-                        <CheckCircle className="w-3 h-3 mr-1.5" />
-                        Betald
-                    </div>
-                );
+                return null;
             default:
                 return null;
         }
@@ -193,8 +199,7 @@ const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, compa
                             )}
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-                            <User className="h-3 w-3" />
-                            <span className="truncate max-w-[120px] sm:max-w-[200px]">
+                            <span className="truncate max-w-[180px] sm:max-w-[300px]">
                                 {customer?.company_name || customer?.name || "Okänd kund"}
                             </span>
                         </div>
@@ -236,8 +241,16 @@ const InvoiceCard = ({ invoice, onDelete, onStatusChange, onEdit, onClick, compa
                         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStatusChange(invoice.id, "sent"); }}>
                             <Send className="mr-2 h-4 w-4" /> Markera som skickad
                         </DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onSend?.(invoice); }}>
+                            <Send className="mr-2 h-4 w-4" /> {invoice.status === 'sent' ? 'Skicka igen' : 'Skicka med e-post'}
+                        </DropdownMenuItem>
+
                         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStatusChange(invoice.id, "paid"); }} className="text-green-600 focus:text-green-600">
                             <CheckCircle className="mr-2 h-4 w-4" /> Markera som betald
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onStatusChange(invoice.id, "cancelled"); }} className="text-gray-600">
+                            <XCircle className="mr-2 h-4 w-4" /> Markera som makulerad
                         </DropdownMenuItem>
 
                         {customer && !loadingCustomer && (

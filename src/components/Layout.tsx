@@ -28,7 +28,7 @@ const Layout = ({ children }: LayoutProps) => {
 
       {/* Main Content Area */}
       <main className="flex-1 h-full overflow-hidden flex flex-col lg:overflow-visible">
-        <div className="flex-1 overflow-y-auto lg:rounded-3xl bg-white lg:bg-white/50 border-0 lg:border border-white/60 shadow-none lg:shadow-sm p-4 lg:p-8 pt-[180px] lg:pt-6 relative custom-scrollbar">
+        <div className="flex-1 overflow-y-auto lg:rounded-3xl bg-white lg:bg-white/50 border-0 lg:border border-white/60 shadow-none lg:shadow-sm p-4 lg:p-8 pt-20 lg:pt-6 relative custom-scrollbar">
           {/* Back button - show on all pages except dashboard, hidden on mobile */}
           {!isDashboard && (
             <Button

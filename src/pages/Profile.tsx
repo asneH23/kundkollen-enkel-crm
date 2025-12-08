@@ -184,7 +184,7 @@ const Profile = () => {
 
       if (updatedData) {
         // Database update successful - data is now saved to your account
-        console.log("Profile updated successfully in database:", updatedData);
+
         // Data is now in database and will persist across all browsers and devices
         toast({
           title: "Sparad",

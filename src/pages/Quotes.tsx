@@ -62,6 +62,8 @@ interface QuoteFormData {
   propertyDesignation: string;
 }
 
+import { triggerConfetti } from "@/utils/confetti";
+
 const Quotes = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -148,6 +150,17 @@ const Quotes = () => {
       });
     }
   };
+
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "new") {
+      setTimeout(() => {
+        handleOpenDialog();
+        // Clear params
+        navigate("/offerter", { replace: true });
+      }, 100);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchQuotes();
@@ -285,7 +298,11 @@ const Quotes = () => {
           .update(quoteData)
           .eq("id", editingQuote.id);
 
-        if (error) {
+        if (!error) {
+          if (quoteData.status === "accepted") {
+            triggerConfetti();
+          }
+        } else {
           throw error;
         }
 
@@ -511,16 +528,19 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
       ).toBlob();
 
       // Convert blob to base64
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-
-      reader.onloadend = async () => {
-        try {
+      // Convert blob to base64 using a Promise to ensure we wait for it
+      const pdfBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
           const base64data = reader.result as string;
-          const pdfBase64 = base64data.split(',')[1];
+          resolve(base64data.split(',')[1]);
+        };
+        reader.onerror = reject;
+      });
 
-          // Create HTML body
-          const htmlBody = `
+      // Create HTML body
+      const htmlBody = `
             <!DOCTYPE html>
             <html>
             <head>
@@ -549,57 +569,47 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
 
                 <div class="footer">
                   <p>Med vänliga hälsningar,<br><strong>${userProfile?.company_name || "Kundkollen"}</strong></p>
-                  <p style="font-size: 12px; margin-top: 10px; color: #9ca3af;">Skickat via Kundkollen CRM</p>
+                  <p style="font-size: 12px; margin-top: 10px; color: #9ca3af;">Skickat via Kundkollen</p>
                 </div>
               </div>
             </body>
             </html>
           `;
 
-          // Call Edge Function
-          const { error } = await supabase.functions.invoke('send-quote-email', {
-            body: {
-              to: [customerEmail.trim()],
-              subject: subject,
-              html: htmlBody,
-              pdfBase64: pdfBase64,
-              filename: `offert-${selectedQuote.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
-              replyTo: userProfile?.email,
-              fromName: userProfile?.company_name || "Kundkollen Användare"
-            }
-          });
-
-          if (error) throw error;
-
-          // Update quote status
-          if (selectedQuote.status !== "sent") {
-            await supabase
-              .from("quotes")
-              .update({ status: "sent" })
-              .eq("id", selectedQuote.id);
-
-            fetchQuotes();
-          }
-
-          toast({
-            title: "Offert skickad!",
-            description: "E-post med PDF har skickats till kunden.",
-          });
-
-          setSendQuoteOpen(false);
-          setCustomerEmail("");
-          setEmailMessage("");
-        } catch (error: any) {
-          console.error("Error sending email:", error);
-          toast({
-            title: "Kunde inte skicka email",
-            description: error.message || "Ett fel uppstod vid utskick",
-            variant: "destructive",
-          });
-        } finally {
-          setSendingQuote(false);
+      // Call Edge Function
+      const { error } = await supabase.functions.invoke('send-quote-email', {
+        body: {
+          to: [customerEmail.trim()],
+          subject: subject,
+          html: htmlBody,
+          pdfBase64: pdfBase64,
+          filename: `offert-${selectedQuote.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+          replyTo: userProfile?.email,
+          fromName: userProfile?.company_name || "Kundkollen Användare"
         }
-      };
+      });
+
+      if (error) throw error;
+
+      // Update quote status
+      if (selectedQuote.status !== "sent") {
+        await supabase
+          .from("quotes")
+          .update({ status: "sent" })
+          .eq("id", selectedQuote.id);
+
+        fetchQuotes();
+      }
+
+      toast({
+        title: "Offert skickad!",
+        description: "E-post med PDF har skickats till kunden.",
+      });
+
+      setSendQuoteOpen(false);
+      setCustomerEmail("");
+      setEmailMessage("");
+      setSendingQuote(false);
     } catch (error: any) {
       console.error("Error preparing email:", error);
       toast({
@@ -1179,6 +1189,7 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
             onEdit={handleOpenDialog}
             onDelete={handleDeleteClick}
             onView={handleOpenDetail}
+            onSend={handleOpenSendQuote}
           />
 
           {/* Desktop Grid View */}

@@ -25,6 +25,9 @@ import {
     ResponsiveDialogFooter
 } from "@/components/ui/responsive-dialog";
 
+import { triggerConfetti } from "@/utils/confetti";
+import GoalReachedModal from "@/components/GoalReachedModal";
+
 const Invoices = () => {
     const { user } = useAuth();
     const { toast } = useToast();
@@ -60,6 +63,10 @@ const Invoices = () => {
         laborCost: "",
         propertyDesignation: ""
     });
+
+    // Goal Celebration State
+    const [goalReachedOpen, setGoalReachedOpen] = useState(false);
+    const [currentTotalSales, setCurrentTotalSales] = useState(0);
 
     const fetchInvoices = async () => {
         if (!user) return;
@@ -133,6 +140,15 @@ const Invoices = () => {
                     setSearchParams({});
                 }, 500);
             }
+        } else if (action === 'new') {
+            toast({
+                title: "Skapa faktura",
+                description: "Skapa en offert först för att generera en faktura. Vidarebefordrar...",
+            });
+            setTimeout(() => {
+                navigate('/offerter?action=new');
+            }, 1500);
+            setSearchParams({});
         }
     }, [invoices, searchParams]);
 
@@ -157,6 +173,14 @@ const Invoices = () => {
                 title: "Status uppdaterad",
                 description: `Fakturans status har ändrats till ${status}.`,
             });
+
+            if (status === "paid") {
+                triggerConfetti();
+                const invoice = invoices.find(i => i.id === id);
+                if (invoice) {
+                    checkGoalReached(invoice.amount);
+                }
+            }
 
             fetchInvoices();
         } catch (error) {
@@ -214,6 +238,11 @@ const Invoices = () => {
 
             setEditDialogOpen(false);
             setEditingInvoice(null);
+            if (editFormData.status === "paid" && editingInvoice.status !== "paid") {
+                triggerConfetti();
+                checkGoalReached(parseFloat(editFormData.amount.replace(/\s/g, '').replace(',', '.')));
+            }
+
             fetchInvoices();
         } catch (error: any) {
             console.error("Error updating invoice:", error);
@@ -243,6 +272,15 @@ const Invoices = () => {
     const handleSendEmail = async () => {
         if (!selectedInvoice) return;
 
+        if (!customerEmail || !customerEmail.trim()) {
+            toast({
+                title: "E-post saknas",
+                description: "Vänligen ange en e-postadress till mottagaren.",
+                variant: "destructive"
+            });
+            return;
+        }
+
         try {
             setSendingEmail(true);
 
@@ -262,54 +300,142 @@ const Invoices = () => {
                 />
             ).toBlob();
 
-            // Convert blob to base64
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
+            // Convert blob to base64 using a Promise
+            const base64data = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                    const res = reader.result as string;
+                    resolve(res.split(',')[1]);
+                }
+                reader.onerror = reject;
+            });
 
-            reader.onloadend = async () => {
-                const base64data = (reader.result as string).split(',')[1];
+            // Create Premium HTML body (Matching Quotes)
+            const htmlBody = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px; }
+                .header { background-color: #16A34A; color: white; padding: 24px; border-radius: 8px 8px 0 0; }
+                .content { background-color: #ffffff; padding: 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+                .invoice-box { background-color: #f8fafc; padding: 24px; border-radius: 8px; border-left: 6px solid #16A34A; margin: 24px 0; }
+                .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px; }
+                .button { background-color: #16A34A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; margin-top: 16px; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                 <h1 style="margin: 0; font-size: 24px; font-weight: 700;">Faktura från ${companyInfo?.name || 'oss'}</h1>
+              </div>
+              <div class="content">
+                <p style="margin-bottom: 24px;">${emailMessage.replace(/\n/g, '<br>')}</p>
+                
+                <div class="invoice-box">
+                    <p style="margin: 0; font-weight: 600; color: #111827;">Faktura #${selectedInvoice.invoice_number}</p>
+                    <p style="margin: 8px 0; font-size: 24px; font-weight: 700; color: #16A34A;">${selectedInvoice.amount.toLocaleString()} kr</p>
+                    <p style="margin: 0; font-size: 14px; color: #4b5563;">
+                        Förfallodatum: ${selectedInvoice.due_date ? new Date(selectedInvoice.due_date).toLocaleDateString("sv-SE") : "Se PDF"}
+                    </p>
+                </div>
 
-                // 2. Send email via Edge Function
-                const { error } = await supabase.functions.invoke('send-invoice-email', {
-                    body: {
-                        to: [customerEmail],
-                        subject: `Faktura #${selectedInvoice.invoice_number} från ${companyInfo?.name || 'Kundkollen'}`,
-                        html: `<p>${emailMessage.replace(/\n/g, '<br>')}</p>`,
-                        pdfBase64: base64data,
-                        filename: `faktura-${selectedInvoice.invoice_number}.pdf`,
-                        fromName: companyInfo?.name || "Kundkollen",
-                        replyTo: companyInfo?.email || user?.email
-                    }
-                });
+                <div class="footer">
+                  <p>Med vänliga hälsningar,<br><strong>${companyInfo?.name || "Kundkollen"}</strong></p>
+                  <p style="font-size: 12px; margin-top: 10px; color: #9ca3af;">Skickat via Kundkollen</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
 
-                if (error) throw error;
+            // 2. Send email via Edge Function
+            const { error } = await supabase.functions.invoke('send-invoice-email', {
+                body: {
+                    to: [customerEmail],
+                    subject: `Faktura #${selectedInvoice.invoice_number} från ${companyInfo?.name || 'Kundkollen'}`,
+                    html: htmlBody,
+                    pdfBase64: base64data,
+                    filename: `faktura-${selectedInvoice.invoice_number}.pdf`,
+                    fromName: companyInfo?.name || "Kundkollen",
+                    replyTo: companyInfo?.email || user?.email
+                }
+            });
 
-                // 3. Update status to 'sent'
-                const { error: updateError } = await supabase
-                    .from('invoices' as any)
-                    .update({ status: 'sent' })
-                    .eq('id', selectedInvoice.id);
+            if (error) throw error;
 
-                if (updateError) throw updateError;
+            // 3. Update status to 'sent'
+            const { error: updateError } = await supabase
+                .from('invoices' as any)
+                .update({ status: 'sent' })
+                .eq('id', selectedInvoice.id);
 
-                toast({
-                    title: "Faktura skickad",
-                    description: `Fakturan har skickats till ${customerEmail}`,
-                });
+            if (updateError) throw updateError;
 
-                setSendDialogOpen(false);
-                fetchInvoices();
-            };
+            toast({
+                title: "Faktura skickad",
+                description: `Fakturan har skickats till ${customerEmail}`,
+            });
+
+            setSendDialogOpen(false);
+            fetchInvoices();
 
         } catch (error: any) {
             console.error('Email error:', error);
             toast({
                 title: "Fel vid utskick",
-                description: "Kunde inte skicka fakturan. Försök igen.",
+                description: error.message || "Kunde inte skicka fakturan. Försök igen.",
                 variant: "destructive"
             });
         } finally {
             setSendingEmail(false);
+        }
+    };
+
+    // Function to check if goal is reached
+    const checkGoalReached = async (newAmount: number) => {
+        if (!user) return;
+
+        try {
+            // 1. Get current goal
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('sales_goal')
+                .eq('id', user.id)
+                .single();
+
+            const goal = profile?.sales_goal;
+            if (!goal || goal <= 0) return; // No goal set
+
+            // 2. Get total sales (excluding the one we just added to avoid double counting if DB update was instant, 
+            // but usually we want to know if WE crossed the line. 
+            // Let's fetch current total paid excluding current invoice to be safe, then add new amount)
+
+            const { data: paidInvoices } = await supabase
+                .from('invoices')
+                .select('amount')
+                .eq('user_id', user.id)
+                .eq('status', 'paid');
+
+            const totalBefore = paidInvoices?.reduce((sum, inv) => sum + (inv.amount || 0), 0) || 0;
+            // Note: The invoice update happens BEFORE this call in handleStatusChange, so 'paidInvoices' 
+            // MIGHT already include the updated invoice depending on race conditions/consistency.
+            // A safer check:
+
+            // To be robust: Just use the total from DB. If total >= goal AND (total - newAmount) < goal, then we just crossed it!
+            const currentTotal = totalBefore;
+
+            if (currentTotal >= goal && (currentTotal - newAmount) < goal) {
+                // We just crossed the line!
+                setCurrentTotalSales(currentTotal);
+                setGoalReachedOpen(true);
+            } else if (currentTotal >= goal) {
+                // We were already above goal, maybe just show confetti (handled elsewhere)
+            }
+
+        } catch (error) {
+            console.error("Error checking goal:", error);
         }
     };
 
@@ -441,11 +567,12 @@ const Invoices = () => {
                         onEdit={handleEditClick}
                         onDelete={handleDeleteClick}
                         onStatusChange={handleStatusChange}
+                        onSend={handleOpenSendDialog}
                         companyInfo={companyInfo}
                     />
 
                     {/* Desktop Grid View */}
-                    <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {filteredInvoices.map((invoice) => (
                             <InvoiceCard
                                 key={invoice.id}
@@ -457,6 +584,8 @@ const Invoices = () => {
                                 onStatusChange={handleStatusChange}
                                 companyInfo={companyInfo}
                                 onEdit={handleEditClick}
+                                onClick={() => handleEditClick(invoice)}
+                                onSend={handleOpenSendDialog}
                             />
                         ))}
                     </div>
@@ -539,7 +668,7 @@ const Invoices = () => {
                         <div className="hidden sm:block"></div>
                         <Button
                             onClick={handleSendEmail}
-                            disabled={sendingEmail || !customerEmail}
+                            disabled={sendingEmail}
                             className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90"
                         >
                             {sendingEmail ? (
@@ -696,6 +825,12 @@ const Invoices = () => {
                     </form>
                 </ResponsiveDialogContent>
             </ResponsiveDialog>
+
+            <GoalReachedModal
+                open={goalReachedOpen}
+                onOpenChange={setGoalReachedOpen}
+                amount={currentTotalSales}
+            />
         </div >
     );
 };

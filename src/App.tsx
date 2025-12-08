@@ -26,6 +26,7 @@ import FAQ from "./pages/FAQ";
 const queryClient = new QueryClient();
 
 import MobileBottomNav from "@/components/MobileBottomNav";
+import MobileQuickActions from "@/components/MobileQuickActions";
 
 const App = () => (
   <ErrorBoundary>

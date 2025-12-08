@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import HelpModal from "./HelpModal";
-import { HelpCircle, LogOut } from "lucide-react";
+import { HelpCircle, LogOut, User } from "lucide-react";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 const MobileHeader = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -22,6 +24,15 @@ const MobileHeader = () => {
         </Link>
 
         <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/profil")}
+            className="h-9 w-9 text-muted-foreground hover:text-black hover:bg-black/5 rounded-full"
+          >
+            <User className="h-5 w-5" />
+          </Button>
+
           <HelpModal>
             <Button
               variant="ghost"

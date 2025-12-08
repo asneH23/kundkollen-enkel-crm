@@ -8,9 +8,11 @@ import StatWidget from "@/components/StatWidget";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Bell, TrendingUp, Users, HelpCircle } from "lucide-react";
+import { FileText, Bell, TrendingUp, Users, HelpCircle, Calendar as CalendarIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
+import WeekCalendar, { CalendarEvent } from "@/components/WeekCalendar";
+import { addDays } from "date-fns";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,10 +22,10 @@ const Dashboard = () => {
     customers: 0,
     quotes: 0,
     reminders: 0,
-    wonQuotes: 0,
+    paidInvoices: 0,
     totalValue: 0,
   });
-  const [activities, setActivities] = useState<any[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [salesGoal, setSalesGoal] = useState<number | null>(null);
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [goalInput, setGoalInput] = useState("");
@@ -60,6 +62,7 @@ const Dashboard = () => {
       fetchDisplayName();
       fetchStats();
       fetchSalesGoal();
+      fetchCalendarEvents();
     }
   }, [user]);
 
@@ -114,7 +117,7 @@ const Dashboard = () => {
         .single();
 
       if (error && error.code === "42703") {
-        console.log("display_name column not yet created in database");
+
         // If column doesn't exist, check localStorage as fallback
         const storedName = localStorage.getItem(`profile_display_name_${user.id}`);
         if (storedName) {
@@ -155,134 +158,99 @@ const Dashboard = () => {
     if (!user) return;
 
     try {
-      const [customersRes, quotesRes, remindersRes, wonQuotesRes, wonQuotesData] = await Promise.all([
+      const [customersRes, quotesRes, remindersRes, paidInvoicesRes, paidInvoicesData] = await Promise.all([
         supabase.from("customers").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("quotes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("reminders").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("completed", false),
-        supabase.from("quotes").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "accepted"),
-        supabase.from("quotes").select("amount").eq("user_id", user.id).eq("status", "accepted"),
+        supabase.from("invoices").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("status", "paid"),
+        supabase.from("invoices").select("amount").eq("user_id", user.id).eq("status", "paid"),
       ]);
 
-      const totalValue = wonQuotesData.data?.reduce((sum, quote) => sum + (quote.amount || 0), 0) || 0;
+      const totalValue = paidInvoicesData.data?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
 
       setStats({
         customers: customersRes.count || 0,
         quotes: quotesRes.count || 0,
         reminders: remindersRes.count || 0,
-        wonQuotes: wonQuotesRes.count || 0,
+        paidInvoices: paidInvoicesRes.count || 0,
         totalValue,
       });
-
-      // Fetch recent activities
-      const recentActivities: any[] = [];
-
-      // Recent customers
-      const { data: recentCustomers } = await supabase
-        .from("customers")
-        .select("company_name, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(2);
-
-      recentCustomers?.forEach((customer) => {
-        recentActivities.push({
-          id: `customer-${customer.created_at}`,
-          type: "customer",
-          title: "Ny kund tillagd",
-          description: customer.company_name,
-          timestamp: customer.created_at,
-          icon: Users,
-          color: "bg-accent/10 border border-accent/20 text-accent",
-        });
-      });
-
-      // Recent accepted quotes
-      const { data: recentWonQuotes } = await supabase
-        .from("quotes")
-        .select("title, amount, created_at")
-        .eq("user_id", user.id)
-        .eq("status", "accepted")
-        .order("created_at", { ascending: false })
-        .limit(2);
-
-      recentWonQuotes?.forEach((quote) => {
-        recentActivities.push({
-          id: `quote-${quote.created_at}`,
-          type: "quote",
-          title: "Offert accepterad",
-          description: `${quote.title} - ${quote.amount?.toLocaleString("sv-SE")} kr`,
-          timestamp: quote.created_at,
-          icon: TrendingUp,
-          color: "bg-accent/10 border border-accent/20 text-accent",
-        });
-      });
-
-      // Recent sent quotes
-      const { data: recentSentQuotes } = await supabase
-        .from("quotes")
-        .select("title, created_at")
-        .eq("user_id", user.id)
-        .eq("status", "sent")
-        .order("created_at", { ascending: false })
-        .limit(2);
-
-      recentSentQuotes?.forEach((quote) => {
-        recentActivities.push({
-          id: `quote-sent-${quote.created_at}`,
-          type: "quote",
-          title: "Offert skickad",
-          description: quote.title,
-          timestamp: quote.created_at,
-          icon: FileText,
-          color: "bg-blue-500/10 border border-blue-500/20 text-blue-400",
-        });
-      });
-
-      // Recent reminders
-      const { data: recentReminders } = await supabase
-        .from("reminders")
-        .select("title, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(2);
-
-      recentReminders?.forEach((reminder) => {
-        recentActivities.push({
-          id: `reminder-${reminder.created_at}`,
-          type: "reminder",
-          title: "Påminnelse skapad",
-          description: reminder.title,
-          timestamp: reminder.created_at,
-          icon: Bell,
-          color: "bg-yellow-500/10 border border-yellow-500/20 text-yellow-400",
-        });
-      });
-
-      // Recent invoices
-      const { data: recentInvoices } = await supabase
-        .from("invoices" as any)
-        .select("invoice_number, amount, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(2);
-
-      recentInvoices?.forEach((invoice: any) => {
-        recentActivities.push({
-          id: `invoice-${invoice.created_at}`,
-          type: "invoice",
-          title: "Faktura skapad",
-          description: `Faktura #${invoice.invoice_number} - ${invoice.amount?.toLocaleString("sv-SE")} kr`,
-          timestamp: invoice.created_at,
-          icon: FileText,
-          color: "bg-purple-500/10 border border-purple-500/20 text-purple-400",
-        });
-      });
-
-      // Sort by timestamp and limit to 5
-      recentActivities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-      setActivities(recentActivities.slice(0, 5));
     } catch (error) {
       console.error("Error fetching stats:", error);
+    }
+  };
+
+  const fetchCalendarEvents = async () => {
+    if (!user) return;
+
+    try {
+      const events: CalendarEvent[] = [];
+
+      // 1. Fetch Reminders (Due Dates)
+      const { data: reminders } = await supabase
+        .from("reminders")
+        .select("id, title, description, due_date")
+        .eq("user_id", user.id)
+        .eq("completed", false);
+
+      reminders?.forEach(reminder => {
+        events.push({
+          id: `reminder-${reminder.id}`,
+          type: "reminder",
+          title: "Påminnelse",
+          description: reminder.title,
+          date: new Date(reminder.due_date),
+        });
+      });
+
+      // 2. Fetch Invoices (Due Dates)
+      const { data: invoices } = await supabase
+        .from("invoices" as any)
+        .select("id, invoice_number, customer_name, amount, due_date, status")
+        .eq("user_id", user.id)
+        .neq("status", "paid")
+        .neq("status", "cancelled");
+
+      invoices?.forEach((invoice: any) => {
+        events.push({
+          id: `invoice-${invoice.id}`,
+          type: "invoice",
+          title: `Faktura #${invoice.invoice_number}`,
+          description: `${(invoice as any).customer_name || 'Okänd kund'}`,
+          date: new Date(invoice.due_date),
+          amount: invoice.amount,
+          status: invoice.status
+        });
+      });
+
+      // 3. Fetch Quotes (Expiration = Created + 30 days)
+      const { data: quotes } = await supabase
+        .from("quotes")
+        .select("id, title, created_at, amount, status")
+        .eq("user_id", user.id)
+        .eq("status", "sent");
+
+      quotes?.forEach(quote => {
+        // Calculate expiration date
+        const createdDate = new Date(quote.created_at);
+        const expirationDate = addDays(createdDate, 30);
+
+        // Only show if it's in the future (or recent past?) - WeekCalendar logic filters by week view mostly
+        events.push({
+          id: `quote-${quote.id}`,
+          type: "quote",
+          title: "Offert går ut",
+          description: quote.title,
+          date: expirationDate,
+          amount: quote.amount || undefined,
+          status: quote.status || undefined
+        });
+      });
+
+      setCalendarEvents(events);
+
+    } catch (error) {
+      console.error("Error fetching calendar events:", error);
     }
   };
 
@@ -371,7 +339,7 @@ const Dashboard = () => {
     }
   };
 
-  const conversionRate = stats.quotes > 0 ? Math.round((stats.wonQuotes / stats.quotes) * 100) : 0;
+  // const conversionRate = stats.quotes > 0 ? Math.round((stats.wonQuotes / stats.quotes) * 100) : 0; // Not currently used
   const goalProgress = salesGoal && salesGoal > 0 ? Math.min((stats.totalValue / salesGoal) * 100, 100) : 0;
 
   return (
@@ -396,7 +364,7 @@ const Dashboard = () => {
             title="Total Försäljning"
             value={`${stats.totalValue.toLocaleString()} kr`}
             icon={TrendingUp}
-            description="Totalt värde av accepterade offerter"
+            description="Totalt värde av betalda fakturor"
             trend="up"
             className="h-full bg-primary text-white"
             iconClassName="text-accent"
@@ -480,43 +448,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Activity Feed - Row 3 (Full Width) */}
+        {/* Weekly Calendar Widget (Replaces Activity Feed) */}
         <div className="lg:col-span-4">
-          <div className="bg-card rounded-3xl p-8 border border-border shadow-sm hover:border-accent/30 transition-all duration-300">
-            <div className="mb-8">
-              <h3 className="text-xl font-bold text-primary">Senaste Händelser</h3>
-            </div>
-
-            <div className="space-y-6">
-              {activities.length === 0 ? (
-                <div className="text-center py-8 text-primary/60">Inga aktiviteter ännu</div>
-              ) : (
-                activities.map((activity) => {
-                  const activityDescription = activity.title && activity.description
-                    ? `${activity.title}: ${activity.description}`
-                    : activity.description || activity.title || "";
-
-                  return (
-                    <div key={activity.id} className="flex gap-4 group">
-                      <div className="mt-1 h-2 w-2 rounded-full bg-accent flex-shrink-0 group-hover:scale-125 transition-transform" />
-                      <div>
-                        <p className="text-primary font-medium">{activityDescription}</p>
-                        <p className="text-sm text-primary/60 mt-1">
-                          {new Date(activity.timestamp).toLocaleDateString("sv-SE", {
-                            month: "short",
-                            day: "numeric",
-                          })} • {new Date(activity.timestamp).toLocaleTimeString("sv-SE", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
+          <WeekCalendar events={calendarEvents} />
         </div>
       </div>
 
