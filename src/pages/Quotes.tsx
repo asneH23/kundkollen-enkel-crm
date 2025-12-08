@@ -37,6 +37,10 @@ interface Quote {
   customer_id: string | null;
   created_at: string;
   description?: string | null;
+  rot_rut_type?: 'ROT' | 'RUT' | null;
+  rot_rut_amount?: number;
+  labor_cost?: number;
+  property_designation?: string;
 }
 
 interface Customer {
@@ -53,6 +57,9 @@ interface QuoteFormData {
   status: string;
   customerId: string;
   description: string;
+  rotRutType: string;
+  laborCost: string;
+  propertyDesignation: string;
 }
 
 const Quotes = () => {
@@ -93,6 +100,9 @@ const Quotes = () => {
     status: "draft",
     customerId: "none",
     description: "",
+    rotRutType: "none",
+    laborCost: "",
+    propertyDesignation: ""
   });
 
   const fetchQuotes = async () => {
@@ -196,6 +206,9 @@ const Quotes = () => {
       status: "draft",
       customerId: "",
       description: "",
+      rotRutType: "none",
+      laborCost: "",
+      propertyDesignation: ""
     });
     setEditingQuote(null);
   };
@@ -210,6 +223,9 @@ const Quotes = () => {
         status: quote.status || "draft",
         customerId: quote.customer_id || "none",
         description: quote.description || "",
+        rotRutType: quote.rot_rut_type || "none",
+        laborCost: quote.labor_cost?.toString() || "",
+        propertyDesignation: quote.property_designation || ""
       });
     } else {
       resetForm();
@@ -246,11 +262,16 @@ const Quotes = () => {
     try {
       // Remove spaces from amount before parsing
       const amountValue = formData.amount.replace(/\s/g, "").replace(",", ".");
+      const laborCostValue = formData.laborCost.replace(/\s/g, "").replace(",", ".");
+
       const quoteData: any = {
         title: formData.title.trim(),
         amount: amountValue ? parseFloat(amountValue) : null,
         status: formData.status,
         customer_id: formData.customerId === "none" ? null : formData.customerId,
+        rot_rut_type: formData.rotRutType === "none" ? null : formData.rotRutType,
+        labor_cost: laborCostValue ? parseFloat(laborCostValue) : 0,
+        property_designation: formData.propertyDesignation
       };
 
       // Try to save description to database (if column exists)
@@ -333,6 +354,12 @@ const Quotes = () => {
         due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days default
         status: 'draft',
         description: quote.title,
+        rot_rut_type: quote.rot_rut_type,
+        labor_cost: quote.labor_cost,
+        property_designation: quote.property_designation,
+        // Calculate rot_rut_amount for invoice based on labor_cost and type
+        rot_rut_amount: quote.rot_rut_type === 'ROT' ? (quote.labor_cost ? quote.labor_cost * 0.3 : 0) :
+          quote.rot_rut_type === 'RUT' ? (quote.labor_cost ? quote.labor_cost * 0.5 : 0) : 0
       })
       .select('id, invoice_number')
       .single();
@@ -494,14 +521,39 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
 
           // Create HTML body
           const htmlBody = `
-            <div style="font-family: sans-serif; color: #333; line-height: 1.6;">
-              <p>${emailMessage.replace(/\n/g, '<br>')}</p>
-              <hr style="border: 0; border-top: 1px solid #eee; margin: 24px 0;" />
-              <p style="color: #666; font-size: 14px;">
-                Offerten bifogas som PDF i detta mail.<br>
-                Giltig till: ${new Date(new Date(selectedQuote.created_at).setDate(new Date(selectedQuote.created_at).getDate() + 30)).toLocaleDateString("sv-SE")}
-              </p>
-            </div>
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px; }
+                .header { background-color: #16A34A; color: white; padding: 24px; border-radius: 8px 8px 0 0; }
+                .content { background-color: #ffffff; padding: 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+                .quote-box { background-color: #f8fafc; padding: 24px; border-radius: 8px; border-left: 6px solid #16A34A; margin: 24px 0; }
+                .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                 <h1 style="margin: 0; font-size: 24px; font-weight: 700;">Offert från ${userProfile?.company_name || 'oss'}</h1>
+              </div>
+              <div class="content">
+                <p style="margin-bottom: 24px;">${emailMessage.replace(/\n/g, '<br>')}</p>
+                
+                <div class="quote-box">
+                    <p style="margin: 0; font-weight: 600; color: #111827;">Offerten bifogas som PDF.</p>
+                    <p style="margin-top: 8px; font-size: 14px; color: #4b5563;">
+                        Giltig till: ${new Date(new Date(selectedQuote.created_at).setDate(new Date(selectedQuote.created_at).getDate() + 30)).toLocaleDateString("sv-SE")}
+                    </p>
+                </div>
+
+                <div class="footer">
+                  <p>Med vänliga hälsningar,<br><strong>${userProfile?.company_name || "Kundkollen"}</strong></p>
+                  <p style="font-size: 12px; margin-top: 10px; color: #9ca3af;">Skickat via Kundkollen CRM</p>
+                </div>
+              </div>
+            </body>
+            </html>
           `;
 
           // Call Edge Function
@@ -668,6 +720,60 @@ Med vänliga hälsningar${userProfile?.company_name ? `,\n${userProfile.company_
                       className="premium-input"
                     />
                   </div>
+                </div>
+
+                {/* ROT/RUT Fields */}
+                <div className="pt-2 border-t border-dashed">
+                  <Label className="block mb-2 font-bold text-gray-700">Skattereduktion (ROT/RUT)</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="rot-rut-type" className="text-primary">Typ</Label>
+                      <Select
+                        value={formData.rotRutType}
+                        onValueChange={(val) => {
+                          setFormData({ ...formData, rotRutType: val });
+                        }}
+                      >
+                        <SelectTrigger className="premium-input">
+                          <SelectValue placeholder="Ingen" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-black/10">
+                          <SelectItem value="none">Ingen skattereduktion</SelectItem>
+                          <SelectItem value="ROT">ROT-avdrag (30%)</SelectItem>
+                          <SelectItem value="RUT">RUT-avdrag (50%)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {formData.rotRutType !== 'none' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="labor-cost" className="text-primary">Arbetskostnad (kr)</Label>
+                        <Input
+                          id="labor-cost"
+                          value={formData.laborCost}
+                          onChange={(e) => {
+                            const formatted = formatNumberInput(e.target.value);
+                            setFormData({ ...formData, laborCost: formatted });
+                          }}
+                          placeholder="Belopp för arbete"
+                          className="premium-input"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {formData.rotRutType === 'ROT' && (
+                    <div className="space-y-2 mt-4">
+                      <Label htmlFor="property-designation" className="text-primary">Fastighetsbeteckning</Label>
+                      <Input
+                        id="property-designation"
+                        value={formData.propertyDesignation}
+                        onChange={(e) => setFormData({ ...formData, propertyDesignation: e.target.value })}
+                        placeholder="T.ex. Stockholm Bilen 3"
+                        className="premium-input"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">

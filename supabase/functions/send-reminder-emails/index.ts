@@ -29,7 +29,7 @@ function formatDate(dateString: string): string {
 }
 
 function getEmailContent(reminder: Reminder): { subject: string; html: string } {
-  const appUrl = "https://kundkollen.se"; // Ändra till din faktiska URL
+  const appUrl = "https://kundkollen-enkel-crm.vercel.app"; // Beta URL until Jan 16
   const dueDate = formatDate(reminder.due_date);
   const customerInfo = reminder.customer_name ? `<p><strong>Kund:</strong> ${reminder.customer_name}</p>` : '';
   const description = reminder.reminder_description ? `<p>${reminder.reminder_description}</p>` : '';
@@ -75,49 +75,52 @@ function getEmailContent(reminder: Reminder): { subject: string; html: string } 
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: #1a1a1a;
           max-width: 600px;
           margin: 0 auto;
           padding: 20px;
+          font-size: 16px;
         }
         .header {
-          background-color: #2563eb;
+          background-color: #16A34A;
           color: white;
-          padding: 20px;
+          padding: 24px;
           border-radius: 8px 8px 0 0;
         }
         .content {
-          background-color: #f9fafb;
-          padding: 30px;
+          background-color: #ffffff;
+          padding: 32px;
           border: 1px solid #e5e7eb;
           border-top: none;
           border-radius: 0 0 8px 8px;
         }
         .reminder-box {
-          background-color: white;
-          padding: 20px;
-          border-radius: 6px;
-          border-left: 4px solid #2563eb;
-          margin: 20px 0;
+          background-color: #f8fafc;
+          padding: 24px;
+          border-radius: 8px;
+          border-left: 6px solid #16A34A;
+          margin: 24px 0;
         }
         .reminder-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #1f2937;
-          margin-bottom: 10px;
+          font-size: 20px;
+          font-weight: 700;
+          color: #111827;
+          margin-bottom: 12px;
         }
         .button {
           display: inline-block;
-          background-color: #2563eb;
+          background-color: #16A34A;
           color: white;
-          padding: 12px 24px;
+          padding: 14px 28px;
           text-decoration: none;
-          border-radius: 6px;
-          margin-top: 20px;
+          border-radius: 8px;
+          margin-top: 24px;
+          font-weight: 600;
+          text-align: center;
         }
         .footer {
           text-align: center;
-          margin-top: 30px;
+          margin-top: 40px;
           padding-top: 20px;
           border-top: 1px solid #e5e7eb;
           color: #6b7280;
@@ -127,19 +130,21 @@ function getEmailContent(reminder: Reminder): { subject: string; html: string } 
     </head>
     <body>
       <div class="header">
-        <h1 style="margin: 0; font-size: 24px;">${heading}</h1>
+        <h1 style="margin: 0; font-size: 24px; font-weight: 700;">${heading}</h1>
       </div>
       <div class="content">
-        <p>${message}</p>
+        <p style="margin-bottom: 24px;">${message}</p>
         
         <div class="reminder-box">
           <div class="reminder-title">${reminder.reminder_title}</div>
           ${description}
           ${customerInfo}
-          <p><strong>Datum:</strong> ${dueDate}</p>
+          <p style="margin-top: 12px;"><strong>Datum:</strong> ${dueDate}</p>
         </div>
         
-        <a href="${appUrl}/reminders" class="button">Se påminnelser i Kundkollen</a>
+        <div style="text-align: center;">
+            <a href="${appUrl}/reminders" class="button">Se påminnelser i Kundkollen</a>
+        </div>
         
         <div class="footer">
           <p>Med vänliga hälsningar,<br><strong>Kundkollen</strong></p>
@@ -181,9 +186,9 @@ const handler = async (req: Request): Promise<Response> => {
           <head>
             <meta charset="utf-8">
             <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-              .header { background-color: #2563eb; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-              .content { background-color: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px; }
+              .header { background-color: #16A34A; color: white; padding: 24px; border-radius: 8px 8px 0 0; }
+              .content { background-color: #ffffff; padding: 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
             </style>
           </head>
           <body>

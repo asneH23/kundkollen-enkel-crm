@@ -183,6 +183,8 @@ interface QuotePDFProps {
         status: string;
         created_at: string;
         valid_until?: string;
+        rot_rut_type?: 'ROT' | 'RUT' | null;
+        labor_cost?: number;
     };
     customer: {
         name: string;
@@ -240,6 +242,17 @@ const QuotePDF = ({ quote, customer, companyInfo }: QuotePDFProps) => {
     const vatRate = 0.25;
     const amountExclVAT = quote.amount / (1 + vatRate);
     const vatAmount = quote.amount - amountExclVAT;
+
+    // Calculate ROT/RUT
+    let deduction = 0;
+    if (quote.rot_rut_type && quote.labor_cost) {
+        if (quote.rot_rut_type === 'ROT') {
+            deduction = quote.labor_cost * 0.30;
+        } else if (quote.rot_rut_type === 'RUT') {
+            deduction = quote.labor_cost * 0.50;
+        }
+    }
+    const amountToPay = quote.amount - deduction;
 
     return (
         <Document>
@@ -331,6 +344,19 @@ const QuotePDF = ({ quote, customer, companyInfo }: QuotePDFProps) => {
                         <Text style={styles.grandTotalLabel}>Totalt inkl. moms:</Text>
                         <Text style={styles.grandTotalValue}>{formatCurrency(quote.amount)}</Text>
                     </View>
+
+                    {deduction > 0 && (
+                        <>
+                            <View style={[styles.totalRow, { marginTop: 10, paddingTop: 10, borderTop: '1px dashed #E5E7EB' }]}>
+                                <Text style={styles.totalLabel}>{quote.rot_rut_type}-avdrag:</Text>
+                                <Text style={[styles.totalValue, { color: '#059669' }]}>-{formatCurrency(deduction)}</Text>
+                            </View>
+                            <View style={[styles.grandTotal, { marginTop: 5, borderTop: 'none' }]}>
+                                <Text style={styles.grandTotalLabel}>Att betala:</Text>
+                                <Text style={styles.grandTotalValue}>{formatCurrency(amountToPay)}</Text>
+                            </View>
+                        </>
+                    )}
                 </View>
 
                 {/* Footer */}
