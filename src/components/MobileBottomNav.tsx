@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
-export const MobileBottomNav = () => {
+const MobileBottomNav = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -190,3 +190,5 @@ export const MobileBottomNav = () => {
         </div>
     );
 };
+
+export default MobileBottomNav;
