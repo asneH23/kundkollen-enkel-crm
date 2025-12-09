@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "react-router-dom";
 
 interface Reminder {
   id: string;
@@ -32,6 +33,7 @@ interface Customer {
 const Reminders = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,6 +94,18 @@ const Reminders = () => {
     fetchReminders();
     fetchCustomers();
   }, [user]);
+
+  useEffect(() => {
+    if (searchParams.get("action") === "new") {
+      handleOpenDialog();
+      // Clean up URL
+      setSearchParams(prev => {
+        const newParams = new URLSearchParams(prev);
+        newParams.delete("action");
+        return newParams;
+      });
+    }
+  }, [searchParams]);
 
   const resetForm = () => {
     setTitle("");

@@ -153,7 +153,8 @@ const styles = StyleSheet.create({
         paddingTop: 10,
     },
     statusBadge: {
-        display: 'inline-block',
+        display: 'flex',
+        alignSelf: 'flex-start',
         padding: '4px 12px',
         borderRadius: 4,
         fontSize: 10,

@@ -21,13 +21,15 @@ import { cn } from "@/lib/utils";
 
 interface SidebarProps {
   mobile?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-const Sidebar = ({ mobile }: SidebarProps) => {
+const Sidebar = ({ mobile, isOpen, onClose }: SidebarProps) => {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  // No internal state needed for mobile anymore, controlled by Layout
   const [displayName, setDisplayName] = useState<string>("");
 
   const navItems = [
@@ -36,7 +38,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
     { path: "/offerter", label: "Offerter", icon: FileText },
     { path: "/fakturor", label: "Fakturor", icon: CreditCard },
     { path: "/paminnelser", label: "Påminnelser", icon: Bell },
-    { path: "/rapporter", label: "Rapporter", icon: BarChart3 },
+    { path: "/bokforing", label: "Bokföring", icon: BarChart3 },
     { path: "/profil", label: "Profil", icon: User },
   ];
 
@@ -52,10 +54,13 @@ const Sidebar = ({ mobile }: SidebarProps) => {
     }
   }, [user]);
 
-  const SidebarContent = () => (
-    <div className="h-full glass-panel flex flex-col relative overflow-hidden bg-card border border-white/50 shadow-xl">
+  const SidebarContent = ({ isMobile = false }) => (
+    <div className={cn(
+      "h-full flex flex-col relative overflow-hidden transition-all duration-300",
+      isMobile ? "bg-white" : "glass-panel bg-card border border-white/50 shadow-xl"
+    )}>
       {/* Logo/Brand */}
-      <div className="p-8 pb-8">
+      <div className={cn("pb-8", isMobile ? "p-6 pt-8" : "p-8")}>
         <Link to="/" className="flex items-center gap-4 group no-underline outline-none border-none">
           <div className="h-12 w-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300 overflow-hidden">
             <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
@@ -76,12 +81,12 @@ const Sidebar = ({ mobile }: SidebarProps) => {
             <Link
               key={item.path}
               to={item.path}
-              onClick={() => setMobileOpen(false)}
+              onClick={() => onClose && onClose()}
               className={cn(
                 "flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all duration-300 group relative overflow-hidden",
                 active
                   ? "text-white bg-primary shadow-lg scale-[1.02]"
-                  : "text-primary/70 hover:text-primary hover:bg-white/50"
+                  : "text-primary/70 hover:text-primary hover:bg-black/5"
               )}
             >
               <Icon className={cn(
@@ -112,7 +117,7 @@ const Sidebar = ({ mobile }: SidebarProps) => {
 
       {/* User Profile */}
       <div className="p-4 mt-auto">
-        <div className="glass-card p-4 rounded-2xl bg-white/50 border border-white/60 mb-2">
+        <div className={cn("p-4 rounded-2xl mb-2", isMobile ? "bg-gray-50 border border-gray-100" : "glass-card bg-white/50 border border-white/60")}>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold">
               {displayName ? displayName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase()}
@@ -142,30 +147,25 @@ const Sidebar = ({ mobile }: SidebarProps) => {
   if (mobile) {
     return (
       <>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="h-10 w-10 min-h-[40px] min-w-[40px] text-primary/80 hover:text-primary hover:bg-white/60 backdrop-blur-sm bg-white/40 border border-black/5 shadow-sm rounded-2xl m-3 transition-all duration-200"
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+        {/* No button here anymore - it is in MobileHeader */}
+
+        {/* Backdrop */}
         <div
           className={cn(
-            "fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
-            mobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            "fixed inset-0 z-[90] bg-black/20 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
+            isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           )}
-          onClick={() => setMobileOpen(false)}
+          onClick={onClose}
         />
 
+        {/* Drawer */}
         <div
           className={cn(
-            "fixed left-0 top-0 h-full w-80 z-50 transition-transform duration-300 ease-out lg:hidden p-4",
-            mobileOpen ? "translate-x-0" : "-translate-x-full"
+            "fixed left-0 top-0 h-full w-80 z-[100] transition-transform duration-300 ease-out lg:hidden shadow-2xl",
+            isOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
-          <SidebarContent />
+          <SidebarContent isMobile={true} />
         </div>
       </>
     );

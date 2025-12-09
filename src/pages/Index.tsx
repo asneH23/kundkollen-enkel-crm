@@ -1,11 +1,19 @@
 import { useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, BarChart3, Users, FileText, Shield, Zap, HelpCircle, Smartphone, Monitor } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Auto-redirect to dashboard if logged in
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/dashboard");
+    }
+  }, [user, loading, navigate]);
 
   const features = [
     {

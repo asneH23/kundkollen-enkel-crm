@@ -19,7 +19,8 @@ import Customers from "./pages/Customers";
 import Quotes from "./pages/Quotes";
 import Invoices from "./pages/Invoices";
 import Reminders from "./pages/Reminders";
-import Reports from "./pages/Reports";
+import Reports from "./pages/Reports"; // Legacy? Or same?
+import Accounting from "./pages/Accounting";
 import Profile from "./pages/Profile";
 import FAQ from "./pages/FAQ";
 
@@ -95,6 +96,15 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <Reports />
+                      <MobileBottomNav />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/bokforing"
+                  element={
+                    <ProtectedRoute>
+                      <Accounting />
                       <MobileBottomNav />
                     </ProtectedRoute>
                   }

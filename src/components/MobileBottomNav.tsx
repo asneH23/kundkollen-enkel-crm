@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Users, FileText, CreditCard, Plus, X } from "lucide-react";
+import { LayoutDashboard, FileText, CreditCard, Plus, BarChart3, Users, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -12,7 +12,7 @@ export const MobileBottomNav = () => {
 
     const navItems = [
         { path: "/dashboard", label: "Hem", icon: LayoutDashboard },
-        { path: "/kunder", label: "Kunder", icon: Users },
+        { path: "/bokforing", label: "Bokföring", icon: BarChart3 },
         // FAB goes here conceptually
         { path: "/offerter", label: "Offerter", icon: FileText },
         { path: "/fakturor", label: "Fakturor", icon: CreditCard },
@@ -26,128 +26,167 @@ export const MobileBottomNav = () => {
     };
 
     return (
-        <div className="lg:hidden fixed bottom-6 left-4 right-4 z-50">
-            <AnimatePresence>
-                {open && (
-                    <>
-                        <div
-                            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
-                            onClick={() => setOpen(false)}
-                        />
-                        <div className="absolute bottom-20 left-0 right-0 flex flex-col items-center gap-3 z-40 pb-2">
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:hidden pointer-events-none flex justify-center items-end">
+            <div className="pointer-events-auto w-full max-w-md bg-white/90 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-[2rem] p-2 flex items-center justify-between relative">
+
+                {/* Left Side Items */}
+                {navItems.slice(0, 2).map((item) => {
+                    const active = isActive(item.path);
+                    const Icon = item.icon;
+                    return (
+                        <Link
+                            key={item.path}
+                            to={item.path}
+                            className={cn(
+                                "flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 gap-1",
+                                active ? "bg-primary text-white shadow-lg scale-105" : "text-primary/60 hover:text-primary hover:bg-black/5"
+                            )}
+                        >
+                            <Icon className={cn("w-6 h-6", active && "text-accent")} />
+                            <span className={cn("text-[10px] font-bold leading-none", active ? "text-white" : "text-primary/60")}>
+                                {item.label}
+                            </span>
+                        </Link>
+                    )
+                })}
+
+                {/* FAB Placeholder - Actual button is floating above */}
+                <div className="w-14 h-14" />
+
+                {/* Right Side Items */}
+                {navItems.slice(2, 4).map((item) => {
+                    const active = isActive(item.path);
+                    const Icon = item.icon;
+                    return (
+                        <Link
+                            key={item.path}
+                            to={item.path}
+                            className={cn(
+                                "flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 gap-1",
+                                active ? "bg-primary text-white shadow-lg scale-105" : "text-primary/60 hover:text-primary hover:bg-black/5"
+                            )}
+                        >
+                            <Icon className={cn("w-6 h-6", active && "text-accent")} />
+                            <span className={cn("text-[10px] font-bold leading-none", active ? "text-white" : "text-primary/60")}>
+                                {item.label}
+                            </span>
+                        </Link>
+                    )
+                })}
+
+            </div>
+
+            {/* FAB Button - Absolute Pos */}
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-[34px] z-50 pointer-events-auto">
+                <AnimatePresence>
+                    {open && (
+                        <>
                             <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                                transition={{ duration: 0.2 }}
-                                className="w-full flex justify-center"
-                            >
-                                <Button
-                                    variant="outline"
-                                    className="shadow-xl border-border/50 bg-white text-primary rounded-2xl pr-6 pl-4 h-14 flex items-center gap-3 w-[200px] justify-start hover:bg-gray-50"
-                                    onClick={() => handleAction("/offerter?action=new")}
-                                >
-                                    <div className="bg-blue-100 p-2 rounded-full">
-                                        <FileText className="w-5 h-5 text-blue-600" />
-                                    </div>
-                                    <span className="font-bold text-base">Ny Offert</span>
-                                </Button>
-                            </motion.div>
-
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-[-1]"
+                                onClick={() => setOpen(false)}
+                            />
                             <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                initial={{ opacity: 0, y: 20, scale: 0.8 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                                transition={{ duration: 0.2, delay: 0.05 }}
-                                className="w-full flex justify-center"
+                                exit={{ opacity: 0, y: 20, scale: 0.8 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 min-w-max pb-4"
                             >
-                                <Button
-                                    variant="outline"
-                                    className="shadow-xl border-border/50 bg-white text-primary rounded-2xl pr-6 pl-4 h-14 flex items-center gap-3 w-[200px] justify-start hover:bg-gray-50"
-                                    onClick={() => handleAction("/fakturor?action=new")}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="w-full flex justify-center"
                                 >
-                                    <div className="bg-purple-100 p-2 rounded-full">
-                                        <CreditCard className="w-5 h-5 text-purple-600" />
-                                    </div>
-                                    <span className="font-bold text-base">Ny Faktura</span>
-                                </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="shadow-xl border-border/50 bg-white text-primary rounded-2xl pr-6 pl-4 h-14 flex items-center gap-3 w-[200px] justify-start hover:bg-gray-50"
+                                        onClick={() => handleAction("/offerter?action=new")}
+                                    >
+                                        <div className="bg-blue-100 p-2 rounded-full">
+                                            <FileText className="w-5 h-5 text-blue-600" />
+                                        </div>
+                                        <span className="font-bold text-base">Ny Offert</span>
+                                    </Button>
+                                </motion.div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    transition={{ duration: 0.2, delay: 0.05 }}
+                                    className="w-full flex justify-center"
+                                >
+                                    <Button
+                                        variant="outline"
+                                        className="shadow-xl border-border/50 bg-white text-primary rounded-2xl pr-6 pl-4 h-14 flex items-center gap-3 w-[200px] justify-start hover:bg-gray-50"
+                                        onClick={() => handleAction("/fakturor?action=new")}
+                                    >
+                                        <div className="bg-purple-100 p-2 rounded-full">
+                                            <CreditCard className="w-5 h-5 text-purple-600" />
+                                        </div>
+                                        <span className="font-bold text-base">Ny Faktura</span>
+                                    </Button>
+                                </motion.div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    transition={{ duration: 0.2, delay: 0.1 }}
+                                    className="w-full flex justify-center"
+                                >
+                                    <Button
+                                        variant="outline"
+                                        className="shadow-xl border-border/50 bg-white text-primary rounded-2xl pr-6 pl-4 h-14 flex items-center gap-3 w-[200px] justify-start hover:bg-gray-50"
+                                        onClick={() => handleAction("/kunder?action=new")}
+                                    >
+                                        <div className="bg-green-100 p-2 rounded-full">
+                                            <Users className="w-5 h-5 text-green-600" />
+                                        </div>
+                                        <span className="font-bold text-base">Ny Kund</span>
+                                    </Button>
+                                </motion.div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    transition={{ duration: 0.2, delay: 0.15 }}
+                                    className="w-full flex justify-center"
+                                >
+                                    <Button
+                                        variant="outline"
+                                        className="shadow-xl border-border/50 bg-white text-primary rounded-2xl pr-6 pl-4 h-14 flex items-center gap-3 w-[200px] justify-start hover:bg-gray-50"
+                                        onClick={() => handleAction("/paminnelser?action=new")}
+                                    >
+                                        <div className="bg-yellow-100 p-2 rounded-full">
+                                            <Bell className="w-5 h-5 text-yellow-600" />
+                                        </div>
+                                        <span className="font-bold text-base">Ny Påminnelse</span>
+                                    </Button>
+                                </motion.div>
                             </motion.div>
-                        </div>
-                    </>
-                )}
-            </AnimatePresence>
+                        </>
+                    )}
+                </AnimatePresence>
 
-            <nav className="bg-white/90 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl flex items-center justify-between px-2 h-16 relative z-50">
-                {/* Left Group */}
-                <div className="flex items-center justify-around flex-1">
-                    {navItems.slice(0, 2).map((item) => {
-                        const Icon = item.icon;
-                        const active = isActive(item.path);
-                        return (
-                            <Link
-                                key={item.path}
-                                to={item.path}
-                                onClick={() => setOpen(false)}
-                                className={cn(
-                                    "flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-all duration-200",
-                                    active ? "text-accent bg-accent/10" : "text-muted-foreground hover:text-primary hover:bg-gray-50"
-                                )}
-                            >
-                                <Icon
-                                    strokeWidth={active ? 2.5 : 2}
-                                    className="h-5 w-5 mb-0.5"
-                                />
-                                <span className="text-[10px] font-bold">
-                                    {item.label}
-                                </span>
-                            </Link>
-                        );
-                    })}
-                </div>
-
-                {/* Center FAB */}
-                <div className="relative -top-6 mx-2">
-                    <Button
-                        size="icon"
-                        className={cn(
-                            "h-14 w-14 rounded-full shadow-[0_8px_16px_rgba(22,163,74,0.4)] transition-all duration-300 border-4 border-background",
-                            open ? "bg-red-500 hover:bg-red-600 rotate-45" : "bg-accent hover:bg-accent/90 hover:scale-105"
-                        )}
-                        onClick={() => setOpen(!open)}
-                    >
-                        <Plus className="h-7 w-7 text-white" />
-                    </Button>
-                </div>
-
-                {/* Right Group */}
-                <div className="flex items-center justify-around flex-1">
-                    {navItems.slice(2, 4).map((item) => {
-                        const Icon = item.icon;
-                        const active = isActive(item.path);
-                        return (
-                            <Link
-                                key={item.path}
-                                to={item.path}
-                                onClick={() => setOpen(false)}
-                                className={cn(
-                                    "flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-all duration-200",
-                                    active ? "text-accent bg-accent/10" : "text-muted-foreground hover:text-primary hover:bg-gray-50"
-                                )}
-                            >
-                                <Icon
-                                    strokeWidth={active ? 2.5 : 2}
-                                    className="h-5 w-5 mb-0.5"
-                                />
-                                <span className="text-[10px] font-bold">
-                                    {item.label}
-                                </span>
-                            </Link>
-                        );
-                    })}
-                </div>
-            </nav>
+                <Button
+                    onClick={() => setOpen(!open)}
+                    className={cn(
+                        "h-16 w-16 rounded-full shadow-[0_0_20px_rgba(34,197,94,0.6)] transition-all duration-300 flex items-center justify-center p-0",
+                        open
+                            ? "bg-red-500 hover:bg-red-600 rotate-45 scale-90"
+                            : "bg-[#22c55e] hover:bg-[#16a34a] scale-100 hover:scale-105"
+                    )}
+                >
+                    <Plus className="h-8 w-8 text-white stroke-[3]" />
+                </Button>
+            </div>
         </div>
     );
 };
-
-export default MobileBottomNav;

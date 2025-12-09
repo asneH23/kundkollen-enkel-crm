@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import MobileHeader from "./MobileHeader";
@@ -15,16 +15,27 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isDashboard = location.pathname === "/dashboard";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-white lg:bg-background lg:p-6 flex gap-6 overflow-hidden h-screen lg:overflow-visible">
-      {/* Floating Sidebar */}
+      {/* Floating Sidebar - Desktop */}
       <div className="hidden lg:block w-72 flex-shrink-0 h-full">
         <Sidebar />
       </div>
 
-      {/* Mobile Topbar */}
-      <MobileHeader />
+      {/* Mobile Sidebar (Hamburger Menu) - Controlled */}
+      <Sidebar
+        mobile
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Mobile Topbar - With Menu Button */}
+      <MobileHeader
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 h-full overflow-hidden flex flex-col lg:overflow-visible">

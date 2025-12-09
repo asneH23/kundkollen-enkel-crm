@@ -29,7 +29,9 @@ function formatDate(dateString: string): string {
 }
 
 function getEmailContent(reminder: Reminder): { subject: string; html: string } {
-  const appUrl = "https://kundkollen-enkel-crm.vercel.app"; // Beta URL until Jan 16
+  // Use configured App URL or fallback to production
+  const appUrl = Deno.env.get("APP_URL") || "https://kundkollen-enkel-crm.vercel.app";
+
   const dueDate = formatDate(reminder.due_date);
   const customerInfo = reminder.customer_name ? `<p><strong>Kund:</strong> ${reminder.customer_name}</p>` : '';
   const description = reminder.reminder_description ? `<p>${reminder.reminder_description}</p>` : '';
@@ -143,7 +145,7 @@ function getEmailContent(reminder: Reminder): { subject: string; html: string } 
         </div>
         
         <div style="text-align: center;">
-            <a href="${appUrl}/reminders" class="button">Se påminnelser i Kundkollen</a>
+            <a href="${appUrl}/paminnelser" class="button">Se påminnelser i Kundkollen</a>
         </div>
         
         <div class="footer">
@@ -244,8 +246,11 @@ const handler = async (req: Request): Promise<Response> => {
         const { subject, html } = getEmailContent(reminder);
 
         // Send email via Resend
+        const SENDER_EMAIL = Deno.env.get("SENDER_EMAIL");
+        const fromEmail = SENDER_EMAIL || "onboarding@resend.dev";
+
         const emailResponse = await resend.emails.send({
-          from: "Kundkollen <onboarding@resend.dev>",
+          from: `Kundkollen <${fromEmail}>`,
           to: [reminder.user_email],
           subject,
           html,

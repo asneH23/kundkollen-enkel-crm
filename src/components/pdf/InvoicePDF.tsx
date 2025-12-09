@@ -145,6 +145,25 @@ const styles = StyleSheet.create({
         backgroundColor: '#FEE2E2',
         color: '#991B1B',
     },
+    table: {
+        marginTop: 15,
+    },
+    tableHeader: {
+        flexDirection: 'row',
+        backgroundColor: '#F3F4F6',
+        padding: 10,
+        fontWeight: 'bold',
+        fontSize: 10,
+        borderBottom: '2px solid #10B981',
+    },
+    tableRow: {
+        flexDirection: 'row',
+        padding: 10,
+        borderBottom: '1px solid #E5E7EB',
+    },
+    tableCol1: {
+        width: '60%',
+    },
 });
 
 interface InvoicePDFProps {
@@ -174,10 +193,21 @@ interface InvoicePDFProps {
         phone?: string;
         address?: string;
         orgNumber?: string;
+        bankgiro?: string;
+        plusgiro?: string;
+        iban?: string;
+        bic?: string;
     };
+    items?: {
+        description: string;
+        quantity: number;
+        unit_price: number;
+        vat_rate: number;
+        type: 'service' | 'material' | 'other';
+    }[];
 }
 
-const InvoicePDF = ({ invoice, customer, companyInfo }: InvoicePDFProps) => {
+const InvoicePDF = ({ invoice, customer, companyInfo, items }: InvoicePDFProps) => {
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('sv-SE');
     };
@@ -287,13 +317,40 @@ const InvoicePDF = ({ invoice, customer, companyInfo }: InvoicePDFProps) => {
                     </View>
                 </View>
 
-                {/* Description */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Beskrivning</Text>
-                    {invoice.description && (
-                        <Text style={styles.description}>{invoice.description}</Text>
-                    )}
-                </View>
+                {/* Invoice Details / Items */}
+                {items && items.length > 0 ? (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Specifikation</Text>
+                        <View style={styles.table}>
+                            <View style={styles.tableHeader}>
+                                <Text style={styles.tableCol1}>Beskrivning</Text>
+                                <Text style={{ width: '10%', textAlign: 'right' }}>Antal</Text>
+                                <Text style={{ width: '15%', textAlign: 'right' }}>Pris</Text>
+                                <Text style={{ width: '15%', textAlign: 'right' }}>Belopp</Text>
+                            </View>
+                            {items.map((item, index) => (
+                                <View key={index} style={styles.tableRow}>
+                                    <View style={styles.tableCol1}>
+                                        <Text style={styles.value}>{item.description}</Text>
+                                        <Text style={{ fontSize: 8, color: '#666666' }}>
+                                            {item.type === 'service' ? 'Arbetskostnad (ROT/RUT-grundande)' : item.type === 'material' ? 'Material' : 'Övrigt'}
+                                        </Text>
+                                    </View>
+                                    <Text style={{ width: '10%', textAlign: 'right', fontSize: 10 }}>{item.quantity}</Text>
+                                    <Text style={{ width: '15%', textAlign: 'right', fontSize: 10 }}>{formatCurrency(item.unit_price)}</Text>
+                                    <Text style={{ width: '15%', textAlign: 'right', fontSize: 10 }}>{formatCurrency(item.quantity * item.unit_price)}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                ) : (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Beskrivning</Text>
+                        {invoice.description && (
+                            <Text style={styles.description}>{invoice.description}</Text>
+                        )}
+                    </View>
+                )}
 
                 {/* Price Breakdown */}
                 <View style={styles.totalSection}>

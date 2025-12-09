@@ -5,17 +5,27 @@ import { HelpCircle, LogOut, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
-const MobileHeader = () => {
-  const { user, signOut } = useAuth();
+import { Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface MobileHeaderProps {
+  mobileMenuOpen?: boolean;
+  setMobileMenuOpen?: (open: boolean) => void;
+}
+
+const MobileHeader = ({ mobileMenuOpen, setMobileMenuOpen }: MobileHeaderProps) => {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   if (!user) return null;
 
   return (
-    <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border shadow-sm h-14">
-      <div className="flex items-center justify-between px-4 h-full">
+    <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border shadow-sm h-14 transition-all duration-300">
+      <div className="flex items-center justify-between px-4 h-full max-w-7xl mx-auto">
+
+        {/* Logo Section */}
         <Link to="/" className="flex items-center gap-2 group no-underline outline-none border-none">
-          <div className="h-8 w-8 rounded-xl flex items-center justify-center shadow-lg overflow-hidden group-hover:scale-105 transition-transform duration-300">
+          <div className="h-8 w-8 rounded-xl flex items-center justify-center shadow-lg overflow-hidden group-hover:scale-105 transition-transform duration-300 bg-white">
             <img src="/logo.png" alt="Kundkollen Logo" className="h-full w-full object-cover" />
           </div>
           <span className="text-lg font-bold text-primary tracking-tight group-hover:text-accent transition-colors">
@@ -23,35 +33,17 @@ const MobileHeader = () => {
           </span>
         </Link>
 
-        <div className="flex items-center gap-1">
+        {/* Hamburger Menu - Integrated directly in header for perfect alignment */}
+        {setMobileMenuOpen && (
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate("/profil")}
-            className="h-9 w-9 text-muted-foreground hover:text-black hover:bg-black/5 rounded-full"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="h-9 w-9 text-primary hover:text-black hover:bg-black/5 rounded-full transition-colors"
           >
-            <User className="h-5 w-5" />
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
-
-          <HelpModal>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 text-muted-foreground hover:text-black hover:bg-black/5 rounded-full"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </Button>
-          </HelpModal>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => signOut()}
-            className="h-9 w-9 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-full"
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
-        </div>
+        )}
       </div>
     </div>
   );

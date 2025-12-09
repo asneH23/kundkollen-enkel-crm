@@ -43,7 +43,15 @@ const handler = async (req: Request): Promise<Response> => {
             },
         ] : [];
 
-        const fromEmail = "onboarding@resend.dev"; // Använd denna tills domänen är verifierad
+        // Use configured sender email or fallback to Resend's testing email
+        const SENDER_EMAIL = Deno.env.get("SENDER_EMAIL");
+        const fromEmail = SENDER_EMAIL || "onboarding@resend.dev";
+
+        // Warning log if still using testing email in production
+        if (!SENDER_EMAIL) {
+            console.warn("Using testing email 'onboarding@resend.dev'. Configure SENDER_EMAIL in Supabase Edge Function secrets for production.");
+        }
+
         const from = fromName ? `${fromName} <${fromEmail}>` : "Kundkollen <" + fromEmail + ">";
 
         const emailData = {

@@ -145,7 +145,7 @@ const EmailVerification = () => {
         type: "signup",
         email: emailToUse,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          // emailRedirectTo removed to rely on default Site URL
         },
       });
 
@@ -178,7 +178,7 @@ const EmailVerification = () => {
         type: "signup",
         email: emailToUse,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          // emailRedirectTo removed to rely on default Site URL
         },
       });
 

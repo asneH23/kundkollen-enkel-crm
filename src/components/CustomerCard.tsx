@@ -112,6 +112,17 @@ const CustomerCard = ({ customer, onEdit, onDelete }: CustomerCardProps) => {
           </a>
         )}
 
+        {customer.org_number && (
+          <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-black/5 transition-colors group/item cursor-default">
+            <div className="h-8 w-8 rounded-lg bg-black/5 flex items-center justify-center text-primary/60 group-hover/item:text-primary transition-colors">
+              <Building2 className="h-4 w-4" />
+            </div>
+            <span className="text-sm font-medium text-primary/80 truncate text-xs text-muted-foreground" title="Org.nr / Personnr">
+              {customer.org_number}
+            </span>
+          </div>
+        )}
+
 
       </div>
 

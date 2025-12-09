@@ -12,6 +12,7 @@ import CustomerCard from "@/components/CustomerCard";
 import { Plus, Search, Users, AlertTriangle, FileText, Bell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import MobileCustomerList from "@/components/MobileCustomerList";
+import { useSearchParams } from "react-router-dom";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -28,6 +29,7 @@ interface Customer {
   email: string | null;
   phone: string | null;
   address: string | null;
+  org_number: string | null;
 }
 
 interface CustomerFormData {
@@ -36,11 +38,13 @@ interface CustomerFormData {
   email: string;
   phone: string;
   address: string;
+  orgNumber: string;
 }
 
 const Customers = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -57,6 +61,7 @@ const Customers = () => {
     email: "",
     phone: "",
     address: "",
+    orgNumber: "",
   });
 
   const formatPhone = (value: string) => {
@@ -80,6 +85,18 @@ const Customers = () => {
   useEffect(() => {
     fetchCustomers();
   }, [user]);
+
+  useEffect(() => {
+    if (searchParams.get("action") === "new") {
+      handleOpenDialog();
+      // Remove query param to prevent reopening on generic refresh, but keep url clean
+      setSearchParams(prev => {
+        const newParams = new URLSearchParams(prev);
+        newParams.delete("action");
+        return newParams;
+      });
+    }
+  }, [searchParams]);
 
   const fetchCustomers = async () => {
     if (!user) return;
@@ -111,6 +128,7 @@ const Customers = () => {
       email: "",
       phone: "",
       address: "",
+      orgNumber: "",
     });
     setEditingCustomer(null);
   };
@@ -124,6 +142,7 @@ const Customers = () => {
         email: customer.email || "",
         phone: formatPhone(customer.phone || ""),
         address: customer.address || "",
+        orgNumber: customer.org_number || "",
       });
     } else {
       resetForm();
@@ -154,6 +173,7 @@ const Customers = () => {
         email: formData.email.trim() || null,
         phone: normalizePhoneForSave(formData.phone || ""),
         address: formData.address.trim() || null,
+        org_number: formData.orgNumber.trim() || null,
       };
 
       if (editingCustomer) {
@@ -317,6 +337,17 @@ const Customers = () => {
                     required
                     className="premium-input"
                   />
+                  <div className="space-y-2">
+                    <Label htmlFor="orgNumber" className="text-primary">Org.nr / Personnummer</Label>
+                    <Input
+                      id="orgNumber"
+                      value={formData.orgNumber}
+                      onChange={(e) => setFormData({ ...formData, orgNumber: e.target.value })}
+                      placeholder="556XXX-XXXX / YYYYMMDD-XXXX"
+                      className="premium-input"
+                    />
+                    <p className="text-xs text-muted-foreground">Krävs för ROT/RUT</p>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

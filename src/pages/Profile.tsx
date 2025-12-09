@@ -28,6 +28,10 @@ const Profile = () => {
   const [address, setAddress] = useState("");
   const [orgNumber, setOrgNumber] = useState("");
   const [contactPerson, setContactPerson] = useState("");
+  const [bankgiro, setBankgiro] = useState("");
+  const [plusgiro, setPlusgiro] = useState("");
+  const [iban, setIban] = useState("");
+  const [bic, setBic] = useState("");
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [stats, setStats] = useState({
     customers: 0,
@@ -65,6 +69,10 @@ const Profile = () => {
         setAddress((data as any).address || localStorage.getItem(`profile_address_${user.id}`) || "");
         setOrgNumber(data.org_number || "");
         setContactPerson(data.contact_person || "");
+        setBankgiro((data as any).bankgiro || "");
+        setPlusgiro((data as any).plusgiro || "");
+        setIban((data as any).iban || "");
+        setBic((data as any).bic || "");
         setCreatedAt(data.created_at || null);
       } else {
         // If no data in database, try loading from localStorage as temporary fallback
@@ -161,6 +169,10 @@ const Profile = () => {
         address: address.trim() || null,
         org_number: orgNumber.trim() || null,
         contact_person: contactPerson.trim() || null,
+        bankgiro: bankgiro.trim() || null,
+        plusgiro: plusgiro.trim() || null,
+        iban: iban.trim() || null,
+        bic: bic.trim() || null,
       };
 
       // Save to Supabase database (primary storage - works across browsers)
@@ -356,6 +368,68 @@ const Profile = () => {
                       placeholder="Gatunamn 123, 123 45 Stad"
                       className="mt-2"
                     />
+                  </div>
+                </div>
+
+                {/* Payment Details Section */}
+                <div className="pt-6 border-t border-border mt-2">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-accent" />
+                    Betalningsuppgifter (Visas på fakturan)
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="bankgiro" className="flex items-center gap-2">
+                        Bankgiro
+                      </Label>
+                      <Input
+                        id="bankgiro"
+                        type="text"
+                        value={bankgiro}
+                        onChange={(e) => setBankgiro(e.target.value)}
+                        placeholder="123-4567"
+                        className="mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="plusgiro" className="flex items-center gap-2">
+                        Plusgiro
+                      </Label>
+                      <Input
+                        id="plusgiro"
+                        type="text"
+                        value={plusgiro}
+                        onChange={(e) => setPlusgiro(e.target.value)}
+                        placeholder="12 34 56-7"
+                        className="mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="iban" className="flex items-center gap-2">
+                        IBAN (Internationellt)
+                      </Label>
+                      <Input
+                        id="iban"
+                        type="text"
+                        value={iban}
+                        onChange={(e) => setIban(e.target.value)}
+                        placeholder="SE..."
+                        className="mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="bic" className="flex items-center gap-2">
+                        BIC/SWIFT
+                      </Label>
+                      <Input
+                        id="bic"
+                        type="text"
+                        value={bic}
+                        onChange={(e) => setBic(e.target.value)}
+                        placeholder="NDE..."
+                        className="mt-2"
+                      />
+                    </div>
                   </div>
                 </div>
 

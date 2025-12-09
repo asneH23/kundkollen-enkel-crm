@@ -1,55 +1,41 @@
-# Fixa Email Verification Redirect
+# Fixa Email Verifiering (Förenklad)
 
-## Problem
-När användare klickar på verifieringslänken i emailet får de felet: `{"error":"requested path is invalid"}`
+Jag har uppdaterat koden åt dig så att du **inte** behöver krångla med komplicerade redirect-länkar längre.
 
-## Lösning
+Nu behöver du bara göra en enda sak i Supabase:
 
-Du behöver uppdatera Supabase redirect URLs:
+## 1. Gå till URL Settings
+1. Logga in på [Supabase Dashboard](https://supabase.com/dashboard).
+2. Gå till ditt projekt.
+3. Klicka på **Authentication** (i menyn till vänster).
+4. Klicka på **URL Configuration**.
 
-### Steg 1: Gå till Supabase Dashboard
-1. Öppna https://supabase.com/dashboard
-2. Välj ditt projekt (bztmchmfaprivbdxnhsz)
-3. Gå till **Authentication** → **URL Configuration**
+## 2. Kolla "Site URL"
+Se till att **Site URL** är satt till:
 
-### Steg 2: Uppdatera URLs
-
-**Site URL:**
+Om du kör lokalt (på din dator):
 ```
 http://localhost:8080
 ```
-(För produktion: `https://kundkollen-enkel-crm.vercel.app` eller din egen domän)
 
-**Redirect URLs (lägg till dessa):**
+Om du kör i produktion (Vercel):
+```
+https://kundkollen-enkel-crm.vercel.app
+```
+
+## 3. Redirect URLs (Valfritt men bra)
+Du behöver inte lägga till massor av länkar här längre, men det är bra att ha en stjärna för säkerhets skull:
 ```
 http://localhost:8080/**
-http://localhost:8080/dashboard
-http://localhost:8080/auth
-https://kundkollen-enkel-crm.vercel.app/**
-https://kundkollen-enkel-crm.vercel.app/dashboard
 ```
 
-### Steg 3: Spara
-
-Klicka "Save" längst ner.
-
-### Steg 4: Testa igen
-
-1. Skapa ett nytt testkonto
-2. Kolla emailen
-3. Klicka på verifieringslänken
-4. Du ska nu redirectas till Dashboard
+## 4. Spara
+Klicka på **Save**.
 
 ---
 
-## Varför detta händer
+### Vad jag fixade i koden:
+1. Jag tog bort koden som tvingade användaren till `/dashboard` direkt i mailet (vilket var det som krånglade).
+2. Jag lade istället till en smart funktion på startsidan som automatiskt skickar inloggade användare till dashboarden.
 
-Supabase kollar att redirect URL:en är tillåten för säkerhet. Om URL:en inte finns i listan över tillåtna URLs får du detta fel.
-
-## För produktion
-
-När du deployar till din egen domän (kundkollen.se), lägg till:
-```
-https://kundkollen.se/**
-https://kundkollen.se/dashboard
-```
+Nu ska det funka smärtfritt! Testa registrera ett nytt konto.

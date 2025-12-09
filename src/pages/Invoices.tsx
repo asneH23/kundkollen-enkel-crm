@@ -12,6 +12,7 @@ import InvoiceCard, { Invoice } from "@/components/InvoiceCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { pdf } from "@react-pdf/renderer";
 import InvoicePDF from "@/components/pdf/InvoicePDF";
+import InvoiceItemsEditor, { InvoiceItem, InvoiceItemType } from "@/components/InvoiceItemsEditor";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,6 +64,7 @@ const Invoices = () => {
         laborCost: "",
         propertyDesignation: ""
     });
+    const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([]);
 
     // Goal Celebration State
     const [goalReachedOpen, setGoalReachedOpen] = useState(false);
@@ -106,6 +108,11 @@ const Invoices = () => {
                     email: profile.email,
                     phone: profile.phone,
                     address: profile.address,
+                    orgNumber: profile.org_number,
+                    bankgiro: (profile as any).bankgiro,
+                    plusgiro: (profile as any).plusgiro,
+                    iban: (profile as any).iban,
+                    bic: (profile as any).bic
                 });
             }
 
@@ -208,6 +215,35 @@ const Invoices = () => {
             propertyDesignation: invoice.property_designation || ""
         });
         setEditDialogOpen(true);
+
+        // Fetch items for this invoice
+        const fetchItems = async () => {
+            const { data, error } = await supabase
+                .from('invoice_items' as any)
+                .select('*')
+                .eq('invoice_id', invoice.id);
+
+            if (data && data.length > 0) {
+                setInvoiceItems(data.map((item: any) => ({
+                    id: item.id,
+                    description: item.description,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    vat_rate: item.vat_rate,
+                    type: item.type as InvoiceItemType
+                })));
+            } else {
+                // If no items exist (legacy invoice), create one from the main invoice data
+                setInvoiceItems([{
+                    description: invoice.description || "Tjänst",
+                    quantity: 1,
+                    unit_price: invoice.amount, // Gross amount, maybe should back-calculate but keeping simple
+                    vat_rate: 25,
+                    type: invoice.labor_cost ? 'service' : 'other'
+                }]);
+            }
+        };
+        fetchItems();
     };
 
     const handleEditSubmit = async (e: React.FormEvent) => {
@@ -215,21 +251,47 @@ const Invoices = () => {
         if (!editingInvoice) return;
 
         try {
+            // Calculate totals from items
+            const totalAmount = invoiceItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+            const totalLabor = invoiceItems
+                .filter(item => item.type === 'service')
+                .reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+
+            // 1. Update Invoice Summary
             const { error } = await supabase
                 .from('invoices' as any)
                 .update({
-                    description: editFormData.description,
-                    amount: parseFloat(editFormData.amount.replace(/\s/g, '').replace(',', '.')),
+                    description: editFormData.description, // Keep main description for list view
+                    amount: totalAmount, // Update total
                     due_date: editFormData.dueDate,
                     status: editFormData.status,
                     customer_id: editFormData.customerId,
                     rot_rut_type: editFormData.rotRutType === "none" ? null : editFormData.rotRutType,
-                    labor_cost: editFormData.laborCost ? parseFloat(editFormData.laborCost.replace(/\s/g, '').replace(',', '.')) : 0,
+                    labor_cost: totalLabor, // Update labor cost from items
                     property_designation: editFormData.propertyDesignation
                 })
                 .eq('id', editingInvoice.id);
 
             if (error) throw error;
+
+            // 2. Update Invoice Items (Delete all and re-insert is easiest for now)
+            // First delete existing
+            await supabase.from('invoice_items' as any).delete().eq('invoice_id', editingInvoice.id);
+
+            // Then insert new
+            const itemsToInsert = invoiceItems.map(item => ({
+                invoice_id: editingInvoice.id,
+                description: item.description,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                vat_rate: item.vat_rate,
+                type: item.type
+            }));
+
+            if (itemsToInsert.length > 0) {
+                const { error: itemsError } = await supabase.from('invoice_items' as any).insert(itemsToInsert);
+                if (itemsError) throw itemsError;
+            }
 
             toast({
                 title: "Faktura uppdaterad",
@@ -238,9 +300,10 @@ const Invoices = () => {
 
             setEditDialogOpen(false);
             setEditingInvoice(null);
+
             if (editFormData.status === "paid" && editingInvoice.status !== "paid") {
                 triggerConfetti();
-                checkGoalReached(parseFloat(editFormData.amount.replace(/\s/g, '').replace(',', '.')), editingInvoice.id);
+                checkGoalReached(totalAmount, editingInvoice.id);
             }
 
             fetchInvoices();
@@ -248,7 +311,7 @@ const Invoices = () => {
             console.error("Error updating invoice:", error);
             toast({
                 title: "Fel",
-                description: "Kunde inte spara ändringar",
+                description: error.message || "Kunde inte spara ändringar",
                 variant: "destructive"
             });
         }
@@ -284,6 +347,20 @@ const Invoices = () => {
         try {
             setSendingEmail(true);
 
+            // Fetch Items for PDF
+            const { data: invoiceItemsData } = await supabase
+                .from('invoice_items' as any)
+                .select('*')
+                .eq('invoice_id', selectedInvoice.id);
+
+            const pdfItems = invoiceItemsData?.map((item: any) => ({
+                description: item.description,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                vat_rate: item.vat_rate,
+                type: item.type as InvoiceItemType
+            })) || [];
+
             // 1. Generate PDF
             const customer = customers.find(c => c.id === selectedInvoice.customer_id);
             const blob = await pdf(
@@ -297,6 +374,7 @@ const Invoices = () => {
                         address: customer?.address,
                     }}
                     companyInfo={companyInfo}
+                    items={pdfItems}
                 />
             ).toBlob();
 
@@ -720,16 +798,12 @@ const Invoices = () => {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="edit-amount">Belopp (kr)</Label>
-                                    <Input
-                                        id="edit-amount"
-                                        value={editFormData.amount}
-                                        onChange={(e) => setEditFormData({ ...editFormData, amount: e.target.value })}
-                                        className="premium-input"
-                                    />
-                                </div>
+                            <div className="grid grid-cols-1 gap-4">
+                                <InvoiceItemsEditor
+                                    items={invoiceItems}
+                                    onItemsChange={setInvoiceItems}
+                                />
+
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-duedate">Förfallodatum</Label>
                                     <Input
@@ -772,15 +846,8 @@ const Invoices = () => {
                                     </div>
 
                                     {editFormData.rotRutType !== 'none' && (
-                                        <div className="space-y-2">
-                                            <Label htmlFor="labor-cost">Arbetskostnad (kr)</Label>
-                                            <Input
-                                                id="labor-cost"
-                                                value={editFormData.laborCost}
-                                                onChange={(e) => setEditFormData({ ...editFormData, laborCost: e.target.value })}
-                                                placeholder="Belopp för arbete"
-                                                className="premium-input"
-                                            />
+                                        <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+                                            Arbetskostnad beräknas automatiskt från dina <strong>Arbete</strong>-rader ovan.
                                         </div>
                                     )}
                                 </div>

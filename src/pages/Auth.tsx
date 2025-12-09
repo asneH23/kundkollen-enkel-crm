@@ -85,7 +85,6 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
               company_name: companyName,
             },
